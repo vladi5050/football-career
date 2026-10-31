@@ -47,6 +47,22 @@ export function SettingsScreen() {
 
       <section class="paper settings-group">
         <h2 class="paper-title">משחק</h2>
+        <div class="moment-style" style={{ display: 'grid', gap: '8px', padding: '6px 0 10px' }}>
+          <span class="tg-text" style={{ display: 'grid', gap: '2px' }}>
+            <b style={{ fontSize: 'var(--t-md)' }}>סגנון רגעי מפתח</b>
+            <small style={{ fontSize: 'var(--t-sm)', color: 'var(--ink-3)', fontWeight: 600 }}>
+              {s.momentStyle === 'arcade' ? 'מיני-משחק: מחליקים ומקישים כדי לבעוט, למסור ולהציל' : 'קוראים את המצב על הלוח ובוחרים את ההחלטה הנכונה'}
+            </small>
+          </span>
+          <div class="seg" role="group" aria-label="סגנון רגעי מפתח">
+            <button type="button" aria-pressed={s.momentStyle !== 'arcade'} onClick={() => setUiSetting('momentStyle', 'decision')}>
+              החלטות
+            </button>
+            <button type="button" aria-pressed={s.momentStyle === 'arcade'} onClick={() => setUiSetting('momentStyle', 'arcade')}>
+              ארקייד (החלקות)
+            </button>
+          </div>
+        </div>
         <Toggle
           label="סמלץ רגעי מפתח אוטומטית"
           sub="המשחק ירוץ בלי לעצור לרגעים. אפשר תמיד לשנות"

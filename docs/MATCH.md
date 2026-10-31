@@ -146,3 +146,95 @@ caps the flash and makes the vignette static. Gameplay timing does not change.
 - In dev builds the current scene is exposed as `globalThis.__mm` (`scene`, `ctx`, `script`). Playwright uses it to aim swipes.
 - Unit tests: `npx vitest run tests/unit/match` covers swipe classification and all of the sim's resolvers and physics.
 - Screenshots: `docs/match-shots/*.png`.
+
+---
+
+## Decision moments ("רגע החלטה"), the default style
+
+Swiping proved hard to play, so the default key-moment style is now a tactical read on the locker-room whiteboard. The Pixi swipe player above is kept as the optional "ארקייד (החלקות)" style. Players switch between them in Settings → משחק → "סגנון רגעי מפתח" (`uiSettings.momentStyle: 'decision' | 'arcade'`, default `'decision'`, stored in localStorage).
+
+```ts
+import { playDecisionMoment } from './match/decision';
+const result = await playDecisionMoment(host, spec, {
+  attr: player.attr, pos: player.pos,                          // required
+  colors: { user: club.colors, opp: opp.colors },              // optional
+  userName: player.name, shirt: player.shirt, reducedMotion,   // optional
+  // timer?: seconds (0 = none). Default: 7 under lateClose, otherwise 10
+  // rnd?: () => number. Test hook; Math.random by default
+});
+```
+
+- `Match.tsx` lazy-loads `src/match/decision/index.ts` when `momentStyle !== 'arcade'`. The chunk is about 27 KB gzip and contains no Pixi.
+- The overlay is a full-screen fixed DOM layer appended to `document.body`. It still listens for `moment-skip` on `host`, which resolves `{ skipped: true }`.
+- Cleanup removes the DOM, the listeners, the ResizeObserver and the rAF loop.
+
+**Files** (all in `src/match/decision/`):
+
+| file | contents |
+|---|---|
+| `types.ts` | the data model |
+| `scenarios.ts` | `LIBRARY`: 15 kinds × 3-4 situations × 3-4 options, all Hebrew |
+| `resolve.ts` | the pure resolver (unit tested) |
+| `board.ts` | the SVG whiteboard and step animator |
+| `icons.ts` | the card icons |
+| `index.ts` | UI, timer, flow and `renumber` |
+
+**Scenario model.**
+- Each variant has a coach note, magnets (`me`, `gk`, `m*` teammates, `d*`/`s*` opponents, `w*` wall players), the ball, and arrows (run in blue, press in red, pass as a thin line).
+- Each variant also has a hidden `fit` (0..1) per option: the "right read".
+- Each option has:
+  - a label, an icon, an attribute, and a risk of 1-3;
+  - `bold: false` for options that keep the ball;
+  - `ok` and `fail` choreography steps;
+  - stamps and commentator lines (`{name}` is replaced by the surname);
+  - optional `ctx` shifts.
+
+**Resolution** (`resolve.ts`):
+1. Context shifts the fit:
+   - Leading late (`lateClose` or minute ≥ 80): bold:false +0.3, risk 3 −0.15, other risk 2 −0.08.
+   - Chasing late: risk 3 +0.08, bold:false −0.12.
+   - Rain: dribbling and chips −0.08.
+   - Hostile crowd and rival: only through per-option `ctx`.
+2. Success chance = `0.1 + 0.42·fit + 0.36·attrNorm(attr) − 0.26·difficulty + {+0.1, 0, −0.1}[risk]`, minus 0.03 each for hostile and rival and 0.02 for lateClose. The result is clamped to 0.05..0.93.
+3. Quality: success gives about 0.5..1 and failure about 0.1..0.35.
+4. Timeout gives `success: false, quality: 0.05`, the stamp "היססת", and the board plays the weakest read's failure.
+5. Vision hint ("נראה לך פתוח" on the best-fit card):
+   - vision ≥ 72: always shown;
+   - vision 55..71: shown with probability (v−55)/17;
+   - keepers use max(vision, gk).
+
+**Core semantics** (core is unchanged):
+- For scoring kinds, success means a goal, so every option in those kinds is a goal attempt; a one-two plus a finish counts as one. Cutbacks and safe passes appear only in assist-type kinds (cross, through_ball, dribble).
+- Penalty: takers get taker variants, and a GK gets keeper variants where failure concedes.
+
+**Board.**
+- The camera crops each situation (box situations keep the goal in shot; midfield situations frame the action) and refits to the on-screen aspect.
+- Keeper magnets get a colour that contrasts with both teams.
+- If a teammate wears the user's shirt number, he is renumbered, and the note and commentary follow.
+
+**Flow.**
+1. Pick a card (tap, or keys 1-4 on desktop).
+2. The intended play is drawn as a red marker arrow (0.6 s).
+3. The real outcome animates (about 1-1.5 s, with net ripple and shake on a goal).
+4. A stamp and a commentator line appear, then "המשך" (auto-closes after 5.2 s).
+
+Under reduced motion, the result appears instantly.
+
+**Demo:** `src/match/demo.html?mode=decision&kind=shot&vision=80&pos=CB&asKeeper=1&lateClose=1&lead=1&timer=0`.
+
+**Tests:** `tests/unit/match-decision.test.ts` covers:
+- library integrity;
+- ids in the choreography;
+- penalty roles;
+- fit and context shifts;
+- the effect of attributes and difficulty;
+- Monte Carlo;
+- timeout;
+- the vision hint;
+- renumbering.
+
+**Screenshots** from the real app at 390×844:
+- `docs/match-shots/decision-<n>-<kind>-{situation,choice,anim,result}.png`
+- `decision-settings.png`
+
+Demo shots are in `decision-demo-*.png`.

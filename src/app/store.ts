@@ -97,16 +97,18 @@ export function toast(text: string, ms = 2600): void {
 
 // ---------------------------------------------------------------- local UI settings
 const LS_KEY = 'fc.ui.settings';
-interface UiSettings { reducedMotion: boolean; seenReveal: boolean; autoMoments: boolean }
+/** Key-moment style: 'decision' = tactical read on the whiteboard (default), 'arcade' = Pixi swipe mini-game. */
+export type MomentStyle = 'decision' | 'arcade';
+interface UiSettings { reducedMotion: boolean; seenReveal: boolean; autoMoments: boolean; momentStyle: MomentStyle }
 function loadUi(): UiSettings {
   const osReduced = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
   try {
     const raw = localStorage.getItem(LS_KEY);
-    if (raw) return { reducedMotion: osReduced, seenReveal: false, autoMoments: false, ...JSON.parse(raw) };
+    if (raw) return { reducedMotion: osReduced, seenReveal: false, autoMoments: false, momentStyle: 'decision', ...JSON.parse(raw) };
   } catch {
     /* ignore */
   }
-  return { reducedMotion: osReduced, seenReveal: false, autoMoments: false };
+  return { reducedMotion: osReduced, seenReveal: false, autoMoments: false, momentStyle: 'decision' };
 }
 export const uiSettings = signal<UiSettings>(loadUi());
 export function setUiSetting<K extends keyof UiSettings>(k: K, v: UiSettings[K]): void {

@@ -1,7 +1,8 @@
 // Standalone dev page for the key-moment player: /src/match/demo.html
-// URL params (for automation): ?kind=shot&rain=1&lateClose=1&hostileCrowd=1&rivalInvolved=1&derby=1&asKeeper=1&difficulty=0.5&skill=70&auto=1&bare=1&seed=3
+// URL params (for automation): ?mode=decision&vision=80&pos=CB&timer=0&kind=shot&rain=1&lateClose=1&hostileCrowd=1&rivalInvolved=1&derby=1&asKeeper=1&difficulty=0.5&skill=70&auto=1&bare=1&seed=3
 import type { MomentKind, MomentResult, MomentSpec } from '../core/types';
 import { playMoment, MOMENT_FACTORIES } from './index';
+import { playDecisionMoment } from './decision';
 
 const KIND_LABEL: Record<MomentKind, string> = {
   shot: 'בעיטה', one_on_one: 'אחד על אחד', header: 'נגיחה', dribble: 'דריבל', through_ball: 'מסירת עומק', long_shot: 'בעיטה מרחוק',
@@ -41,14 +42,31 @@ function makeSpec(kind: MomentKind): MomentSpec {
     opponentId: 42,
     opponentName: 'אבי לוי',
     context: { lateClose: late, hostileCrowd: chk('hostileCrowd'), rivalInvolved: chk('rivalInvolved'), rain: chk('rain'), derby: chk('derby') },
-    scoreBefore: late ? [1, 1] : [0, 0],
+    scoreBefore: params.get('lead') === '1' ? [1, 0] : late ? [1, 1] : [0, 0],
     stakes: late ? 'דקה 88, 1-1. הכל על הכף' : 'הזדמנות לפתוח את המשחק',
   };
 }
 
 async function run(kind: MomentKind): Promise<MomentResult> {
   $('idle')?.remove();
-  const res = await playMoment(host, makeSpec(kind), {
+  const spec = makeSpec(kind);
+  if (params.get('mode') === 'decision') {
+    const sk = Number($<HTMLInputElement>('skill').value);
+    const keeper = $<HTMLInputElement>('asKeeper').checked;
+    const vis = Number(params.get('vision') ?? sk);
+    const res = await playDecisionMoment(host, spec, {
+      attr: { finishing: sk, passing: sk, dribbling: sk, pace: sk, stamina: sk, defending: sk, heading: sk, vision: vis, gk: keeper ? sk : 20 },
+      pos: keeper ? 'GK' : (params.get('pos') as never) ?? 'ST',
+      colors: { user: ['#0B7A3B', '#FFFFFF'], opp: ['#C8102E', '#FFFFFF'] },
+      userName: 'דני כהן', shirt: 9,
+      reducedMotion: $<HTMLInputElement>('reducedMotion').checked,
+      timer: params.get('timer') !== null ? Number(params.get('timer')) : undefined,
+    });
+    (window as unknown as { __results: MomentResult[] }).__results.push(res);
+    log(`${kind}: ${res.skipped ? 'skipped' : res.success ? 'SUCCESS' : 'fail'} q=${res.quality}`);
+    return res;
+  }
+  const res = await playMoment(host, spec, {
     reducedMotion: $<HTMLInputElement>('reducedMotion').checked,
     asKeeper: $<HTMLInputElement>('asKeeper').checked,
     colors: { user: ['#0B7A3B', '#FFFFFF'], opp: ['#C8102E', '#FFFFFF'] },

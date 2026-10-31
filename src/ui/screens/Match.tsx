@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
-import type { ClubView, LiveMatch, MomentKind, MomentResult, MomentSpec } from '../../core/types';
+import type { Attributes, ClubView, LiveMatch, MomentKind, MomentResult, MomentSpec, Position } from '../../core/types';
 import { act, busy, matchOutro, reducedMotion, uiSettings, view } from '../../app/store';
 import { Crest } from '../components/Crest';
 import { Confetti } from '../components/Confetti';
@@ -15,6 +15,23 @@ export const MOMENT_HE: Record<MomentKind, string> = {
 type PlayMoment = (host: HTMLElement, spec: MomentSpec, opts: { reducedMotion?: boolean; asKeeper?: boolean; colors?: { user: [string, string]; opp: [string, string] } }) => Promise<MomentResult>;
 // Guarded lazy import: the build works even if src/match is missing. Pixi loads only on first moment.
 const matchModules = import.meta.glob('../../match/index.{ts,tsx}');
+type PlayDecision = (host: HTMLElement, spec: MomentSpec, opts: {
+  attr: Attributes; pos: Position; colors?: { user: [string, string]; opp: [string, string] };
+  userName?: string; shirt?: number; reducedMotion?: boolean;
+}) => Promise<MomentResult>;
+// "רגע החלטה" (default style): small SVG/DOM module, no Pixi.
+const decisionModules = import.meta.glob('../../match/decision/index.ts');
+async function loadPlayDecision(): Promise<PlayDecision | null> {
+  const loader = Object.values(decisionModules)[0];
+  if (!loader) return null;
+  try {
+    const mod = (await loader()) as { playDecisionMoment?: PlayDecision };
+    return mod.playDecisionMoment ?? null;
+  } catch (e) {
+    console.warn('decision module failed to load', e);
+    return null;
+  }
+}
 async function loadPlayMoment(): Promise<PlayMoment | null> {
   const loader = Object.values(matchModules)[0];
   if (!loader) return null;
@@ -38,7 +55,7 @@ export function MatchScreen() {
 
   const [clock, setClock] = useState(0);
   const [fast, setFast] = useState(false);
-  const [playing, setPlaying] = useState<null | 'pixi' | 'fallback'>(null);
+  const [playing, setPlaying] = useState<null | 'pixi' | 'decision' | 'fallback'>(null);
   const [goalFlash, setGoalFlash] = useState(0);
   const fallbackDone = useRef<((r: MomentResult) => void) | null>(null);
   const hostRef = useRef<HTMLDivElement>(null);
@@ -123,12 +140,23 @@ export function MatchScreen() {
   const play = async () => {
     if (!pending || !hostRef.current) return;
     const spec = pending;
-    const fn = await loadPlayMoment();
+    const colors = v.club && opp ? { user: v.club.colors, opp: opp.colors } : undefined;
+    const decide = uiSettings.value.momentStyle !== 'arcade' ? await loadPlayDecision() : null;
+    const fn = decide ? null : await loadPlayMoment();
     let result: MomentResult;
-    if (fn) {
+    if (decide) {
+      setPlaying('decision');
+      try {
+        result = await decide(hostRef.current, spec, {
+          attr: v.player.attr, pos: v.player.pos, colors, userName: v.player.name, shirt: v.player.shirt, reducedMotion: reducedMotion.value,
+        });
+      } catch (e) {
+        console.error(e);
+        result = { momentId: spec.id, success: false, quality: 0.5, skipped: true };
+      }
+    } else if (fn) {
       setPlaying('pixi');
       try {
-        const colors = v.club && opp ? { user: v.club.colors, opp: opp.colors } : undefined;
         result = await fn(hostRef.current, spec, { reducedMotion: reducedMotion.value, asKeeper: v.player.pos === 'GK', colors });
       } catch (e) {
         console.error(e);
