@@ -35,6 +35,10 @@ body {
   min-height: 100dvh;
   overflow-x: clip;
 }
+/* iOS Safari < 16 has no overflow: clip; hidden is the fallback (sticky table headers then stay in place) */
+@supports not (overflow-x: clip) {
+  #app, .shell { overflow-x: hidden; }
+}
 button,
 input,
 select,

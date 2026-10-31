@@ -162,3 +162,13 @@ Hash routing (`#/week` etc.) keeps browser / Android back working.
 - Renewal button disabled after collapsed talks (`career.renewalBlockedUntil`, fallback: last renewal walked away), with a note.
 - Money: one format everywhere, `money()` = "₪7,400" / "₪1.2 מיליון" (same as core `fmtMoney`). Counts: `countHe()`.
 - Week end hides gain rows that round to +0.0 and shows `gainsNote` instead when nothing is left.
+
+## 11. Narrow phones and the league table
+
+- Table: `table-layout: fixed`, columns # (30) · club (rest, ellipsis) · מש׳ (34) · הפרש (42) · נק׳ (38). Toggle "מקוצר / מלא"
+  (full swaps מש׳/הפרש for נ-ת-ה and the last-5 form dots). Tap a row for details (W-D-L, goals, form). Sticky header; zone
+  colour bar on the right edge; the user's row tinted with an orange edge on the left.
+- Round label: "מחזור N מתוך T" where N = the user's played matches from the table, T = (clubs - 1) * 2 for this league.
+- Overflow audit `fc-shots/overflow.cjs`: Chromium with an iPhone Safari UA at 360/390/430 with long real club names
+  (team-names override in IndexedDB). Rule: every flex/grid child that holds text gets `min-width: 0` + ellipsis.
+- Safari < 16 lacks `overflow: clip`; `@supports not` falls back to `overflow-x: hidden` on #app / .shell.

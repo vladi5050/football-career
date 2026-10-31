@@ -540,36 +540,66 @@ mark {
 .loops li::marker { color: var(--red); font-family: var(--f-display); font-size: 24px; }
 
 /* ---------------------------------------------------------------- table */
-.table-paper { padding: var(--s2) var(--s2); }
-.ltable { width: 100%; border-collapse: collapse; font-size: var(--t-sm); }
-.ltable th { font-size: 12px; font-weight: 800; color: var(--ink-3); text-align: center; padding: 6px 4px; border-bottom: 2px solid rgba(27, 42, 74, 0.15); }
-.ltable td { text-align: center; padding: 0 4px; height: 42px; border-bottom: 1px solid rgba(27, 42, 74, 0.08); font-weight: 600; }
+/* Fits 360-430px: fixed layout, the club column takes what is left and ellipsizes. */
+.table-paper { padding: var(--s1, 4px) var(--s2); min-width: 0; }
+.table-toggle { align-self: flex-start; }
+.table-toggle button { min-width: 84px; }
+.ltable { width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 0; font-size: var(--t-sm); }
+.ltable col.w-pos { width: 30px; }
+.ltable col.w-p { width: 34px; }
+.ltable col.w-gd { width: 42px; }
+.ltable col.w-pts { width: 38px; }
+.ltable col.w-wdl { width: 62px; }
+.ltable col.w-form { width: 56px; }
+.ltable th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--paper);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ink-3);
+  text-align: center;
+  padding: 8px 2px 6px;
+  border-bottom: 2px solid rgba(27, 42, 74, 0.15);
+}
+.ltable td { text-align: center; padding: 0 2px; height: 42px; border-bottom: 1px solid rgba(27, 42, 74, 0.08); font-weight: 600; overflow: hidden; white-space: nowrap; }
+.ltable td.num, .ltable th { display: table-cell; }
 .ltable .c-club { text-align: right; }
-.ltable td.c-club { font-weight: 700; width: 100%; }
-.club-cell { display: flex; align-items: center; gap: 8px; white-space: nowrap; overflow: hidden; max-width: 170px; }
-.club-cell span { overflow: hidden; text-overflow: ellipsis; }
+.ltable td.c-club { font-weight: 700; padding-inline: 4px 2px; }
+.club-cell { display: flex; align-items: center; gap: 6px; min-width: 0; max-width: 100%; }
+.club-cell svg { flex: none; }
+.club-cell .cc-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ltable .c-pts { font-weight: 800; font-size: var(--t-md); }
-.ltable .c-pos { width: 28px; position: relative; font-weight: 800; }
-.ltable tr.z-champ .c-pos { box-shadow: inset -4px 0 0 var(--yellow); }
-.ltable tr.z-promo .c-pos { box-shadow: inset -4px 0 0 var(--promo); }
-.ltable tr.z-releg .c-pos { box-shadow: inset -4px 0 0 var(--releg); }
+.ltable .c-pos { font-weight: 800; }
+/* zone colour bar on the leading (right) edge */
+.ltable tr.z-champ td.c-pos { box-shadow: inset -5px 0 0 var(--yellow); }
+.ltable tr.z-promo td.c-pos { box-shadow: inset -5px 0 0 var(--promo); }
+.ltable tr.z-releg td.c-pos { box-shadow: inset -5px 0 0 var(--releg); }
 .ltable tr.me td { background: var(--orange-soft); }
 .ltable tr.me td.c-club { font-weight: 800; }
+.ltable tr.me td:first-child { border-right: 0; }
+.ltable tr.me td:last-child { box-shadow: inset 4px 0 0 var(--orange); }
+.ltable tr.tap { cursor: pointer; }
+.ltable tr.tap:active td { background: rgba(27, 42, 74, 0.06); }
+.ltable tr.row-detail td { height: auto; padding: 6px 8px 10px; text-align: right; white-space: normal; background: rgba(27, 42, 74, 0.04); }
+.ltable tr.row-detail.me td { background: var(--orange-soft); }
+.rd { display: grid; gap: 2px; font-size: 13px; font-weight: 600; }
+.rd b { font-size: var(--t-sm); }
+.rd-form { display: inline-flex; align-items: center; gap: 2px; }
 .c-form { white-space: nowrap; }
 .fd { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin: 0 1px; background: #c9ced6; }
 .fd-W { background: var(--green); }
 .fd-L { background: var(--red); }
-.legend { display: flex; flex-wrap: wrap; gap: var(--s3); font-size: var(--t-sm); font-weight: 600; color: #c3cee0; }
+.legend { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3); font-size: var(--t-sm); font-weight: 600; color: #c3cee0; }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
 .lgd { display: inline-block; width: 12px; height: 12px; border-radius: 3px; }
 .lgd.z-champ { background: var(--yellow); }
 .lgd.z-promo { background: var(--promo); }
 .lgd.z-releg { background: var(--releg); }
 .lgd.me { background: var(--orange-soft); border: 1px solid var(--orange); }
-.ltable.compact td { height: 36px; }
-@media (max-width: 380px) {
-  .ltable .c-wdl, .ltable th:nth-child(4) { display: none; }
-}
+.ltable.compact td { height: 34px; }
+.ltable.compact th { position: static; }
 
 /* ---------------------------------------------------------------- club */
 .club-hero { display: flex; align-items: center; gap: var(--s3); }
@@ -857,3 +887,27 @@ mark {
 }
 .summer-note { margin: 0; font-size: var(--t-sm); font-weight: 600; color: var(--red); }
 .retire-note { margin: -6px 0 0; text-align: center; font-size: var(--t-sm); color: #a9b6cb; font-weight: 600; }
+
+/* narrow phones (360px) and long real club names: nothing may push the column wider than the viewport */
+button.list-row { width: 100%; min-width: 0; }
+.paper > .list-row, .more-screen .paper > * { min-width: 0; }
+.week-board, .week-board > * { min-width: 0; }
+.days { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.day { min-width: 0; }
+.day-label, .day-hint { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wb-hint { min-width: 0; }
+.sat-teams { min-width: 0; }
+.sat-team { min-width: 0; }
+.sat-team span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 370px) {
+  .wb-hint { display: none; }
+  .week-board { padding: 8px 8px 6px; }
+  .days { gap: 6px; }
+}
+/* segmented toggle on the locker wall */
+.table-toggle { background: rgba(0, 0, 0, 0.25); }
+.table-toggle button { color: #c3cee0; }
+.table-toggle button[aria-pressed='true'] { background: var(--paper); color: var(--ink); }
+.sat-teams { flex: 1 1 auto; }
+.sat-team { flex: 1 1 0; justify-content: center; }
+.sat-vs { flex: none; }
