@@ -57,6 +57,7 @@ export function ClubScreen() {
               <span class="chip chip-orange">{ROLE_HE[c?.role ?? 'prospect']}</span>
               <span class="chip">{POS_HE[p.pos]}</span>
               <span class="chip">גיל {p.age}</span>
+              {p.injury && <span class="chip chip-red">פצוע · {p.injury.weeksLeft === 1 ? 'עוד שבוע' : `עוד ${p.injury.weeksLeft} שבועות`}</span>}
             </div>
           </div>
           <div class="ch-shirt" aria-hidden="true">
@@ -78,6 +79,15 @@ export function ClubScreen() {
             <div><b class="num">{avgRating(p.stats) || '-'}</b><span>ממוצע</span></div>
           </div>
         </div>
+        {p.injury && (
+          <div class="injury-banner on-paper" role="status">
+            <span class="ib-cross" aria-hidden="true">+</span>
+            <div>
+              <b>{p.injury.kind}</b>
+              <span>{p.injury.weeksLeft === 1 ? 'עוד שבוע אחד לחזרה' : `עוד ${p.injury.weeksLeft} שבועות לחזרה`} · כושר {Math.round(p.fitness)}</span>
+            </div>
+          </div>
+        )}
         <div class="me-pot muted">
           פוטנציאל לפי הסקאוטים: <b class="num">{p.potentialRange[0]}-{p.potentialRange[1]}</b>
         </div>

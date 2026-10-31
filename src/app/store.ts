@@ -77,8 +77,17 @@ if (typeof window !== 'undefined') {
 export interface ToastMsg { id: number; text: string }
 export const toasts = signal<ToastMsg[]>([]);
 let toastId = 1;
+/** Number of open modals. Toasts are suppressed while any is open. */
+export const modalsOpen = signal(0);
+const recentToasts = new Map<string, number>();
+const TOAST_DEDUPE_MS = 10_000;
 export function toast(text: string, ms = 2600): void {
-  if (!text || toasts.value.some((t) => t.text === text)) return;
+  if (!text || modalsOpen.value > 0) return;
+  const now = Date.now();
+  const last = recentToasts.get(text);
+  if (last != null && now - last < TOAST_DEDUPE_MS) return;
+  recentToasts.set(text, now);
+  for (const [k, t] of recentToasts) if (now - t > TOAST_DEDUPE_MS) recentToasts.delete(k);
   const id = toastId++;
   toasts.value = [...toasts.value, { id, text }].slice(-2);
   setTimeout(() => {
@@ -130,6 +139,8 @@ function alreadyOnScreen(text: string, v: View): boolean {
   const t = norm(text);
   if (!t) return true;
   const shown: string[] = [];
+  if (v.phase === 'retired') return true; // the career-end screen speaks for itself
+  if (v.phase === 'event' && /החלטה/.test(text)) return true; // the event screen is the decision
   if (v.phase === 'negotiation' && v.career.negotiation) shown.push(...v.career.negotiation.log);
   const rep = v.lastWeekReport;
   if (rep && (v.phase === 'postmatch' || v.phase === 'weekend' || v.phase === 'offseason')) {

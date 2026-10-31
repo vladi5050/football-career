@@ -1,6 +1,5 @@
 import { useState } from 'preact/hooks';
 import { act, busy, navigate, view } from '../../app/store';
-import type { ClubView, View } from '../../core/types';
 import { ATTR_HE, weekLabel } from '../i18n';
 import { Crest } from '../components/Crest';
 import { TapedCard } from '../components/TapedCard';
@@ -9,14 +8,9 @@ import { ProgressNearGoal, Bar } from '../components/Bars';
 import { RatingStamp } from '../components/Rating';
 import { Confetti } from '../components/Confetti';
 import { Modal } from '../components/Modal';
-import { contractExpired } from '../viewExtras';
+import { clubLookup, contractExpired, renewalBlocked } from '../viewExtras';
 
-function clubFor(v: View, id: number): ClubView | null {
-  if (v.club?.id === id) return v.club;
-  if (v.nextFixture?.opp.id === id) return v.nextFixture.opp;
-  const row = v.table.find((r) => r.clubId === id);
-  return row ? { id, name: row.name, short: row.short, colors: row.colors, crest: row.crest, city: '', reputation: 50, leagueName: '', country: '', stadium: '' } : null;
-}
+const clubFor = clubLookup;
 
 export function WeekEndScreen() {
   const v = view.value!;
@@ -34,6 +28,9 @@ export function WeekEndScreen() {
   const expired = offseason && contractExpired(v);
   const offers = v.career.offers;
   const [askNext, setAskNext] = useState(false);
+  const blocked = renewalBlocked(v);
+  // UX-03: rows that would read "+0.0" are noise
+  const gains = (rep?.gains ?? []).filter((g) => Math.round((g.after - g.before) * 10) >= 1);
   const nextSeason = () => {
     if (expired) setAskNext(true);
     else void act({ type: 'finishWeek' });
@@ -81,10 +78,10 @@ export function WeekEndScreen() {
         </TapedCard>
       )}
 
-      {rep && rep.gains.length > 0 && (
+      {gains.length > 0 && (
         <section class="paper gains">
           <h2 class="paper-title">מה השתפר</h2>
-          {rep.gains.map((g, i) => {
+          {gains.map((g, i) => {
             const crossed = Math.floor(g.after) > Math.floor(g.before);
             return (
               <div key={g.key} class={`gain-row ${crossed ? 'crossed' : ''}`}>
@@ -100,7 +97,9 @@ export function WeekEndScreen() {
         </section>
       )}
 
-      {rep && rep.gains.length === 0 && rep.gainsNote && <p class="gains-note">{rep.gainsNote}</p>}
+      {rep && gains.length === 0 && (
+        <p class="gains-note">{rep.gainsNote ?? 'השבוע בלי שינוי שרואים במספרים. העבודה מצטברת.'}</p>
+      )}
 
       {rep && rep.nearGoals.length > 0 && (
         <section class="near-list">
@@ -127,11 +126,12 @@ export function WeekEndScreen() {
               {offers.length ? `הצעות על השולחן (${offers.length})` : 'לסוכן'}
             </button>
             {v.club && (
-              <button class={`btn ${expired ? 'btn-primary' : ''}`} type="button" disabled={busy.value} onClick={() => act({ type: 'requestRenewal' })}>
-                לבקש חידוש ב{v.club.short}
+              <button class={`btn ${expired && !blocked ? 'btn-primary' : ''}`} type="button" disabled={busy.value || blocked} onClick={() => act({ type: 'requestRenewal' })}>
+                לבקש חידוש ב{v.club.name}
               </button>
             )}
           </div>
+          {blocked && <p class="summer-note">השיחות על חידוש התפוצצו. בחלון הזה {v.club?.name} לא יחזרו לשולחן.</p>}
         </section>
       )}
 

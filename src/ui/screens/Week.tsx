@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { PlanSlot, View, WeekPlan } from '../../core/types';
 import { act, busy, view } from '../../app/store';
-import { ATTR_HE, DAYS, OTHER_SLOTS, POS_KEYS, SLOT_INFO, firstName, nearestAttrGoal, trainingSlots } from '../i18n';
+import { ATTR_HE, DAYS, OTHER_SLOTS, POS_KEYS, SLOT_INFO, firstName, nearestAttrGoal, trainingSlots, type SlotInfo } from '../i18n';
 import { TopBar } from '../components/TopBar';
 import { Magnet } from '../components/Magnet';
 import { SlotGlyph, IconBolt } from '../components/Icons';
@@ -10,7 +10,13 @@ import { Bar, ProgressNearGoal } from '../components/Bars';
 
 type Plan = (PlanSlot | null)[];
 
+const REHAB: SlotInfo = { label: 'שיקום', short: 'שיקום', color: 'green', glyph: 'rehab', hint: '+כושר', cost: 4 };
+function weeksHe(n: number): string {
+  return n === 1 ? 'עוד שבוע אחד' : `עוד ${n} שבועות`;
+}
+
 function coachNote(v: View): string {
+  if (v.player.injury) return 'קודם כל להחלים. אל תמהר לחזור';
   if (v.player.fitness < 50) return 'אתה גמור. תנוח קצת השבוע';
   if (v.nextFixture?.derby) return 'דרבי בשבת. רגליים טריות!';
   if (v.player.form >= 4) return 'ככה ממשיכים. אל תשתנה';
@@ -20,7 +26,14 @@ function coachNote(v: View): string {
 
 export function WeekScreen() {
   const v = view.value!;
-  const [plan, setPlan] = useState<Plan>(() => (v.career.lastPlan ? [...v.career.lastPlan] : [null, null, null]));
+  const inj = v.player.injury;
+  const rehabSlot = trainingSlots(v.player.pos)[0]!;
+  // Injured: training days become rehab (the engine turns train_* into +fitness); no gym.
+  const infoOf = (s: PlanSlot): SlotInfo => (inj && s.startsWith('train_') ? REHAB : SLOT_INFO[s]);
+  const [plan, setPlan] = useState<Plan>(() => {
+    const p: Plan = v.career.lastPlan ? [...v.career.lastPlan] : [null, null, null];
+    return inj ? (p.map((x) => (x == null ? x : x.startsWith('train_') ? rehabSlot : x === 'extra_gym' ? 'rest' : x)) as Plan) : p;
+  });
   const [selected, setSelected] = useState<PlanSlot | null>(null);
   const [snapAt, setSnapAt] = useState<{ i: number; k: number } | null>(null);
   const [drag, setDrag] = useState<{ slot: PlanSlot; x: number; y: number; from: number | null; over: number | null } | null>(null);
@@ -105,7 +118,7 @@ export function WeekScreen() {
   };
 
   const full = plan.every((p) => p != null);
-  const projected = Math.max(0, Math.min(100, v.player.fitness + plan.reduce((s, p) => s + (p ? SLOT_INFO[p].cost : 0), 0)));
+  const projected = Math.max(0, Math.min(100, v.player.fitness + plan.reduce((s, p) => s + (p ? infoOf(p).cost : 0), 0)));
   const ng = nearestAttrGoal(v);
   const fx = v.nextFixture;
   const coach = v.coach;
@@ -118,16 +131,26 @@ export function WeekScreen() {
     <main class="screen has-nav has-actions week-screen">
       <TopBar v={v} title={v.club?.name ?? 'השבוע'} />
 
+      {inj && (
+        <div class="injury-banner" role="status">
+          <span class="ib-cross" aria-hidden="true">+</span>
+          <div>
+            <b>פצוע: {weeksHe(inj.weeksLeft)}</b>
+            <span>{inj.kind}. האימונים הופכים לשיקום, ובשבת אתה ביציע.</span>
+          </div>
+        </div>
+      )}
+
       <div class="board-wrap">
         <div class="board week-board">
           <div class="wb-head">
             <span class="board-title">תוכנית השבוע</span>
-            <span class="wb-hint">{selected ? `הקש על יום כדי לשים "${SLOT_INFO[selected].short}"` : 'גרור מגנט ליום, או הקש עליו'}</span>
+            <span class="wb-hint">{selected ? `הקש על יום כדי לשים "${infoOf(selected).short}"` : 'גרור מגנט ליום, או הקש עליו'}</span>
           </div>
           <div class="days">
             {DAYS.map((d, i) => {
               const s = plan[i];
-              const info = s ? SLOT_INFO[s] : null;
+              const info = s ? infoOf(s) : null;
               const over = drag?.over === i;
               return (
                 <button
@@ -190,8 +213,11 @@ export function WeekScreen() {
 
       <section class="tray" aria-label="מגנטים">
         <div class="tray-scroll">
-          {[...trainingSlots(v.player.pos).slice(0, 4), ...OTHER_SLOTS, ...trainingSlots(v.player.pos).slice(4)].map((s) => {
-            const info = SLOT_INFO[s];
+          {(inj
+            ? [rehabSlot, ...OTHER_SLOTS.filter((x) => x !== 'extra_gym')]
+            : [...trainingSlots(v.player.pos).slice(0, 4), ...OTHER_SLOTS, ...trainingSlots(v.player.pos).slice(4)]
+          ).map((s) => {
+            const info = infoOf(s);
             return (
               <button
                 key={s}
@@ -213,14 +239,14 @@ export function WeekScreen() {
 
       <section class="week-status paper">
         <div class="meter-row">
-          <span class="meter-label">כושר</span>
-          <Bar value={v.player.fitness} color={v.player.fitness < 50 ? 'red' : 'green'} />
+          <span class={`meter-label ${inj ? 'marker-red' : ''}`}>{inj ? 'כושר · פצוע' : 'כושר'}</span>
+          <Bar value={v.player.fitness} color={inj || v.player.fitness < 50 ? 'red' : 'green'} />
           <span class="meter-val num">{Math.round(v.player.fitness)}</span>
           <span class="meter-label muted">צפי לשבת</span>
           <Bar value={projected} color={projected < 50 ? 'red' : 'blue'} />
           <span class="meter-val num">{Math.round(projected)}</span>
         </div>
-        {ng && <ProgressNearGoal text={ng.text} progress={ng.value} target={ng.target} />}
+        {ng && !inj && <ProgressNearGoal text={ng.text} progress={ng.value} target={ng.target} />}
       </section>
 
       <div class="action-bar">
@@ -234,8 +260,8 @@ export function WeekScreen() {
 
       {drag && (
         <div class="drag-ghost" style={{ left: `${drag.x}px`, top: `${drag.y}px` }} aria-hidden="true">
-          <Magnet color={SLOT_INFO[drag.slot].color} size={52} lifted>
-            <SlotGlyph glyph={SLOT_INFO[drag.slot].glyph} />
+          <Magnet color={infoOf(drag.slot).color} size={52} lifted>
+            <SlotGlyph glyph={infoOf(drag.slot).glyph} />
           </Magnet>
         </div>
       )}

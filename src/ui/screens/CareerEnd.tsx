@@ -1,18 +1,14 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { ClubView, View } from '../../core/types';
 import { navigate, toast, view } from '../../app/store';
-import { POS_HE, avgRating } from '../i18n';
+import { POS_HE, avgRating, countHe } from '../i18n';
+import { clubLookup, vx } from '../viewExtras';
 import { Crest, readableOn } from '../components/Crest';
 import { Shirt, patternFor } from '../components/Shirt';
 import { TapedCard } from '../components/TapedCard';
 import { IconDownload, IconShare } from '../components/Icons';
 
-function clubById(v: View, id: number): ClubView | null {
-  if (v.club?.id === id) return v.club;
-  if (v.offerClubs[id]) return v.offerClubs[id]!;
-  const r = v.table.find((t) => t.clubId === id);
-  return r ? { id, name: r.name, short: r.short, colors: r.colors, crest: r.crest, city: '', reputation: 50, leagueName: '', country: '', stadium: '' } : null;
-}
+const clubById = clubLookup;
 function clubPath(v: View): ClubView[] {
   const out: ClubView[] = [];
   for (const h of v.career.history) {
@@ -20,7 +16,7 @@ function clubPath(v: View): ClubView[] {
     if (c && out[out.length - 1]?.id !== c.id) out.push(c);
   }
   if (!out.length && v.club) out.push(v.club);
-  return out.slice(0, 5);
+  return out;
 }
 
 function svgToImage(svg: SVGSVGElement, w: number, h: number): Promise<HTMLImageElement> {
@@ -126,9 +122,10 @@ async function drawCard(v: View, shirtSvg: SVGSVGElement, crestSvgs: SVGSVGEleme
     ctx.fillText(l, x + bw / 2, 1438);
   });
 
-  // clubs path (RTL: first club on the right)
-  const cw = 120, cg = 70;
+  // clubs path (RTL: first club on the right); shrinks to fit the whole career
   const n = crestSvgs.length;
+  const scale = Math.min(1, (W - 80) / Math.max(1, n * 120 + (n - 1) * 70));
+  const cw = Math.round(120 * scale), cg = Math.round(70 * scale);
   const pathW = n * cw + (n - 1) * cg;
   for (let i = 0; i < n; i++) {
     const x = W / 2 + pathW / 2 - cw - i * (cw + cg);
@@ -139,11 +136,12 @@ async function drawCard(v: View, shirtSvg: SVGSVGElement, crestSvgs: SVGSVGEleme
       ctx.lineWidth = 6;
       ctx.lineCap = 'round';
       ctx.beginPath();
-      ctx.moveTo(x - 14, 1572);
-      ctx.lineTo(x - cg + 14, 1572);
-      ctx.moveTo(x - cg + 28, 1558);
-      ctx.lineTo(x - cg + 14, 1572);
-      ctx.lineTo(x - cg + 28, 1586);
+      const y = 1500 + cw * 0.6, a = Math.max(6, cg * 0.2);
+      ctx.moveTo(x - cg * 0.2, y);
+      ctx.lineTo(x - cg + cg * 0.2, y);
+      ctx.moveTo(x - cg + cg * 0.2 + a, y - a);
+      ctx.lineTo(x - cg + cg * 0.2, y);
+      ctx.lineTo(x - cg + cg * 0.2 + a, y + a);
       ctx.stroke();
     }
   }
@@ -152,7 +150,13 @@ async function drawCard(v: View, shirtSvg: SVGSVGElement, crestSvgs: SVGSVGEleme
   ctx.fillStyle = '#F2C230';
   ctx.font = '700 40px Assistant, sans-serif';
   const tro = v.career.trophies.slice(0, 2).join('  ·  ');
-  if (tro) ctx.fillText(`★ ${tro}`, W / 2, 1714);
+  if (tro) ctx.fillText(`★ ${tro}`, W / 2, 1700);
+  const key = vx(v).careerStory?.keyPerson;
+  if (key) {
+    ctx.fillStyle = '#C3CEE0';
+    ctx.font = '600 34px Assistant, sans-serif';
+    ctx.fillText(`האדם שהכי השפיע: ${key}`, W / 2, tro ? 1750 : 1710, W - 80);
+  }
 
   // footer
   ctx.fillStyle = '#F28C28';
@@ -175,6 +179,7 @@ export function CareerEndScreen() {
   const clubs = clubPath(v);
   const cs = v.player.careerStats;
   const colors = v.club?.colors ?? (['#F28C28', '#1B2A4A'] as [string, string]);
+  const story = vx(v).careerStory;
 
   useEffect(() => {
     let alive = true;
@@ -244,6 +249,23 @@ export function CareerEndScreen() {
         )}
       </TapedCard>
 
+      {(story?.turningPoint || story?.keyPerson) && (
+        <section class="paper ce-story">
+          {story.turningPoint && (
+            <div>
+              <span class="label">ההחלטה ששינתה הכל</span>
+              <p>{story.turningPoint}</p>
+            </div>
+          )}
+          {story.keyPerson && (
+            <div>
+              <span class="label">האדם שהכי השפיע</span>
+              <p>{story.keyPerson}</p>
+            </div>
+          )}
+        </section>
+      )}
+
       {v.career.history.length > 0 && (
         <section class="paper ce-timeline">
           <h2 class="paper-title">הדרך</h2>
@@ -254,7 +276,9 @@ export function CareerEndScreen() {
                 {c && <Crest spec={c.crest} colors={c.colors} name={c.name} short={c.short} size={30} />}
                 <div class="lr-main">
                   <div class="lr-title">{c?.name ?? 'מועדון'}</div>
-                  <div class="lr-sub">{h.year} · {h.apps} הופעות · {h.goals} שערים · מקום {h.position}</div>
+                  <div class="lr-sub">
+                    {h.year} · {countHe(h.apps, 'הופעה', 'הופעות', true)} · {countHe(h.goals, 'שער', 'שערים')} · מקום {h.position}
+                  </div>
                 </div>
                 <span class="rating-pill r-mid num">{h.avgRating.toFixed(1)}</span>
               </div>
@@ -269,8 +293,8 @@ export function CareerEndScreen() {
           <Shirt name="" number={v.player.shirt} colors={colors} pattern={patternFor(v.club?.crest[1] ?? 0)} noText />
         </div>
         <div ref={crestRef}>
-          {clubs.map((c) => (
-            <Crest key={c.id} spec={c.crest} colors={c.colors} name={c.name} short={c.short} size={120} />
+          {clubs.map((c, i) => (
+            <Crest key={`${c.id}-${i}`} spec={c.crest} colors={c.colors} name={c.name} short={c.short} size={120} />
           ))}
         </div>
       </div>

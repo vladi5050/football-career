@@ -104,6 +104,8 @@ export function SlotGlyph({ glyph }: { glyph: string }) {
       return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0014 0M12 18v3" /></svg>;
     case 'home':
       return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7M6 10v10h12V10" /><path d="M12 14.5c-1.5-1.6-3.5 0-2 1.6L12 18l2-1.9c1.5-1.6-.5-3.2-2-1.6z" /></svg>;
+    case 'rehab':
+      return <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.5 4h5v5.5H20v5h-5.5V20h-5v-5.5H4v-5h5.5z" /></svg>;
     default:
       return <span>{glyph}</span>;
   }

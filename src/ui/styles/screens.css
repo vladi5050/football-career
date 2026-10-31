@@ -814,3 +814,46 @@ mark {
 .sb-team > span { overflow: hidden; text-overflow: ellipsis; }
 .scorebug.is-youth .sb-team { font-size: var(--t-sm); }
 .gains-note { margin: 0; padding: var(--s3) var(--s4); border-radius: 10px; background: rgba(0, 0, 0, 0.2); color: var(--paper); font-weight: 600; }
+
+/* round 3 */
+.ce-story { display: grid; gap: var(--s3); }
+.ce-story p { margin: 2px 0 0; font-weight: 700; font-size: var(--t-md); }
+.injury-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  padding: var(--s3) var(--s4);
+  border-radius: 10px;
+  background: var(--red);
+  color: #fff;
+  box-shadow: 0 3px 0 #8c1323;
+}
+.injury-banner b { display: block; font-family: var(--f-display); font-size: 30px; line-height: 1; }
+.injury-banner span { font-weight: 600; font-size: var(--t-sm); }
+.injury-banner.on-paper { box-shadow: none; }
+.ib-cross {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--red) !important;
+  font-family: var(--f-body);
+  font-size: 30px !important;
+  font-weight: 800;
+  line-height: 1;
+}
+.inj-badge {
+  flex: none;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: var(--red);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.summer-note { margin: 0; font-size: var(--t-sm); font-weight: 600; color: var(--red); }
+.retire-note { margin: -6px 0 0; text-align: center; font-size: var(--t-sm); color: #a9b6cb; font-weight: 600; }

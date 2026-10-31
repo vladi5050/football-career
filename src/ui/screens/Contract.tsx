@@ -146,7 +146,8 @@ export function ContractScreen() {
           const mine = /^(אתה|דרשת|ביקשת|קמת)/.test(l);
           return (
             <div key={i} class={`bubble ${mine ? 'mine' : ''}`}>
-              <span class="b-who">{mine ? 'אתה' : club?.short ?? club?.name ?? 'המועדון'}</span>
+              <span class="b-who">{mine ? 'אתה' : club?.name ?? 'המועדון'}</span>
+              <span class="sr-only">: </span>
               {l.replace(/^(אתה|המנהל):\s*/, '')}
             </div>
           );

@@ -150,3 +150,15 @@ Hash routing (`#/week` etc.) keeps browser / Android back working.
 - Club screen: coach, closest teammate, the one with tension; the rest of the squad folds into "כל הסגל (N)".
 - PWA icons: `public/icon-192.png`, `icon-512.png`, `icon-maskable-512.png`, `apple-touch-icon.png` (rendered from
   `icon.svg` by `fc-shots/icons.cjs`); manifest has `start_url` and `scope` `/`.
+
+## 10. Round-3 notes
+
+- Toasts: deduped by text for 10 s, suppressed (and cleared) while any Modal is open (`modalsOpen` in the store), z-index 65
+  (above nav 30 / action bar 20, below modal 70). No engine toasts on the career-end screen or for "החלטה" while on an event.
+- Injury (`view.player.injury`): red TopBar badge, Week banner "פצוע: עוד N שבועות", training magnets become one "שיקום" magnet
+  (+כושר; the engine turns train_* into rehab), no gym, fitness meter in red; Club hero chip and banner.
+- Career end: clubs come from `View.careerClubs` (fallback current/offers/table via `clubLookup`); the share card draws the whole
+  path, shrinking crests to fit; "ההחלטה ששינתה הכל" / "האדם שהכי השפיע" from `View.careerStory`. Retire is disabled before 30.
+- Renewal button disabled after collapsed talks (`career.renewalBlockedUntil`, fallback: last renewal walked away), with a note.
+- Money: one format everywhere, `money()` = "₪7,400" / "₪1.2 מיליון" (same as core `fmtMoney`). Counts: `countHe()`.
+- Week end hides gain rows that round to +0.0 and shows `gainsNote` instead when nothing is left.

@@ -848,3 +848,7 @@
 .shell-row:has(.bottom-nav) .toasts { bottom: calc(var(--nav-h) + var(--safe-b) + 12px); }
 .shell-row:has(.has-nav.has-actions) .toasts { bottom: calc(var(--nav-h) + var(--safe-b) + 80px); }
 .toast { font-size: var(--t-sm); padding: 8px 12px; }
+/* round 3: toasts above the nav/action bar but below modals; clear the tallest action bars */
+.toasts { z-index: 65; }
+.shell-row:has(.has-actions) .toasts { bottom: calc(var(--safe-b) + 108px); }
+.shell-row:has(.has-nav.has-actions) .toasts { bottom: calc(var(--nav-h) + var(--safe-b) + 92px); }

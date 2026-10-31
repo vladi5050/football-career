@@ -30,9 +30,10 @@ export function MoreScreen() {
           </button>
         ))}
       </div>
-      <button class="btn btn-ghost btn-sm retire-btn" type="button" onClick={() => setRetire(true)}>
+      <button class="btn btn-ghost btn-sm retire-btn" type="button" disabled={v.player.age < 30} onClick={() => setRetire(true)}>
         <IconFlag size={20} /> לתלות את הנעליים
       </button>
+      {v.player.age < 30 && <p class="retire-note">אפשר לפרוש מגיל 30.</p>}
       <Modal
         open={retire}
         title="לפרוש?"

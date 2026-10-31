@@ -1,5 +1,6 @@
 import { act, busy, view } from '../../app/store';
 import type { PersonView, SquadRole } from '../../core/types';
+import { renewalBlocked } from '../viewExtras';
 import { ROLE_HE, TRAIT_HE, money, moneyShort, relationWord } from '../i18n';
 import { TopBar } from '../components/TopBar';
 import { Crest } from '../components/Crest';
@@ -99,8 +100,9 @@ export function AgentScreen() {
             <div class="muted">
               {money(v.player.contract.monthlyWage)} · {ROLE_HE[v.player.contract.role]} · עד עונה {v.player.contract.endSeason}
             </div>
+            {renewalBlocked(v) && <div class="summer-note">השיחות האחרונות התפוצצו. אפשר לנסות שוב בחלון הבא.</div>}
           </div>
-          <button class="btn btn-sm btn-ink" type="button" disabled={busy.value || ROLE_ORDER.indexOf(v.player.contract.role) < 0} onClick={() => act({ type: 'requestRenewal' })}>
+          <button class="btn btn-sm btn-ink" type="button" disabled={busy.value || ROLE_ORDER.indexOf(v.player.contract.role) < 0 || renewalBlocked(v)} onClick={() => act({ type: 'requestRenewal' })}>
             לבקש חוזה חדש
           </button>
         </div>

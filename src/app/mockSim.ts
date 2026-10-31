@@ -118,8 +118,8 @@ export function createMockSim(): SimApi {
       absWeek: 0,
       season: { number: 1, year: 2026, week: 0, totalWeeks: 22, themes: ['relegation_fight', 'new_owner'] },
       player: {
-        id: 1, name: `${cmd.firstName} ${cmd.lastName}`.trim(), age: 15, pos: cmd.pos, attr, overall: 46, potentialRange: [68, 82],
-        form: 2, fitness: 86, morale: 72, injury: null,
+        id: 1, name: `${cmd.firstName} ${cmd.lastName}`.trim(), age: typeof location !== 'undefined' && /[?&]veteran/.test(location.search) ? 31 : 15, pos: cmd.pos, attr, overall: 46, potentialRange: [68, 82],
+        form: 2, fitness: 86, morale: 72, injury: typeof location !== 'undefined' && /[?&]injured/.test(location.search) ? { kind: 'קרע בשריר הירך', weeksLeft: 4 } : null,
         contract: { clubId: club.id, monthlyWage: 2500, endSeason: 2, role: 'prospect', releaseClause: null, bonuses: [{ kind: 'goal', amount: 300 }] },
         stats: { apps: 0, goals: 0, assists: 0, ratingSum: 0, cleanSheets: 0 },
         careerStats: { apps: 0, goals: 0, assists: 0, ratingSum: 0, cleanSheets: 0 },
@@ -474,8 +474,13 @@ export function createMockSim(): SimApi {
           { season: 6, year: 2031, clubId: 102, leagueId: 2, apps: 33, goals: 14, assists: 9, avgRating: 7.3, position: 2 },
           { season: 9, year: 2034, clubId: 200, leagueId: 3, apps: 36, goals: 19, assists: 11, avgRating: 7.6, position: 1 },
           { season: 14, year: 2039, clubId: 201, leagueId: 4, apps: 29, goals: 8, assists: 10, avgRating: 7.0, position: 4 },
-          { season: 19, year: 2044, clubId: 104, leagueId: 1, apps: 21, goals: 5, assists: 4, avgRating: 6.9, position: 6 },
+          { season: 19, year: 2044, clubId: 104, leagueId: 1, apps: 21, goals: 1, assists: 4, avgRating: 6.9, position: 6 },
         ];
+        // core round 3 shapes: every career club + the two story lines
+        Object.assign(v, {
+          careerClubs: { 104: clubView(4), 102: clubView(2), 200: foreignView(0), 201: foreignView(1) },
+          careerStory: { turningPoint: 'לסרב לבלגים בגיל 17 ולהישאר עוד עונה בבית', keyPerson: 'אבי רוזנטל, המאמן הראשון' },
+        });
         return res();
       }
       case 'setAutoMoments':

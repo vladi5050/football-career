@@ -55,15 +55,14 @@ export function trainingSlots(pos: Position): PlanSlot[] {
 }
 export const DAYS = ['שלישי', 'רביעי', 'חמישי'] as const;
 
+/** The one money format (matches core fmtMoney): "₪7,400", "₪1.2 מיליון". */
 export function money(n: number): string {
-  if (Math.abs(n) >= 1_000_000) return `₪${(n / 1_000_000).toLocaleString('he-IL', { maximumFractionDigits: 1 })}M`;
-  return `₪${Math.round(n).toLocaleString('he-IL')}`;
+  const r = Math.round(n);
+  if (Math.abs(r) >= 1_000_000) return `₪${(r / 1_000_000).toFixed(1).replace(/\.0$/, '')} מיליון`;
+  return `₪${r.toLocaleString('en-US')}`;
 }
-export function moneyShort(n: number): string {
-  if (Math.abs(n) >= 1_000_000) return `₪${(n / 1_000_000).toLocaleString('he-IL', { maximumFractionDigits: 1 })}M`;
-  if (Math.abs(n) >= 10_000) return `₪${Math.round(n / 1000)}K`;
-  return `₪${Math.round(n).toLocaleString('he-IL')}`;
-}
+/** Kept for older call sites: same format as money(). */
+export const moneyShort = money;
 export function initials(name: string): string {
   const p = name.trim().split(/\s+/);
   return ((p[0]?.[0] ?? '') + (p[1]?.[0] ?? '')).replace(/[״׳"']/g, '');
@@ -120,3 +119,9 @@ export const START_KIND_HE = {
   foreign_academy: { title: 'אקדמיה בחו״ל', line: 'אקדמיה באירופה הציעה לך מקום. מזוודה אחת, חלום אחד.' },
   raised_abroad: { title: 'גדלת בחו״ל', line: 'נולדת לישראלים בחו״ל. הנבחרת עוד לא יודעת עליך.' },
 } as const;
+
+/** Hebrew count: 1 -> "שער אחד" / "הופעה אחת", n -> "n שערים". */
+export function countHe(n: number, one: string, many: string, fem = false): string {
+  if (n === 1) return `${one} ${fem ? 'אחת' : 'אחד'}`;
+  return `${n} ${many}`;
+}
