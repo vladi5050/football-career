@@ -1,4 +1,5 @@
-import { act, busy, view } from '../../app/store';
+import { useState } from 'preact/hooks';
+import { act, busy, navigate, view } from '../../app/store';
 import type { ClubView, View } from '../../core/types';
 import { ATTR_HE, weekLabel } from '../i18n';
 import { Crest } from '../components/Crest';
@@ -7,6 +8,8 @@ import { CountUp } from '../components/CountUp';
 import { ProgressNearGoal, Bar } from '../components/Bars';
 import { RatingStamp } from '../components/Rating';
 import { Confetti } from '../components/Confetti';
+import { Modal } from '../components/Modal';
+import { contractExpired } from '../viewExtras';
 
 function clubFor(v: View, id: number): ClubView | null {
   if (v.club?.id === id) return v.club;
@@ -19,14 +22,25 @@ export function WeekEndScreen() {
   const v = view.value!;
   const rep = v.lastWeekReport;
   const offseason = v.phase === 'offseason';
-  const res = rep?.result;
+  const live = v.live;
+  // Youth (U19) matches don't produce a senior result: build the card from the live match instead.
+  const youth = !rep?.result && !!live?.youth && live.finished !== false;
+  const res = rep?.result ?? (youth && live ? { home: live.fixture.home, away: live.fixture.away, hg: live.fixture.hg, ag: live.fixture.ag } : null);
   const home = res ? clubFor(v, res.home) : null;
   const away = res ? clubFor(v, res.away) : null;
   const userHome = res ? res.home === v.club?.id : true;
   const diff = res ? (userHome ? res.hg - res.ag : res.ag - res.hg) : 0;
+  const rating = rep?.userRating ?? null;
+  const expired = offseason && contractExpired(v);
+  const offers = v.career.offers;
+  const [askNext, setAskNext] = useState(false);
+  const nextSeason = () => {
+    if (expired) setAskNext(true);
+    else void act({ type: 'finishWeek' });
+  };
 
   return (
-    <main class="screen has-actions weekend-screen">
+    <main class={`screen has-actions weekend-screen ${offseason ? 'has-nav' : ''}`}>
       {rep?.headline && (
         <div class="newspaper rise">
           <div class="np-mast">
@@ -38,29 +52,30 @@ export function WeekEndScreen() {
       )}
 
       {res && home && away && (
-        <TapedCard tape="left" class="result-card">
+        <TapedCard tape="left" class={`result-card ${youth ? 'is-youth' : ''}`}>
+          {youth && <span class="chip chip-blue u19-chip">U19 · משחק נוער</span>}
           <div class="rc-row">
             <div class="rc-team">
               <Crest spec={home.crest} colors={home.colors} name={home.name} short={home.short} size={46} />
-              <span>{home.short}</span>
+              <span>{home.short}{youth && <small class="youth-suffix"> נוער</small>}</span>
             </div>
             <div class="rc-score display num">
               {res.hg}-{res.ag}
             </div>
             <div class="rc-team">
               <Crest spec={away.crest} colors={away.colors} name={away.name} short={away.short} size={46} />
-              <span>{away.short}</span>
+              <span>{away.short}{youth && <small class="youth-suffix"> נוער</small>}</span>
             </div>
-            {rep.userRating != null && (
+            {rating != null && (
               <div class="rc-stamp">
-                <RatingStamp value={rep.userRating} />
+                <RatingStamp value={rating} />
               </div>
             )}
           </div>
           <div class="rc-line">
-            <span class={`chip ${diff > 0 ? 'chip-green' : diff < 0 ? 'chip-red' : 'chip-ink'}`}>{diff > 0 ? 'ניצחון' : diff < 0 ? 'הפסד' : 'תיקו'}</span>
-            {rep.userGoals > 0 && <span class="chip chip-orange">{rep.userGoals === 1 ? 'שער' : `${rep.userGoals} שערים`}</span>}
-            {rep.userAssists > 0 && <span class="chip chip-blue">{rep.userAssists === 1 ? 'בישול' : `${rep.userAssists} בישולים`}</span>}
+            <span class={`chip ${diff > 0 ? 'chip-green' : diff < 0 ? 'chip-red' : 'chip-ink'}`}>{diff > 0 ? 'ניצחון' : diff < 0 ? 'הפסד' : 'תיקו'}{youth ? ' בנוער' : ''}</span>
+            {rep && rep.userGoals > 0 && <span class="chip chip-orange">{rep.userGoals === 1 ? 'שער' : `${rep.userGoals} שערים`}</span>}
+            {rep && rep.userAssists > 0 && <span class="chip chip-blue">{rep.userAssists === 1 ? 'בישול' : `${rep.userAssists} בישולים`}</span>}
           </div>
         </TapedCard>
       )}
@@ -86,11 +101,34 @@ export function WeekEndScreen() {
 
       {rep && rep.nearGoals.length > 0 && (
         <section class="near-list">
-          {rep.nearGoals.map((n) => (
+          {rep.nearGoals.slice(0, 2).map((n) => (
             <div key={n.text} class="paper slim">
-              <ProgressNearGoal text={n.text} progress={n.progress} target={n.target} from={n.target > 10 ? n.target - 5 : 0} />
+              {/* Fill is exactly progress/target; the engine keeps both in the same unit. */}
+              <ProgressNearGoal text={n.text} progress={n.progress} target={n.target} />
             </div>
           ))}
+        </section>
+      )}
+
+      {offseason && (
+        <section class="paper summer-card" aria-labelledby="summer-title">
+          <h2 class="paper-title" id="summer-title">החלטות הקיץ</h2>
+          {v.player.contract && (
+            <p class={`summer-contract ${expired ? 'expired' : ''}`}>
+              {expired ? <b>החוזה שלך נגמר.</b> : <b>החוזה שלך בתוקף עד סוף עונה {v.player.contract.endSeason}.</b>}{' '}
+              {expired ? 'אפשר לבקש חידוש, לבחור הצעה, או לתת למועדון להחליט.' : 'אפשר לבדוק הצעות לפני שהעונה מתחילה.'}
+            </p>
+          )}
+          <div class="summer-actions">
+            <button class="btn btn-ink" type="button" disabled={busy.value} onClick={() => navigate('agent')}>
+              {offers.length ? `הצעות על השולחן (${offers.length})` : 'לסוכן'}
+            </button>
+            {v.club && (
+              <button class={`btn ${expired ? 'btn-primary' : ''}`} type="button" disabled={busy.value} onClick={() => act({ type: 'requestRenewal' })}>
+                לבקש חידוש ב{v.club.short}
+              </button>
+            )}
+          </div>
         </section>
       )}
 
@@ -121,10 +159,28 @@ export function WeekEndScreen() {
       {rep && rep.userGoals > 0 && <Confetti seed={v.absWeek + 3} />}
 
       <div class="action-bar">
-        <button class="btn btn-primary" type="button" disabled={busy.value} onClick={() => act({ type: 'finishWeek' })}>
+        <button class="btn btn-primary" type="button" disabled={busy.value} onClick={() => (offseason ? nextSeason() : act({ type: 'finishWeek' }))}>
           {offseason ? 'לעונה הבאה' : 'לשבוע הבא'}
         </button>
       </div>
+
+      <Modal
+        open={askNext}
+        title="לצאת לעונה בלי חוזה חדש?"
+        onClose={() => setAskNext(false)}
+        actions={
+          <>
+            <button class="btn" type="button" onClick={() => { setAskNext(false); navigate('agent'); }}>
+              לבדוק הצעות
+            </button>
+            <button class="btn btn-primary" type="button" onClick={() => { setAskNext(false); void act({ type: 'finishWeek' }); }}>
+              המועדון יחליט
+            </button>
+          </>
+        }
+      >
+        <p>החוזה שלך נגמר ולא חתמת על כלום. אם תמשיך, המועדון יחליט בשבילך: חידוש קצר, או מעבר למי שהציע.</p>
+      </Modal>
     </main>
   );
 }

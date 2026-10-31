@@ -2,7 +2,7 @@
 import type { Content } from './content';
 import type { Footballer, World } from './types';
 import type { Rng } from './rng';
-import { addNews, avg, changeRelation, clamp, ovr, pushHistory, userClub, userLeague, userPlayer } from './helpers';
+import { addNews, avg, changeRelation, clamp, ovr, pushHistory, userClub, userLeague, userPlayer, pre, count } from './helpers';
 import { buildSeason, promoteRelegate, sortedTable, tablePosition } from './schedule';
 import { npcSeasonDevelopment, retireAndRegen } from './development';
 import { emptyStats } from './worldGen';
@@ -20,7 +20,7 @@ export function pickThemes(content: Content, rng: Rng): string[] {
 
 /** Create season `number` (fixtures, tables, themes) and reset season stats. */
 export function startSeason(world: World, content: Content, rng: Rng, number: number, year: number): void {
-  world.season = buildSeason(world, rng, number, year, pickThemes(content, rng));
+  world.season = buildSeason(world, rng, number, year, pickThemes(content, rng), userLeague(world)?.id ?? null);
   for (const c of world.clubs) for (const id of c.squad) {
     const p = world.people[id] as Footballer;
     if (p && p.role === 'player') p.stats = emptyStats();
@@ -59,7 +59,7 @@ export function endSeason(world: World, content: Content, rng: Rng): SeasonEndRe
         champion = true;
         const t = `אליפות ${l.name} ${world.season.year}`;
         world.career.trophies.push(t);
-        pushHistory(world, 'title', `זכית ב${t}`);
+        pushHistory(world, 'title', `זכית ${pre('ב', t)}`);
         world.career.fame = clamp(world.career.fame + 6, 0, 100);
       }
     }
@@ -74,7 +74,7 @@ export function endSeason(world: World, content: Content, rng: Rng): SeasonEndRe
     if (best && best.stats.goals > 0) lines.push(`מלך השערים: ${best.name} עם ${best.stats.goals}`);
   }
   const rival = world.people[world.career.rivalId] as Footballer | undefined;
-  if (rival && rival.stats.apps > 0) lines.push(`${rival.name} סיים עם ${rival.stats.goals} שערים ב${rival.stats.apps} הופעות`);
+  if (rival && rival.stats.apps > 0) lines.push(`${rival.name} סיים עם ${count(rival.stats.goals, 'שער', 'שערים')} ${pre('ב', count(rival.stats.apps, 'הופעה', 'הופעות', true))}`);
 
   const moves = promoteRelegate(world);
   const promoted = !!c && moves.promoted.includes(c.id);

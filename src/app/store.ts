@@ -78,8 +78,9 @@ export interface ToastMsg { id: number; text: string }
 export const toasts = signal<ToastMsg[]>([]);
 let toastId = 1;
 export function toast(text: string, ms = 2600): void {
+  if (!text || toasts.value.some((t) => t.text === text)) return;
   const id = toastId++;
-  toasts.value = [...toasts.value, { id, text }].slice(-3);
+  toasts.value = [...toasts.value, { id, text }].slice(-2);
   setTimeout(() => {
     toasts.value = toasts.value.filter((t) => t.id !== id);
   }, ms);
@@ -119,8 +120,27 @@ function applyResult(res: ApplyResult): void {
     if (prev?.phase === 'match' && res.view.phase !== 'match') matchOutro.value = true;
     view.value = res.view;
   });
-  res.toast?.forEach((t) => toast(t));
+  res.toast?.filter((t) => !alreadyOnScreen(t, res.view)).forEach((t) => toast(t));
   if (res.saveDue) void persist();
+}
+
+/** Skip toasts that repeat something the next screen already shows (negotiation log, week report, news). */
+function alreadyOnScreen(text: string, v: View): boolean {
+  const norm = (x: string) => x.replace(/[\s."'״]+/g, '');
+  const t = norm(text);
+  if (!t) return true;
+  const shown: string[] = [];
+  if (v.phase === 'negotiation' && v.career.negotiation) shown.push(...v.career.negotiation.log);
+  const rep = v.lastWeekReport;
+  if (rep && (v.phase === 'postmatch' || v.phase === 'weekend' || v.phase === 'offseason')) {
+    shown.push(...rep.meanwhile, ...rep.openLoops);
+    if (rep.headline) shown.push(rep.headline);
+  }
+  shown.push(...v.news.slice(0, 3).map((n) => n.headline));
+  return shown.some((s) => {
+    const n = norm(s);
+    return n === t || (t.length > 12 && n.includes(t));
+  });
 }
 
 async function persist(): Promise<void> {

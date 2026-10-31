@@ -3,9 +3,11 @@ import type { Content } from './content';
 import type { AttrGain, AttrKey, Footballer, PlanSlot, Position, WeekPlan, World } from './types';
 import type { Rng } from './rng';
 import {
-  ATTR_HE, ATTR_KEYS, POS_WEIGHTS, addNews, changeRelation, clamp, ovr, pushHistory, relationOf, userPlayer,
-} from './helpers';
+  ATTR_HE, ATTR_KEYS, POS_WEIGHTS, addNews, changeRelation, clamp, ovr, pushHistory, relationOf, userPlayer, count } from './helpers';
 import { SQUAD_MIX, clubLevel, makeFootballer, npcPotential } from './worldGen';
+
+/** Calendar the weekly tuning was balanced on (season weeks). */
+export const SEASON_REF_WEEKS = 38;
 
 export const DEV_TUNING = {
   trainGain: 0.12, // per slot per week, before factors
@@ -124,7 +126,9 @@ export function applyTraining(world: World, plan: WeekPlan, rng: Rng): AttrGain[
     const club = user.clubId != null ? world.clubs[user.clubId] : null;
     const facilities = club ? 0.85 + club.reputation / 400 : 0.9;
     const army = world.career.life.armyStatus === 'serving' ? 0.7 : 1;
-    const f = ageFactor(user.age) * gapFactor(user) * minutesFactor(world) * facilities * army * (0.8 + user.morale / 250);
+    // per-season growth does not depend on the calendar length (seasons are 25-41 weeks)
+    const cal = SEASON_REF_WEEKS / Math.max(20, world.season.totalWeeks || SEASON_REF_WEEKS);
+    const f = ageFactor(user.age) * gapFactor(user) * minutesFactor(world) * facilities * army * (0.8 + user.morale / 250) * cal;
     for (const slot of plan) {
       if (slot.startsWith('train_')) {
         const key = slot.slice(6) as AttrKey;
@@ -137,19 +141,20 @@ export function applyTraining(world: World, plan: WeekPlan, rng: Rng): AttrGain[
     const w = POS_WEIGHTS[user.pos];
     for (const k of ATTR_KEYS) if (w[k]) user.attr[k] = Math.min(99, user.attr[k] + DEV_TUNING.passiveGain * f * (w[k]! * 4));
   }
-  applyAgeingWeekly(user);
+  applyAgeingWeekly(user, SEASON_REF_WEEKS / Math.max(20, world.season.totalWeeks || SEASON_REF_WEEKS));
+  // only changes visible at one decimal (>= 0.1 on screen)
   const gains: AttrGain[] = [];
-  for (const k of ATTR_KEYS) if (Math.abs(user.attr[k] - before[k]) >= 0.005) gains.push({ key: k, before: before[k], after: user.attr[k] });
+  for (const k of ATTR_KEYS) if (Math.round(user.attr[k] * 10) !== Math.round(before[k] * 10)) gains.push({ key: k, before: before[k], after: user.attr[k] });
   return gains;
 }
 
-function applyAgeingWeekly(p: Footballer): void {
+function applyAgeingWeekly(p: Footballer, cal = 1): void {
   if (p.age < 30) return;
-  const a = p.age - 29;
+  const a = (p.age - 29) * cal;
   p.attr.pace = Math.max(5, p.attr.pace - 0.025 * a);
   p.attr.stamina = Math.max(5, p.attr.stamina - 0.02 * a);
-  if (p.age <= 34) p.attr.vision = Math.min(99, p.attr.vision + 0.012);
-  if (p.age >= 33) for (const k of ['finishing', 'dribbling', 'defending', 'heading', 'gk'] as AttrKey[]) p.attr[k] = Math.max(5, p.attr[k] - 0.01 * (p.age - 32));
+  if (p.age <= 34) p.attr.vision = Math.min(99, p.attr.vision + 0.012 * cal);
+  if (p.age >= 33) for (const k of ['finishing', 'dribbling', 'defending', 'heading', 'gk'] as AttrKey[]) p.attr[k] = Math.max(5, p.attr[k] - 0.01 * (p.age - 32) * cal);
 }
 
 const INJURY_KINDS: { kind: string; w: number; weeks: [number, number] }[] = [
@@ -176,8 +181,8 @@ export function injureUser(world: World, rng: Rng, weeks?: number): string {
   const kind = weeks != null ? (weeks <= 2 ? 'מתיחה' : weeks <= 8 ? 'קרע' : 'פציעה קשה') : k.kind;
   user.injury = { kind, weeksLeft: w };
   pushHistory(world, 'injury', `נפצעת (${kind})`);
-  addNews(world, { kind: 'career', headline: `${user.name} נפצע: ${kind}, ${w} שבועות בחוץ` });
-  return `${kind}: ${w} שבועות בחוץ`;
+  addNews(world, { kind: 'career', headline: `${user.name} נפצע: ${kind}, ${count(w, 'שבוע', 'שבועות')} בחוץ` });
+  return `${kind}: ${count(w, 'שבוע', 'שבועות')} בחוץ`;
 }
 
 /** A sensible version of the plan for an automatic week: tired players get a rest day. */
@@ -301,8 +306,8 @@ export function nearAttrGoals(p: Footballer): { text: string; progress: number; 
     const next = Math.floor(v / 10) * 10 + 10;
     const gap = next - v;
     if (gap <= 1.5 && next <= 99) {
-      const need = Math.max(1, Math.ceil(gap));
-      out.push({ text: `עוד ${need} ל${ATTR_HE[k]} ${next}`, progress: Math.round((v - (next - 10)) * 10) / 10, target: 10, gap });
+      const cur = Math.floor(v * 10) / 10;
+      out.push({ text: `${ATTR_HE[k]}: ${cur.toFixed(1)} מתוך ${next}`, progress: cur, target: next, gap });
     }
   }
   return out.sort((a, b) => a.gap - b.gap).slice(0, 2).map(({ text, progress, target }) => ({ text, progress, target }));

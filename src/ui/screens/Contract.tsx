@@ -8,6 +8,7 @@ import { PatienceBar } from '../components/Bars';
 import { Avatar } from '../components/Avatar';
 import { Modal } from '../components/Modal';
 import { agentArchetype } from './Agent';
+import { negotiationFinal } from '../viewExtras';
 
 const ROLES: SquadRole[] = ['backup', 'prospect', 'rotation', 'starter', 'star'];
 
@@ -24,8 +25,14 @@ export function ContractScreen() {
   const club: ClubView | null = v.offerClubs[n.clubId] ?? (v.club?.id === n.clubId ? v.club : null);
   const min = Math.round((n.currentOffer.wage * 0.8) / 100) * 100;
   const max = Math.round((n.agentRange[1] * 1.45) / 100) * 100;
-  const pct = (x: number) => ((x - min) / (max - min)) * 100;
-  const final = n.round > 3;
+  const frac = (x: number) => Math.min(1, Math.max(0, (x - min) / (max - min)));
+  const pct = (x: number) => frac(x) * 100;
+  const final = negotiationFinal(n);
+  const agreed = /מסכימים/.test(n.log[n.log.length - 1] ?? '');
+  // The band sits on the thumb's travel (track minus thumb width), so the knob fits inside it.
+  const THUMB = 34;
+  const b0 = frac(n.agentRange[0]);
+  const b1 = frac(n.agentRange[1]);
   const clauseAmount = Math.round((wage * 160) / 50000) * 50000;
   const arch = agentArchetype(v.agent);
 
@@ -37,11 +44,11 @@ export function ContractScreen() {
           <h1 class="tb-title">{club?.name ?? 'משא ומתן'}</h1>
           <div class="tb-sub">{n.offerId == null ? 'חידוש חוזה' : 'הצעת מעבר'} · משא ומתן</div>
         </div>
-        <div class="rounds" aria-label={`סבב ${Math.min(n.round, 3)} מתוך 3`}>
+        <div class={`rounds ${final ? 'is-final' : ''}`} aria-label={final ? 'הצעה אחרונה' : `סבב ${Math.min(n.round, 3)} מתוך 3`}>
           {[1, 2, 3].map((r) => (
-            <i key={r} class={r < n.round ? 'done' : r === n.round ? 'cur' : ''} />
+            <i key={r} class={r < n.round || (final && r <= n.round) ? 'done' : r === n.round ? 'cur' : ''} />
           ))}
-          <span>{final ? 'הצעה אחרונה' : `סבב ${n.round}/3`}</span>
+          <span>{final ? 'הצעה אחרונה' : `סבב ${Math.min(n.round, 3)}/3`}</span>
         </div>
       </div>
 
@@ -67,6 +74,12 @@ export function ContractScreen() {
         </p>
       </div>
 
+      {final ? (
+        <div class="final-banner" role="status">
+          <b>{agreed ? 'יש הסכמה' : 'הצעה אחרונה'}</b>
+          <span>{agreed ? 'הם קיבלו את הדרישה שלך. נשאר רק לחתום.' : 'אין עוד סבבים. אפשר לחתום על ההצעה או לקום מהשולחן.'}</span>
+        </div>
+      ) : (
       <section class="paper demand">
         <h2 class="paper-title">הדרישה שלך</h2>
         <div class="wage-out">
@@ -74,7 +87,11 @@ export function ContractScreen() {
           <span class="muted">לחודש</span>
         </div>
         <div class="slider-wrap">
-          <div class="agent-band" style={{ right: `${pct(n.agentRange[0])}%`, width: `${pct(n.agentRange[1]) - pct(n.agentRange[0])}%` }} aria-hidden="true">
+          <div
+            class="agent-band"
+            style={{ left: `calc((100% - ${THUMB}px) * ${b0})`, width: `calc((100% - ${THUMB}px) * ${b1 - b0} + ${THUMB}px)` }}
+            aria-hidden="true"
+          >
             <span>טווח הסוכן</span>
           </div>
           <input
@@ -89,9 +106,9 @@ export function ContractScreen() {
             aria-label="שכר חודשי"
             onInput={(e) => setWage(Number((e.target as HTMLInputElement).value))}
           />
-          <div class="slider-ends num">
-            <span>{money(min)}</span>
-            <span>{money(max)}</span>
+          <div class="slider-ends">
+            <span><small>פחות</small> <b class="num">{money(min)}</b></span>
+            <span><small>יותר</small> <b class="num">{money(max)}</b></span>
           </div>
         </div>
 
@@ -122,12 +139,14 @@ export function ContractScreen() {
           </button>
         </div>
       </section>
+      )}
 
       <section class="neg-log" aria-label="יומן המשא ומתן">
         {n.log.map((l, i) => {
-          const mine = l.startsWith('אתה');
+          const mine = /^(אתה|דרשת|ביקשת|קמת)/.test(l);
           return (
             <div key={i} class={`bubble ${mine ? 'mine' : ''}`}>
+              <span class="b-who">{mine ? 'אתה' : club?.short ?? club?.name ?? 'המועדון'}</span>
               {l.replace(/^(אתה|המנהל):\s*/, '')}
             </div>
           );
@@ -138,14 +157,16 @@ export function ContractScreen() {
         <button class="btn btn-danger btn-sm" type="button" disabled={busy.value} onClick={() => setConfirmWalk(true)}>
           לקום
         </button>
-        <button
-          class="btn btn-ink"
-          type="button"
-          disabled={busy.value || final}
-          onClick={() => act({ type: 'negotiate', demand: { wage, role, years, releaseClause: clause ? clauseAmount : null } })}
-        >
-          לבקש
-        </button>
+        {!final && (
+          <button
+            class="btn btn-ink"
+            type="button"
+            disabled={busy.value}
+            onClick={() => act({ type: 'negotiate', demand: { wage, role, years, releaseClause: clause ? clauseAmount : null } })}
+          >
+            לבקש
+          </button>
+        )}
         <button class="btn btn-primary grow2 btn-col" type="button" disabled={busy.value} onClick={() => act({ type: 'acceptNegotiation' })}>
           לחתום
           <span class="sub num">{money(n.currentOffer.wage)}</span>

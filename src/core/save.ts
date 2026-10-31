@@ -119,5 +119,16 @@ export function migrate(world: World, fromVersion: number): World {
   world.settings ??= { autoMoments: false };
   world.career.recentMinutes ??= [];
   world.career.recentRatings ??= [];
+  relinkLive(world);
   return world;
+}
+
+/** A senior live match shares its Fixture object with the season list; JSON splits them, so join them again after a load. */
+function relinkLive(world: World): void {
+  const live = world.live;
+  if (!live || live.youth) return;
+  const list = world.season.fixtures[live.leagueId];
+  if (!list) return;
+  const i = list.findIndex((f) => f.week === live.fixture.week && f.home === live.fixture.home && f.away === live.fixture.away);
+  if (i >= 0) list[i] = live.fixture;
 }

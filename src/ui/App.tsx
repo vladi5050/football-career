@@ -26,13 +26,15 @@ import { MoreScreen } from './screens/More';
 
 export type ScreenId = Route | 'event' | 'prematch' | 'match' | 'weekend' | 'negotiation' | 'retired';
 
+const OFFSEASON_ROUTES: Route[] = ['table', 'club', 'agent', 'more', 'news', 'goals', 'end'];
+
 /** Pure routing rule (exported for docs/tests). */
 export function resolveScreen(phase: string | null, route: Route, outro: boolean, seenReveal: boolean): ScreenId {
   if (phase == null) return route === 'new' || route === 'editor' || route === 'settings' ? route : 'title';
   if (route === 'title') return 'title';
   if (route === 'new' && phase === 'retired') return 'new';
   if (route === 'editor' || route === 'settings') {
-    if (phase === 'plan') return route;
+    if (phase === 'plan' || (phase === 'offseason' && route === 'settings')) return route;
   }
   if (outro) return 'match';
   switch (phase) {
@@ -40,8 +42,9 @@ export function resolveScreen(phase: string | null, route: Route, outro: boolean
     case 'prematch': return 'prematch';
     case 'match': return 'match';
     case 'postmatch':
-    case 'weekend':
-    case 'offseason': return 'weekend';
+    case 'weekend': return 'weekend';
+    // Summer: the tabs stay open so offers, agent and renewal are reachable before the new season.
+    case 'offseason': return OFFSEASON_ROUTES.includes(route) ? route : 'weekend';
     case 'negotiation': return 'negotiation';
     case 'retired': return 'retired';
   }
@@ -86,9 +89,10 @@ export function App() {
     case 'more': el = <MoreScreen />; break;
     default: el = <WeekScreen />;
   }
-  const tabbed = !!v && v.phase === 'plan' && TABBED.includes(id);
-  const side = tabbed && id !== 'table' && id !== 'news';
-  const takeover = ['event', 'prematch', 'match', 'weekend', 'negotiation', 'retired'].includes(id);
+  const summer = v?.phase === 'offseason';
+  const tabbed = !!v && ((v.phase === 'plan' && TABBED.includes(id)) || (summer && (id === 'weekend' || id === 'settings' || TABBED.includes(id))));
+  const side = tabbed && !summer && id !== 'table' && id !== 'news';
+  const takeover = ['event', 'prematch', 'match', 'negotiation', 'retired'].includes(id) || (id === 'weekend' && !summer);
   return (
     <div class={`shell-row ${side ? 'has-side' : ''}`}>
       <div class={`shell ${tabbed ? 'with-nav' : ''}`} aria-busy={busy.value}>

@@ -838,3 +838,13 @@
   color: var(--ink-3);
   font-weight: 600;
 }
+
+/* round 2 (BUG-13): toasts live in the thumb zone, above the action bar / nav, never over the scorebug or headlines */
+.toasts {
+  top: auto;
+  bottom: calc(var(--safe-b) + 16px);
+}
+.shell-row:has(.has-actions) .toasts { bottom: calc(var(--safe-b) + 84px); }
+.shell-row:has(.bottom-nav) .toasts { bottom: calc(var(--nav-h) + var(--safe-b) + 12px); }
+.shell-row:has(.has-nav.has-actions) .toasts { bottom: calc(var(--nav-h) + var(--safe-b) + 80px); }
+.toast { font-size: var(--t-sm); padding: 8px 12px; }

@@ -7,10 +7,16 @@ import { TapedCard } from '../components/TapedCard';
 import { Avatar } from '../components/Avatar';
 import { RelationMeter } from '../components/Bars';
 
+const ARCH = {
+  shark: { name: 'הכריש', line: 'קשרים במועדונים גדולים, עמלה גבוהה. דוחף למעברים.', width: '±20%' },
+  mentor: { name: 'המנטורית', line: 'חושבת על הדקות שלך לפני הכסף. הצעות צנועות, עצות טובות.', width: '±10%' },
+  uncle: { name: 'הדוד', line: 'כמעט בלי עמלה, נאמן לגמרי. מעט קשרים.', width: '±30%' },
+} as const;
 export function agentArchetype(a: PersonView): { name: string; line: string; width: string } {
-  if (a.traits.includes('greedy') || a.traits.includes('ambitious')) return { name: 'הכריש', line: 'קשרים במועדונים גדולים, עמלה גבוהה. דוחף למעברים.', width: '±20%' };
-  if (a.traits.includes('mentor') || a.traits.includes('calm')) return { name: 'המנטור', line: 'חושב על הדקות שלך לפני הכסף. הצעות צנועות, עצות טובות.', width: '±10%' };
-  return { name: 'הדוד', line: 'כמעט בלי עמלה, נאמן לגמרי. מעט קשרים.', width: '±30%' };
+  if (a.archetype && a.archetype in ARCH) return ARCH[a.archetype as keyof typeof ARCH];
+  if (a.traits.includes('greedy') || a.traits.includes('ambitious')) return ARCH.shark;
+  if (a.traits.includes('mentor') || a.traits.includes('calm')) return ARCH.mentor;
+  return ARCH.uncle;
 }
 const ROLE_ORDER: SquadRole[] = ['backup', 'prospect', 'rotation', 'starter', 'star'];
 

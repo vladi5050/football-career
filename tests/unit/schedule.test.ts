@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { fixtureContent } from './_content';
 import { newGame } from '../../src/core/game';
 import { makeRng, seedState } from '../../src/core/rng';
-import { applyResult, doubleRoundRobin, emptyRow, promoteRelegate, sortedTable } from '../../src/core/schedule';
+import { applyResult, doubleRoundRobin, emptyRow, promoteRelegate, SEASON_EXTRA_WEEKS, sortedTable } from '../../src/core/schedule';
 import { simFixture } from '../../src/core/matchSim';
 
 const content = fixtureContent();
@@ -37,7 +37,17 @@ describe('schedule', () => {
         expect(fx.filter((f) => f.home === a && f.away === b).length).toBe(1);
       }
     }
-    expect(w.season.totalWeeks).toBe(Math.max(...w.leagues.map((l) => (l.clubIds.length - 1) * 2)));
+    // season length = the user's league rounds + break weeks; every league fits inside it
+    const ul = w.leagues[w.clubs[(w.people[w.career.playerId] as { clubId: number }).clubId].leagueId];
+    expect(w.season.totalWeeks).toBe((ul.clubIds.length - (ul.clubIds.length % 2 ? 0 : 1)) * 2 + SEASON_EXTRA_WEEKS);
+    for (const lg of w.leagues) for (const f of w.season.fixtures[lg.id]) expect(f.week).toBeLessThan(w.season.totalWeeks);
+    // the user's league never plays twice in a week, and has no long run of empty weeks at the end
+    const weeks = w.season.fixtures[ul.id].map((f) => f.week);
+    for (const c of ul.clubIds) {
+      const mine = w.season.fixtures[ul.id].filter((f) => f.home === c || f.away === c).map((f) => f.week);
+      expect(new Set(mine).size).toBe(mine.length);
+    }
+    expect(w.season.totalWeeks - 1 - Math.max(...weeks)).toBeLessThanOrEqual(2);
   });
 
   it('table tiebreaks: points, goal difference, goals for', () => {

@@ -17,8 +17,9 @@ compileEvents(content);
 
 let world: World | null = null;
 
-/** Commands after which the UI should persist the save. */
-const SAVE_AFTER: Command['type'][] = ['newCareer', 'finishWeek', 'acceptNegotiation', 'walkAway', 'retire'];
+/** Every command changes the world (plan, event answers, match moments, negotiation rounds, settings): the UI saves after each one,
+ *  so a reload resumes in exactly the same phase and an event cannot be re-rolled. */
+const NO_SAVE: Command['type'][] = [];
 
 function result(saveDue: boolean, toast?: string[]): ApplyResult {
   if (!world) throw new Error('no world');
@@ -35,7 +36,7 @@ const api = {
     if (!world) throw new Error('no career loaded');
     const out = coreApply(world, cmd, content);
     world = out.world;
-    return result(SAVE_AFTER.includes(cmd.type) || world.phase === 'offseason', out.toast);
+    return result(!NO_SAVE.includes(cmd.type), out.toast);
   },
   load(json: string): ApplyResult {
     world = deserialize(json);

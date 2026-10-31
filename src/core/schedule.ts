@@ -1,4 +1,5 @@
 // Fixtures (double round-robin), season calendar, transfer windows, tables, promotion/relegation.
+import { pre } from './helpers';
 import type { Fixture, League, Season, TableRow, World } from './types';
 import type { Rng } from './rng';
 
@@ -30,21 +31,49 @@ export function emptyRow(clubId: number): TableRow {
   return { clubId, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0, form: [] };
 }
 
-export function buildSeason(world: World, rng: Rng, number: number, year: number, themes: string[]): Season {
+/** Season calendar: the user's league rounds plus a few break weeks (national-team breaks, preseason). */
+export const SEASON_EXTRA_WEEKS = 3;
+
+/** True when a season week is a national-team break (no league round for the user's league). */
+export function isBreakWeek(week: number): boolean {
+  return (week + 1) % 9 === 0;
+}
+
+/** Weeks that carry league rounds, for a season of `total` weeks with `extra` break weeks. */
+export function matchWeeks(total: number, extra: number): number[] {
+  const breaks = new Set<number>();
+  for (let w = 0; w < total && breaks.size < extra; w++) if (isBreakWeek(w)) breaks.add(w);
+  // not enough national breaks in a short season: the spare week goes at the very end (the first week always has a match)
+  for (let w = total - 1; breaks.size < extra && w > 0; w--) breaks.add(w);
+  const out: number[] = [];
+  for (let w = 0; w < total; w++) if (!breaks.has(w)) out.push(w);
+  return out;
+}
+
+export function buildSeason(world: World, rng: Rng, number: number, year: number, themes: string[], userLeagueId?: number | null): Season {
   const fixtures: Record<number, Fixture[]> = {};
   const tables: Record<number, TableRow[]> = {};
-  let totalWeeks = 0;
+  const roundsBy: Record<number, [number, number][][]> = {};
+  let maxRounds = 1;
   for (const lg of world.leagues) {
-    const rounds = doubleRoundRobin(lg.clubIds, rng);
+    roundsBy[lg.id] = doubleRoundRobin(lg.clubIds, rng);
+    maxRounds = Math.max(maxRounds, roundsBy[lg.id].length);
+  }
+  // season length follows the user's league; other leagues fit their rounds into the same match weeks (2 rounds in some weeks)
+  const userRounds = userLeagueId != null && roundsBy[userLeagueId] ? roundsBy[userLeagueId].length : maxRounds;
+  const totalWeeks = Math.max(1, userRounds + SEASON_EXTRA_WEEKS);
+  const slots = matchWeeks(totalWeeks, SEASON_EXTRA_WEEKS);
+  for (const lg of world.leagues) {
+    const rounds = roundsBy[lg.id];
     const list: Fixture[] = [];
-    rounds.forEach((round, w) => {
+    rounds.forEach((round, r) => {
+      const w = slots[Math.min(slots.length - 1, Math.floor((r * slots.length) / rounds.length))];
       for (const [home, away] of round) list.push({ week: w, home, away, played: false, hg: 0, ag: 0 });
     });
     fixtures[lg.id] = list;
     tables[lg.id] = lg.clubIds.map(emptyRow);
-    totalWeeks = Math.max(totalWeeks, rounds.length);
   }
-  return { number, year, week: 0, totalWeeks: Math.max(totalWeeks, 1), fixtures, tables, themes, startAbsWeek: world.absWeek };
+  return { number, year, week: 0, totalWeeks, fixtures, tables, themes, startAbsWeek: world.absWeek };
 }
 
 export function fixturesInWeek(world: World, leagueId: number, week: number): Fixture[] {
@@ -141,7 +170,7 @@ export function promoteRelegate(world: World): { lines: string[]; promoted: numb
     m.to.clubIds.push(m.clubId);
     world.clubs[m.clubId].leagueId = m.to.id;
     const name = world.clubs[m.clubId].name;
-    lines.push(m.to.tier < m.from.tier ? `${name} עולה ל${m.to.name}` : `${name} יורדת ל${m.to.name}`);
+    lines.push(m.to.tier < m.from.tier ? `${name} עולה ${pre('ל', m.to.name)}` : `${name} יורדת ${pre('ל', m.to.name)}`);
   }
   return { lines, promoted, relegated };
 }

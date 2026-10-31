@@ -76,8 +76,9 @@ Acceptance:
 | S18 | Settings | Auto moments, reduced motion, export/import save, reset. | Export produces a JSON file. |
 
 ## 7. "שבוע מהיר" (quick week)
-One button on S4 (and on S9 as a secondary action). It repeats `lastPlan`, auto-resolves events by picking the option marked `"default": true` (one per template; never when the event is flagged for a major decision: transfer, contract, army, national, captaincy, retirement), skips pre-match, and plays only the moments that matter (late and close, derby, or a rival involved). Everything else is simulated.
+One button on S4 (and on S9 as a secondary action). It repeats `lastPlan` and auto-resolves events by picking the option marked `"default": true` (one per template). It never auto-resolves an event flagged as a major decision: transfer, contract, army, national, captaincy or retirement. It then **skips S6 Pre-match and goes straight into S7 Match** (CTO decision; resolves QA BUG-08, and the first kick takes 4 taps). In the match it plays only the moments that matter (late and close, derby, or a rival involved) and simulates everything else. The pre-match line-up reason is still shown as the first line of the match feed.
 - [ ] Median time per quick week is 90s or less, including at most 2 moments.
+- [ ] Quick week never shows S6. It goes from S4 (or S9) to S7, with any blocking major-decision event in between. (QA BUG-08: resolved in this PRD; `quickWeek` in `src/core/game.ts` must set the phase to `match`.)
 - [ ] Major decisions are never auto-resolved. Quick week stops and shows them.
 - [ ] Auto-resolved events still appear in the log and in history, so later events can cite them.
 
@@ -124,10 +125,10 @@ Reached from S1. The user imports a local JSON file in the `leagues.json` shape 
 | `src/content/names.json` | 11 pools. IL has 88 first and 86 last names (Jewish, Arab, Ethiopian-Israeli, Russian-Israeli). The others have 35-36 first and last names each. All in Hebrew script. |
 | `src/content/wages.json` | Monthly NIS bands per country, tier and age group. |
 | `src/content/themes.json` | 20 season themes. |
-| `src/content/events.json` | 150 templates (35 chain-only follow-ups, 35 chains), 466 variants, 448 options, all 15 categories. 41 cite a past choice through `because`, 25 are tied to season themes, 21 react to the last match. Every template marks exactly one `default` option for quick week. |
+| `src/content/events.json` | 163 templates (36 chain-only follow-ups, 36 chains), 507 variants, 487 options, all 15 categories. 17 are gated to youth age (stage(youth) or a maximum age of 17-19), 13 of them added in round 3 (12 events plus 1 follow-up): school, the youth coach, the first senior call-up, debut nerves, a trial abroad, growing pains. Every template marks exactly one `default` option. Variant titles and option texts are unique across the whole file (the validator enforces this). |
 | `tools/validateContent.ts` | Schema, references, conditions, effects, placeholders, chains, history tags. Exit code 1 on error. |
 
-Writing rules (enforced or reviewed): body ≤ 220 chars, option ≤ 60 chars, Hebrew only, no em-dashes, a real dilemma (no option strictly dominates), mixed tone, every `because` tag produced by some `history(tag)`.
+Writing rules (enforced or reviewed): unique titles and option texts across templates, no prefix letter glued to a digit ("ב-3"), body ≤ 220 chars, option ≤ 60 chars, Hebrew only, no em-dashes, a real dilemma (no option strictly dominates), mixed tone, every `because` tag produced by some `history(tag)`.
 
 ## 15. Metrics (local only in v1; opt-in analytics later)
 Day 1/7/30 return (later), the last screen before exit, % of players who reach the first contract, % who reach the career end, median seconds per week, the share of quick weeks, the share of "silence" weeks, and the distribution of options picked per event (any option above 85% means the dilemma is broken).

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { fixtureContent, realContent } from './_content';
 import { apply, buildView, newGame } from '../../src/core/game';
 import { ovr, userPlayer } from '../../src/core/helpers';
+import { autoOptionId } from '../../src/core/events';
 import { deserialize, serialize } from '../../src/core/save';
 import type { Content } from '../../src/core/content';
 import type { Command, GamePhase, World } from '../../src/core/types';
@@ -15,7 +16,8 @@ function drive(world: World, content: Content, maxSeasons: number, onWeek?: (w: 
   while (!w.career.retired && w.career.seasonsPlayed < maxSeasons && guard++ < 20000) {
     phases.add(w.phase);
     switch (w.phase) {
-      case 'plan': case 'event': run({ type: 'quickWeek' }); break;
+      case 'plan': run({ type: 'quickWeek' }); break;
+      case 'event': run({ type: 'resolveEvent', uid: w.inbox[0].uid, optionId: autoOptionId(content, w.inbox[0]) }); break;
       case 'prematch': run({ type: 'startMatch' }); break;
       case 'match': run({ type: 'simRestOfMatch' }); break;
       case 'postmatch': case 'weekend': onWeek?.(w); run({ type: 'finishWeek' }); break;
@@ -61,7 +63,9 @@ describe('full career', () => {
     });
     sane(world, 20);
     expect(phases.has('offseason')).toBe(true);
-    expect(phases.has('prematch')).toBe(true);
+    // quick week skips pre-match and goes straight into the match
+    expect(phases.has('prematch')).toBe(false);
+    expect(phases.has('postmatch')).toBe(true);
     expect(notable).toBeGreaterThan(5);
     expect(notable).toBeLessThan(reports);
     expect(loops / reports).toBeGreaterThan(1);

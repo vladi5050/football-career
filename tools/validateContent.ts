@@ -22,7 +22,7 @@ const ATTR_KEYS = ['finishing', 'passing', 'dribbling', 'pace', 'stamina', 'defe
 const POSITIONS = ['GK', 'CB', 'FB', 'DM', 'CM', 'AM', 'W', 'ST'];
 const STAGES = ['youth', 'army', 'pro', 'veteran'];
 const GOAL_KINDS = ['attr', 'goals', 'apps', 'transfer', 'title', 'money', 'fame', 'national', 'captain', 'custom'];
-const VALUES = ['overall', 'age', 'fame', 'money', 'form', 'morale', 'fitness', 'seasonWeek', 'season', 'absWeek', 'injured', 'tier', 'foreign', 'starter', 'lastResult', 'lastRating', 'goalsSeason', 'window', 'derbyNext', 'hasOffer', 'contractLeft'];
+const VALUES = ['overall', 'age', 'fame', 'money', 'form', 'morale', 'fitness', 'seasonWeek', 'season', 'absWeek', 'injured', 'tier', 'foreign', 'starter', 'lastResult', 'lastRating', 'goalsSeason', 'window', 'derbyNext', 'hasOffer', 'contractLeft', 'rivalScoredLast', 'rivalGoalsSeason'];
 const FUNCS: Record<string, number> = { rel: 1, attr: 1, flag: 1, trait: 2, theme: 1, recent: 2, stage: 1, pos: 1 };
 const HEX = /^#[0-9A-Fa-f]{6}$/;
 const SNAKE = /^[a-z][a-z0-9_]*$/;
@@ -313,6 +313,28 @@ for (const ev of events) {
       chainTargets.set(ch.event, list);
     }
   }
+}
+// uniqueness across templates: titles and option texts must never repeat (QA UX-07)
+const titleOwner = new Map<string, string>();
+const optionOwner = new Map<string, string>();
+for (const ev of events) {
+  for (const v of ev.variants ?? []) {
+    const prev = titleOwner.get(v.title);
+    if (prev !== undefined && prev !== ev.id) err(`event ${ev.id}`, `title "${v.title}" also used by ${prev}`);
+    else if (prev === ev.id) err(`event ${ev.id}`, `title "${v.title}" repeated inside the template`);
+    titleOwner.set(v.title, ev.id);
+  }
+  for (const o of ev.options ?? []) {
+    const prev = optionOwner.get(o.text);
+    if (prev !== undefined && prev !== ev.id) err(`event ${ev.id}`, `option text "${o.text}" also used by ${prev}`);
+    optionOwner.set(o.text, ev.id);
+  }
+}
+// Hebrew style: a prefix letter glued to a digit needs a maqaf ("ב-3", not "ב3")
+const GLUED = /(^|[\s"(])[בלמוהכש]\d/;
+for (const ev of events) {
+  const texts = [...(ev.variants ?? []).flatMap((v) => [v.title, v.body]), ...(ev.options ?? []).flatMap((o) => [o.text, o.hint ?? '', ...o.effects])];
+  for (const t of texts) if (GLUED.test(t)) err(`event ${ev.id}`, `prefix glued to a number in "${t}" (use a maqaf)`);
 }
 const byId = new Map(events.map((e) => [e.id, e]));
 for (const [target, from] of chainTargets) {

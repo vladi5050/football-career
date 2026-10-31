@@ -3,7 +3,7 @@
     "id": "rival_extra_shooting",
     "category": "rival",
     "weight": 10,
-    "cooldown": 16,
+    "cooldown": 20,
     "cast": {
       "rival": "rival",
       "coach": "coach",
@@ -131,7 +131,7 @@
     "id": "school_exam_vs_training",
     "category": "life",
     "weight": 9,
-    "cooldown": 14,
+    "cooldown": 40,
     "when": [
       "stage(youth)"
     ],
@@ -149,7 +149,7 @@
         "body": "המורה: \"מחר מבחן, אין מועד ב׳\". {coach}: \"שבע בבוקר על הדשא\". {mother} כבר שלחה שלושה סימני שאלה."
       },
       {
-        "title": "הלילה שלפני",
+        "title": "המחברת והנעליים",
         "body": "אחת עשרה בלילה. המחברת פתוחה, הנעליים ליד הדלת. מחר יש גם בוחן וגם אימון שהמאמן קרא לו \"הכי חשוב העונה\"."
       }
     ],
@@ -372,7 +372,7 @@
     "id": "army_base_vs_match",
     "category": "army",
     "weight": 12,
-    "cooldown": 8,
+    "cooldown": 20,
     "when": [
       "stage(army)",
       "flag(outstanding_athlete) >= 1 || flag(army_serving) >= 1"
@@ -552,13 +552,14 @@
         ],
         "default": true
       }
-    ]
+    ],
+    "cooldown": 20
   },
   {
     "id": "party_invite",
     "category": "life",
     "weight": 10,
-    "cooldown": 10,
+    "cooldown": 20,
     "when": [
       "age >= 16"
     ],
@@ -752,26 +753,27 @@
     "id": "abroad_homesick",
     "category": "family",
     "weight": 10,
-    "cooldown": 14,
+    "cooldown": 20,
     "when": [
       "foreign == 1"
     ],
     "cast": {
       "mother": "mother",
-      "agent": "agent"
+      "agent": "agent",
+      "coach": "coach"
     },
     "variants": [
       {
-        "title": "געגועים",
-        "body": "יום שלישי בגשם. הדירה שקטה, ובשיחת וידאו {mother} מראה לך את הסיר של יום שישי. \"רק תגיד ואני עולה על מטוס.\""
+        "title": "כיפור במשחק",
+        "body": "המשחק של השבוע נקבע ליום כיפור. במועדון לא מבינים מה הבעיה. {mother} שואלת בטלפון, בשקט, מה אתה מתכנן."
+      },
+      {
+        "title": "ליל סדר",
+        "body": "ליל הסדר נופל על ערב משחק חוץ. כל המשפחה תהיה סביב השולחן, ואתה במלון בעיר זרה. {mother} שמרה לך כיסא."
       },
       {
         "title": "חג בלי משפחה",
         "body": "בבית מדליקים נרות, ואתה אוכל פסטה לבד מול הטלוויזיה. השפה עדיין זרה, והחבר׳ה מהקבוצה יצאו בלעדיך."
-      },
-      {
-        "title": "הבדיחה שלא הבנת",
-        "body": "כולם צחקו בחדר ההלבשה, ואתה חייכת בלי להבין למה. בדרך הביתה אתה בודק כמה עולה טיסה לתל אביב."
       },
       {
         "title": "שבת שלום",
@@ -780,9 +782,20 @@
     ],
     "options": [
       {
+        "id": "ask",
+        "text": "לבקש מהמאמן לא לשחק בחג",
+        "hint": "הוא לא יבין עד הסוף",
+        "effects": [
+          "rel(coach) -= 4",
+          "rel(mother) += 6",
+          "morale += 4",
+          "history(kept_holiday)"
+        ]
+      },
+      {
         "id": "fly_mom",
-        "text": "להטיס את אמא לשבוע",
-        "hint": "יקר, ושווה כל שקל",
+        "text": "להטיס את אמא לחג",
+        "default": true,
         "effects": [
           "money -= 3000",
           "morale += 8",
@@ -791,20 +804,8 @@
         ]
       },
       {
-        "id": "language",
-        "text": "להירשם לקורס שפה",
-        "effects": [
-          "morale += 2",
-          "rel(teammate) += 5",
-          "fitness -= 3",
-          "flag(adapted) += 1",
-          "history(learned_language)"
-        ],
-        "default": true
-      },
-      {
         "id": "tough",
-        "text": "לבלוע את זה ולהתאמן כפול",
+        "text": "לשחק כרגיל ולבלוע את הגעגוע",
         "hint": "הגוף יתחזק. הלב פחות",
         "effects": [
           "attr(stamina) += 1",
@@ -1004,7 +1005,7 @@
     "id": "bench_again",
     "category": "minutes",
     "weight": 11,
-    "cooldown": 8,
+    "cooldown": 20,
     "when": [
       "starter == 0",
       "age >= 17"
@@ -1020,11 +1021,11 @@
         "body": "ההרכב נתלה על הלוח. השם שלך בצד הלא נכון, שוב. {coach} עובר לידך במסדרון ולא מרים את הראש."
       },
       {
-        "title": "תשעים דקות חימום",
+        "title": "תשעים דקות של חימום",
         "body": "התחממת שלוש פעמים ולא נכנסת. בשריקה {coach} טופח לך על הכתף: \"הזמן שלך יגיע.\" זה מה שאמר גם לפני חודש."
       },
       {
-        "title": "הוויז של הספסל",
+        "title": "הדרך לקו",
         "body": "אתה כבר יודע בעל פה כמה מטרים יש מהספסל לקו. {agent} שולח הודעה: \"ראיתי את ההרכב. אנחנו צריכים לדבר.\""
       },
       {
@@ -1202,7 +1203,7 @@
     "id": "captain_blame_after_loss",
     "category": "team",
     "weight": 10,
-    "cooldown": 10,
+    "cooldown": 20,
     "when": [
       "lastResult == -1"
     ],
@@ -1439,13 +1440,14 @@
           "fitness -= 3"
         ]
       }
-    ]
+    ],
+    "cooldown": 20
   },
   {
     "id": "late_to_training",
     "category": "discipline",
     "weight": 8,
-    "cooldown": 16,
+    "cooldown": 20,
     "when": [
       "age >= 16"
     ],
@@ -1561,7 +1563,7 @@
     "id": "must_win_week",
     "category": "pressure",
     "weight": 9,
-    "cooldown": 8,
+    "cooldown": 20,
     "when": [
       "theme(relegation_fight) == 1 || theme(title_race) == 1 || seasonWeek >= 24"
     ],
@@ -1798,62 +1800,62 @@
     ]
   },
   {
-    "id": "new_coach_forgets_you",
-    "category": "minutes",
+    "id": "new_coach_rules",
+    "category": "discipline",
     "weight": 9,
-    "cooldown": 20,
+    "cooldown": 40,
     "when": [
       "theme(new_coach) == 1 || rel(coach) <= 5"
     ],
     "cast": {
       "coach": "coach",
-      "agent": "agent"
+      "captain": "captain"
     },
     "variants": [
       {
-        "title": "מי אתה?",
-        "body": "{coach} קורא לך בשם של מישהו אחר, כבר בפעם השלישית. בתרגיל ההרכב של שבת אתה בכלל לא קיים."
+        "title": "החוקים החדשים",
+        "body": "{coach} החדש תולה דף על הדלת: טלפונים בתיבה, שקילה כל יום ראשון, עוצר בעשר. {captain} קורא ומגלגל עיניים."
       },
       {
-        "title": "המצגת",
-        "body": "{coach} מציג תוכנית לעונה. בשקופית של העמדה שלך מופיעים שני שמות. אף אחד מהם לא שלך."
+        "title": "השקילה",
+        "body": "שקילה ראשונה אצל המאמן החדש. אתה חצי קילו מעל היעד שלו. \"חצי קילו היום, שלושה בדצמבר,\" אומר {coach}."
       },
       {
-        "title": "הלוח נמחק",
-        "body": "המאמן החדש מחק את הלוח הישן. \"כולם מתחילים מאפס.\" אצלך זה מרגיש כמו מינוס."
+        "title": "התיבה",
+        "body": "{coach} מסתובב עם קופסת קרטון ואוסף טלפונים. השלך עוד ביד, עם הודעה מאמא שלא סיימת לקרוא."
       },
       {
-        "title": "קבוצה ב׳",
-        "body": "{coach} פרסם סגל לאימון של מחר. השם שלך ברשימה של \"קבוצה ב׳\", עם הנוער והפצועים."
+        "title": "האסיפה של השחקנים",
+        "body": "{captain} מכנס את השחקנים בלי המאמן. \"החוקים האלה הם לילדים. אני מדבר איתו מחר. מי איתי?\""
       }
     ],
     "options": [
       {
-        "id": "office",
-        "text": "לדפוק בדלת ולהציג את עצמך",
+        "id": "embrace",
+        "text": "לאמץ את החוקים, גם את השקילה",
+        "default": true,
         "effects": [
-          "rel(coach) += 6",
-          "morale += 1"
-        ],
-        "default": true
-      },
-      {
-        "id": "show",
-        "text": "להוכיח באימונים, בלי מילים",
-        "effects": [
-          "form += 2",
-          "fitness -= 6",
-          "rel(coach) += 3"
+          "rel(coach) += 5",
+          "fitness += 4",
+          "morale -= 1"
         ]
       },
       {
-        "id": "agent",
-        "text": "לבקש מ{agent} להתחיל לחפש",
+        "id": "test",
+        "text": "לבדוק אם הוא באמת אוכף",
+        "hint": "אולי הוא מחפש דוגמה",
         "effects": [
-          "offer(any)",
-          "rel(coach) -= 3",
-          "rel(agent) += 2",
-          "history(asked_agent_out)"
+          "rel(coach) -= 6",
+          "morale += 2",
+          "flag(defiant) += 1"
+        ]
+      },
+      {
+        "id": "lead",
+        "text": "ללכת עם {captain} לדבר איתו",
+        "effects": [
+          "rel(captain) += 6",
+          "rel(coach) -= 3"
         ]
       }
     ]
@@ -1862,7 +1864,7 @@
     "id": "form_slump",
     "category": "pressure",
     "weight": 9,
-    "cooldown": 12,
+    "cooldown": 20,
     "when": [
       "form <= -3"
     ],
@@ -2448,7 +2450,7 @@
     "id": "journalist_trap",
     "category": "media",
     "weight": 10,
-    "cooldown": 12,
+    "cooldown": 20,
     "when": [
       "fame >= 12"
     ],
@@ -2572,7 +2574,7 @@
     "id": "online_hate",
     "category": "media",
     "weight": 8,
-    "cooldown": 14,
+    "cooldown": 20,
     "when": [
       "fame >= 8",
       "lastRating <= 6"
@@ -2634,7 +2636,7 @@
     "id": "ultras_at_gate",
     "category": "fans",
     "weight": 8,
-    "cooldown": 14,
+    "cooldown": 20,
     "when": [
       "lastResult == -1",
       "fame >= 10"
@@ -2749,7 +2751,7 @@
     "id": "derby_provocation",
     "category": "rival",
     "weight": 14,
-    "cooldown": 10,
+    "cooldown": 20,
     "when": [
       "derbyNext == 1"
     ],
@@ -3014,7 +3016,7 @@
       },
       {
         "id": "decline",
-        "text": "לסרב",
+        "text": "לסרב בנימוס",
         "effects": [
           "rel(agent) -= 5",
           "rel(mother) += 6"
@@ -3092,7 +3094,7 @@
     "id": "injury_rush_back",
     "category": "injury",
     "weight": 14,
-    "cooldown": 10,
+    "cooldown": 20,
     "when": [
       "injured == 1"
     ],
@@ -3206,7 +3208,7 @@
     "id": "long_rehab",
     "category": "injury",
     "weight": 10,
-    "cooldown": 8,
+    "cooldown": 20,
     "when": [
       "injured == 1"
     ],
@@ -3275,46 +3277,53 @@
     "variants": [
       {
         "title": "זימון לנבחרת",
-        "body": "הטלפון מצלצל באמצע ארוחת שישי. \"מדברים מההתאחדות. אתה בסגל הנבחרת.\" {mother} כבר בוכה, והאוכל מתקרר."
+        "body": "הטלפון מצלצל באמצע ארוחת שישי: אתה בסגל הנבחרת. אחרי חמש דקות מתקשר {coach}: \"זה רק משחק ידידות. תגיד שכואב לך משהו.\""
       },
       {
         "title": "השם ברשימה",
-        "body": "הסגל של הנבחרת פורסם. השם שלך שם, אחרון ברשימה, באותיות קטנות. אתה מצלם את המסך חמש פעמים."
+        "body": "השם שלך בסגל הנבחרת, אחרון ברשימה. {coach} מזכיר שבשבוע שאחרי יש משחק עונה, ושהוא \"לא צריך אותך גמור\"."
       },
       {
-        "title": "המאמן הלאומי",
-        "body": "המאמן הלאומי ראה אותך בשבת. היום הוא מתקשר בעצמו. \"יש לי עשרים ושלושה מקומות. אחד מהם שלך, אם אתה רוצה.\""
+        "title": "מכתב מהרופא",
+        "body": "המאמן הלאומי מתקשר בעצמו: \"יש לי מקום בשבילך.\" באותו ערב הרופא של המועדון כותב: \"אם צריך, אני מוציא לך מכתב.\""
+      },
+      {
+        "title": "{mother} כבר סיפרה",
+        "body": "{mother} כבר סיפרה לכל השכונה על הזימון. {coach} מבקש בשקט שתמצא סיבה לא לנסוע. רק הפעם."
       }
     ],
     "options": [
       {
         "id": "go",
         "text": "לנסוע ולתת הכל",
+        "default": true,
         "effects": [
           "fame += 5",
           "morale += 8",
           "fitness -= 6",
+          "rel(coach) -= 3",
           "flag(national_caps) += 1",
           "history(national_callup)"
-        ],
-        "default": true
+        ]
       },
       {
-        "id": "rest",
-        "text": "לבקש לוותר הפעם בגלל עומס",
-        "hint": "המאמן במועדון יודה לך. ההתאחדות פחות",
+        "id": "fake",
+        "text": "לשלוח מכתב רפואי ולהישאר",
+        "hint": "המאמן יודה לך. אם יתגלה, הנבחרת לא תשכח",
         "effects": [
-          "rel(coach) += 6",
-          "fame -= 3",
+          "rel(coach) += 8",
+          "flag(liar) += 1",
+          "fame -= 2",
           "fitness += 8"
         ]
       },
       {
-        "id": "go_quiet",
-        "text": "לנסוע, בלי לפרסם כלום עד שתשחק",
+        "id": "half",
+        "text": "לנסוע ולבקש לשחק רק חצי",
         "effects": [
           "fame += 3",
           "morale += 5",
+          "rel(coach) += 2",
           "flag(national_caps) += 1",
           "history(national_callup)"
         ]
@@ -3442,7 +3451,7 @@
     "id": "big_club_bench_offer",
     "category": "transfer",
     "weight": 10,
-    "cooldown": 16,
+    "cooldown": 20,
     "when": [
       "hasOffer == 1"
     ],
@@ -3559,7 +3568,7 @@
     "id": "language_barrier",
     "category": "team",
     "weight": 9,
-    "cooldown": 16,
+    "cooldown": 20,
     "when": [
       "foreign == 1"
     ],
@@ -3803,7 +3812,7 @@
     "id": "scout_in_stands",
     "category": "transfer",
     "weight": 10,
-    "cooldown": 14,
+    "cooldown": 20,
     "when": [
       "age <= 21",
       "lastRating >= 7.5"
@@ -4184,7 +4193,7 @@
         "body": "אתה שומע את עצמך אומר ל{kid} בדיוק את המשפט שאמרו לך לפני עשר שנים. אפילו באותה הטעמה."
       },
       {
-        "title": "קפה של בוקר",
+        "title": "הקפה שלך עכשיו",
         "body": "אתה מזמין את {kid} לקפה לפני האימון. הוא מתיישב מולך כאילו נקרא למנהל. אתה זוכר את התחושה."
       },
       {
@@ -4626,7 +4635,7 @@
       },
       {
         "id": "take",
-        "text": "לקחת את הכסף",
+        "text": "לקחת את המעטפה",
         "hint": "יש דברים שלא נשכחים",
         "effects": [
           "money += 20000",
@@ -4815,7 +4824,7 @@
     "id": "media_hype",
     "category": "media",
     "weight": 9,
-    "cooldown": 14,
+    "cooldown": 20,
     "when": [
       "lastRating >= 8.5"
     ],
@@ -4877,7 +4886,7 @@
     "id": "coach_monthly_target",
     "category": "minutes",
     "weight": 9,
-    "cooldown": 10,
+    "cooldown": 20,
     "when": [
       "seasonWeek >= 2"
     ],
@@ -4932,10 +4941,10 @@
     ]
   },
   {
-    "id": "gk_penalty_homework",
+    "id": "gk_sweeper_keeper",
     "category": "team",
     "weight": 9,
-    "cooldown": 12,
+    "cooldown": 40,
     "when": [
       "pos(GK)"
     ],
@@ -4945,47 +4954,48 @@
     },
     "variants": [
       {
-        "title": "הבועט של {opp}",
-        "body": "לבועט הפנדלים של {opp} יש שלושה עשר מתוך שלושה עשר. מאמן השוערים שולח לך סרטון של כולם. \"תמצא לי משהו.\""
+        "title": "שוער עם רגליים",
+        "body": "{coach} רוצה שתתחיל לבנות משחק מאחור. \"כל כדור עובר דרכך. גם תחת לחץ.\" בעבר בעטת רחוק וזהו."
       },
       {
-        "title": "הסוד של הוותיק",
-        "body": "{veteran} שיחק נגד הבועט שלהם שנים. \"אני יודע לאן הוא בועט כשהוא לחוץ. תשאל יפה.\""
+        "title": "המסירה המסוכנת",
+        "body": "באימון מסרת קצר תחת לחץ, והחלוץ של הקבוצה השנייה גנב והבקיע. {coach} מחא כפיים: \"עוד פעם. בדיוק ככה.\""
       },
       {
-        "title": "לילה מול מסך",
-        "body": "אחת בלילה, ועדיין אתה מריץ אחורה פנדלים. הוא מסתכל ימינה ובועט שמאלה. או שלא."
+        "title": "הוותיק מזהיר",
+        "body": "{veteran} תופס אותך בחדר: \"שוער שמשחק ברגליים טוב, עד הטעות הראשונה בדרבי. אחר כך זוכרים רק אותה.\""
       },
       {
-        "title": "הזיכרון של הוותיק",
-        "body": "{veteran} יודע בעל פה עשרים שנה של בועטים. \"הבועט של {opp}? תשאל, אני פה.\" {coach} מהנהן מרחוק."
+        "title": "שעה נוספת",
+        "body": "{coach} מציע לך שעה נוספת כל יום רק על מסירות. זה בא על חשבון שעת ההצלות."
       }
     ],
     "options": [
       {
-        "id": "study",
-        "text": "ללמוד הכל, עד הבעיטה האחרונה",
+        "id": "embrace",
+        "text": "ללמוד לשחק ברגליים",
+        "default": true,
         "effects": [
-          "attr(gk) += 1",
-          "fitness -= 5",
-          "rel(coach) += 3"
+          "attr(passing) += 1",
+          "rel(coach) += 5",
+          "fitness -= 4"
         ]
       },
       {
-        "id": "ask_vet",
-        "text": "לשאול את {veteran}",
+        "id": "refuse",
+        "text": "\"התפקיד שלי זה לעצור כדורים\"",
         "effects": [
-          "rel(veteran) += 6",
-          "attr(gk) += 1"
-        ],
-        "default": true
+          "attr(gk) += 1",
+          "rel(coach) -= 5"
+        ]
       },
       {
-        "id": "instinct",
-        "text": "לסמוך על האינסטינקט ולישון",
+        "id": "secret",
+        "text": "להתאמן על זה לבד, בלי להתחייב",
         "effects": [
-          "fitness += 6",
-          "morale += 2"
+          "attr(passing) += 1",
+          "fitness -= 6",
+          "rel(veteran) += 3"
         ]
       }
     ]
@@ -5353,7 +5363,7 @@
     "id": "salary_delay",
     "category": "money",
     "weight": 12,
-    "cooldown": 10,
+    "cooldown": 40,
     "when": [
       "theme(financial_crisis) == 1"
     ],
@@ -5372,8 +5382,8 @@
         "body": "ההנהלה מציעה לשחקנים לפרוס את המשכורות על פני שנה. מי שחותם מקבל \"הכרת תודה\". מי שלא, \"נראה\"."
       },
       {
-        "title": "{agent} בטלפון",
-        "body": "{agent}: \"המועדון שלך טובע. יש לי שני מקומות שמשלמים בזמן. תגיד מילה ואני מתחיל.\""
+        "title": "מקלחות קרות",
+        "body": "גם לחברת הניקיון לא שילמו, והמקלחות במועדון קרות. המשכורת שלך מתעכבת כבר שבועיים. {agent} שולח: \"תגיד מילה ואני מתחיל.\""
       }
     ],
     "options": [
@@ -5476,40 +5486,40 @@
     },
     "variants": [
       {
-        "title": "הכוכב הגיע",
-        "body": "מאה מצלמות בשדה התעופה. הכוכב החדש משחק בדיוק בעמדה שלך, ו{coach} כבר אמר שהוא \"יפתח כשיהיה מוכן\"."
-      },
-      {
         "title": "המספר שלך",
         "body": "הכוכב החדש ביקש את המספר שלך. המחסנאי שואל בשקט אם אכפת לך. כולם יודעים שאכפת לך."
       },
       {
-        "title": "ההצגה",
-        "body": "ההצגה של הכוכב החדש משודרת בשידור חי. אתה צופה בה מחדר הכושר, לבד, על ההליכון."
+        "title": "הכוכב הגיע",
+        "body": "מאה מצלמות בשדה התעופה. בהצגה הכוכב החדש מחזיק חולצה עם המספר שלך. אף אחד לא שאל אותך."
+      },
+      {
+        "title": "הבקשה של הכוכב",
+        "body": "הכוכב החדש ניגש אליך בחדר: \"המספר הזה שלי מגיל שש. מה תרצה בשבילו?\" {captain} מקשיב מהצד."
       },
       {
         "title": "שיחה עם המאמן",
-        "body": "{coach}: \"הבאנו אותו כי היינו צריכים, לא כי אתה לא טוב. אבל לא אשקר לך, הוא יקבל הזדמנות.\""
+        "body": "{coach}: \"הכוכב רוצה את המספר שלך. אני לא אכריח אותך. אבל זה יעזור לי אם תוותר.\""
       }
     ],
     "options": [
       {
-        "id": "welcome",
-        "text": "לברך אותו ולהראות לו את העיר",
+        "id": "give",
+        "text": "לוותר על המספר בחיוך",
         "default": true,
         "effects": [
           "rel(teammate) += 4",
-          "rel(coach) += 2",
-          "morale += 1"
+          "rel(coach) += 4",
+          "morale -= 2"
         ]
       },
       {
-        "id": "compete",
-        "text": "להפוך כל אימון למלחמה",
-        "hint": "חד יותר. גם עצבני יותר",
+        "id": "refuse",
+        "text": "\"המספר נשאר שלי\"",
+        "hint": "עכשיו זה אישי",
         "effects": [
-          "form += 2",
-          "fitness -= 8",
+          "rel(coach) -= 3",
+          "morale += 2",
           "history(star_rivalry)"
         ],
         "chain": [
@@ -5520,12 +5530,12 @@
         ]
       },
       {
-        "id": "agent",
-        "text": "לבקש מ{agent} לבדוק אופציות",
+        "id": "trade",
+        "text": "לוותר תמורת תרומה לנוער בשמך",
         "effects": [
-          "offer(any)",
-          "rel(coach) -= 3",
-          "rel(agent) += 2"
+          "rel(coach) += 2",
+          "fame += 2",
+          "rel(captain) += 3"
         ]
       }
     ]
@@ -5586,7 +5596,7 @@
     "id": "world_cup_scouting",
     "category": "national",
     "weight": 12,
-    "cooldown": 12,
+    "cooldown": 20,
     "when": [
       "theme(world_cup_year) == 1",
       "overall >= 56"
@@ -5644,7 +5654,7 @@
     "id": "title_race_nerves",
     "category": "pressure",
     "weight": 12,
-    "cooldown": 8,
+    "cooldown": 20,
     "when": [
       "theme(title_race) == 1",
       "seasonWeek >= 18"
@@ -5815,7 +5825,7 @@
     "id": "injury_crisis_overload",
     "category": "injury",
     "weight": 12,
-    "cooldown": 8,
+    "cooldown": 20,
     "when": [
       "theme(injury_crisis) == 1",
       "injured == 0"
@@ -5871,7 +5881,7 @@
     "id": "derby_family_split",
     "category": "fans",
     "weight": 12,
-    "cooldown": 12,
+    "cooldown": 20,
     "when": [
       "theme(derby_season) == 1",
       "derbyNext == 1"
@@ -5927,7 +5937,7 @@
     "id": "european_travel_fatigue",
     "category": "life",
     "weight": 10,
-    "cooldown": 8,
+    "cooldown": 20,
     "when": [
       "theme(european_nights) == 1"
     ],
@@ -6202,54 +6212,58 @@
     ]
   },
   {
-    "id": "promoted_big_stage",
-    "category": "pressure",
-    "weight": 12,
-    "cooldown": 10,
+    "id": "promoted_ground_share",
+    "category": "fans",
+    "weight": 11,
+    "once": true,
     "when": [
       "theme(promoted_side) == 1"
     ],
     "cast": {
-      "coach": "coach"
+      "boss": "chairman",
+      "captain": "captain"
     },
     "variants": [
       {
-        "title": "ארבעים אלף",
-        "body": "בשבת נגד {opp}, באצטדיון של ארבעים אלף. בשנה שעברה שיחקת מול שלוש מאות איש ושני כלבים."
+        "title": "בית בעיר אחרת",
+        "body": "המגרש שלכם לא עומד בתנאי הליגה. {boss} הודיע שמשחקי הבית יעברו לעיר אחרת, שעה נסיעה. האוהדים מתכננים הפגנה."
       },
       {
-        "title": "{coach} מזהיר",
-        "body": "\"בליגה הזאת מענישים כל טעות.\" {coach} מראה וידאו של {opp}. הם מהירים פי שניים מכל מה שראיתם."
+        "title": "ההפגנה",
+        "body": "מאתיים אוהדים מול משרדי המועדון עם שלטים: \"הבית שלנו פה\". {captain} שואל אם השחקנים צריכים לצאת אליהם."
       },
       {
-        "title": "שידור חי",
-        "body": "מחר נגד {opp}, בשידור חי. הדודה מבאר שבע כבר הזמינה את כל השכונה לסלון."
+        "title": "האוטובוסים",
+        "body": "למשחק הבית הראשון בעיר הזרה נמכרו פחות מאלף כרטיסים. האוהדים אומרים שאין להם איך להגיע."
       }
     ],
     "options": [
       {
-        "id": "enjoy",
-        "text": "ליהנות מכל שנייה",
+        "id": "protest",
+        "text": "לצאת להפגנה עם האוהדים",
+        "hint": "אהבה מהיציע, כעס מההנהלה",
+        "effects": [
+          "fame += 2",
+          "rel(boss) -= 8",
+          "rel(captain) += 3"
+        ]
+      },
+      {
+        "id": "out",
+        "text": "להישאר בחוץ ולהתרכז במשחק",
         "default": true,
         "effects": [
-          "morale += 4"
+          "form += 1",
+          "rel(boss) += 2"
         ]
       },
       {
-        "id": "video",
-        "text": "עוד שעה של וידאו על {opp}",
+        "id": "buses",
+        "text": "לממן אוטובוסים לאוהדים",
         "effects": [
-          "attr(vision) += 1",
-          "fitness -= 3"
-        ]
-      },
-      {
-        "id": "ask",
-        "text": "לבקש מ{coach} לפתוח",
-        "effects": [
-          "goal(apps, 1, לפתוח מול {opp})",
-          "rel(coach) += 1",
-          "morale += 2"
+          "money -= 6000",
+          "fame += 3",
+          "morale += 3"
         ]
       }
     ]
@@ -6321,7 +6335,7 @@
     "id": "farewell_tour_honour",
     "category": "fans",
     "weight": 12,
-    "cooldown": 6,
+    "cooldown": 20,
     "when": [
       "theme(farewell_tour) == 1"
     ],
@@ -6445,42 +6459,44 @@
     },
     "variants": [
       {
-        "title": "החוקרים חוזרים",
-        "body": "החוקרים מצאו מצלמה ש{mate} לא היה איתך. עכשיו הם מזמינים אותך שוב. \"אתה בטוח במה שאמרת?\""
+        "title": "עסקה מהחוקרים",
+        "body": "החוקרים יודעים ש{mate} לא היה איתך. הם מציעים עסקה: \"תעיד נגדו, ואתה יוצא נקי. תשתוק, ואתה בפנים איתו.\""
       },
       {
-        "title": "{mate} נשבר",
-        "body": "{mate} הודה בחקירה. עכשיו גם הגרסה שלך על השולחן, ו{coach} כבר שמע."
+        "title": "{mate} מתחנן",
+        "body": "{mate} שמע שהציעו לך עסקה. הוא מחכה בחניה, עיניים אדומות. \"אם אתה מדבר, אני גמור. {coach} כבר יודע משהו.\""
       }
     ],
     "options": [
       {
-        "id": "confess",
-        "text": "לתקן את העדות",
+        "id": "testify",
+        "text": "להעיד ולספר את האמת",
+        "hint": "נקי מול החוק. לא מול החדר",
+        "effects": [
+          "rel(mate) -= 15",
+          "flag(liar) = 0",
+          "rel(coach) += 2",
+          "history(snitched_mate)"
+        ]
+      },
+      {
+        "id": "silent",
+        "text": "לשתוק ולספוג את ההשעיה",
         "default": true,
         "effects": [
-          "money -= 10000",
-          "rel(coach) -= 4",
-          "fame -= 2",
-          "flag(liar) = 0"
+          "rel(mate) += 8",
+          "fame -= 3",
+          "squadRole(backup)",
+          "morale -= 3"
         ]
       },
       {
-        "id": "stick",
-        "text": "להחזיק בגרסה",
-        "hint": "אם זה נופל, זה נופל חזק",
+        "id": "union",
+        "text": "לבקש ייעוץ מארגון השחקנים",
         "effects": [
-          "rel(mate) += 5",
-          "fame -= 4",
-          "squadRole(backup)"
-        ]
-      },
-      {
-        "id": "lawyer",
-        "text": "לשכור עורך דין",
-        "effects": [
-          "money -= 25000",
-          "morale -= 2"
+          "money -= 3000",
+          "morale -= 1",
+          "rel(coach) += 1"
         ]
       }
     ]
@@ -6716,7 +6732,7 @@
     "id": "rival_gloats",
     "category": "rival",
     "weight": 12,
-    "cooldown": 10,
+    "cooldown": 20,
     "when": [
       "lastResult == -1"
     ],
@@ -6740,7 +6756,7 @@
     "options": [
       {
         "id": "pitch",
-        "text": "לענות רק במגרש",
+        "text": "להדפיס את הסטורי ולתלות בתא",
         "default": true,
         "effects": [
           "morale += 2",
@@ -7073,7 +7089,7 @@
         "body": "{rival} פתח קמפיין ברשתות: \"תצביעו לי.\" האוהדים שלך מבקשים שתעשה אותו דבר."
       },
       {
-        "title": "הטקס",
+        "title": "ערב הפרסים",
         "body": "בטקס מושיבים אתכם באותו שולחן. {journo} מצלם כל מבט. {rival} מוזג לך מים בלי לשאול."
       }
     ],
@@ -7111,7 +7127,7 @@
     "id": "foreign_food",
     "category": "life",
     "weight": 10,
-    "cooldown": 16,
+    "cooldown": 20,
     "when": [
       "foreign == 1"
     ],
@@ -7171,7 +7187,7 @@
     "id": "foreign_loneliness",
     "category": "life",
     "weight": 11,
-    "cooldown": 14,
+    "cooldown": 20,
     "when": [
       "foreign == 1",
       "theme(homesick) == 1 || flag(adapted) <= 1"
@@ -7191,7 +7207,7 @@
         "body": "הדירה שהמועדון שוכר לך גדולה מדי. ההד של הצעדים שלך מזכיר לך כמה אתה לבד."
       },
       {
-        "title": "יום הולדת",
+        "title": "עוגה מהסופר",
         "body": "יום הולדת {age}. ארבע הודעות מהקבוצה, שיחת וידאו מהבית, ועוגה שקנית לעצמך בסופר."
       }
     ],
@@ -7398,7 +7414,7 @@
     "id": "foreign_interview",
     "category": "media",
     "weight": 10,
-    "cooldown": 14,
+    "cooldown": 20,
     "when": [
       "foreign == 1"
     ],
@@ -7476,7 +7492,7 @@
         "body": "אחרי המשחק ההתאחדות המקומית שואלת אם תרצה להגיש תלונה על הקריאות. {coach} אומר שיתמוך בכל החלטה."
       },
       {
-        "title": "השלט",
+        "title": "השלט המכוער",
         "body": "מישהו ביציע הניף נגדך שלט מכוער. המצלמות צילמו. הטלפון שלך מתחיל לרטוט."
       }
     ],
@@ -7513,10 +7529,10 @@
     ]
   },
   {
-    "id": "local_teammate_village",
+    "id": "local_teammate_hebrew",
     "category": "team",
     "weight": 9,
-    "cooldown": 30,
+    "cooldown": 40,
     "when": [
       "foreign == 1"
     ],
@@ -7525,48 +7541,50 @@
     },
     "variants": [
       {
-        "title": "פסטיבל בכפר",
-        "body": "{mate} מזמין אותך לפסטיבל בכפר של המשפחה שלו. \"יין של סבא, ריקודים, ואף אחד לא מדבר על כדורגל.\""
+        "title": "מילים בעברית",
+        "body": "{mate} רוצה שתלמד אותו קללה בעברית, \"משהו טוב\", כדי להפתיע את השחקנים הישראלים במשחק הנבחרות."
       },
       {
-        "title": "ארוחת יום ראשון",
-        "body": "אמא של {mate} שמעה שאתה גר לבד. עכשיו אתה מוזמן לארוחת יום ראשון, כל יום ראשון. היא לא מקבלת לא."
+        "title": "המשפט על החולצה",
+        "body": "{mate} מבקש שתכתוב לו משפט בעברית לחולצה מתחת לחולצה. \"משהו שיגרום לישראלים לחייך. או לכעוס.\""
       },
       {
-        "title": "החתונה של אחותו",
-        "body": "{mate} מזמין אותך לחתונה של אחותו. \"תהיה האורח הכי מעניין שם. אף אחד מעולם לא פגש ישראלי.\""
+        "title": "שיעור ראשון",
+        "body": "{mate} הוריד אפליקציה ללימוד עברית. אחרי יומיים הוא אומר לך \"בוקר טוב\" בכל שעה ביום, כולל בתשע בערב."
       },
       {
-        "title": "המשחק של האחיין",
-        "body": "{mate} מבקש שתבוא איתו למשחק של האחיין שלו בליגת ילדים. \"הוא חושב שאתה כוכב. אל תהרוס לו.\""
+        "title": "הסלנג",
+        "body": "{mate} שמע אותך מדבר בטלפון עם אמא ורוצה לדעת מה זה \"יאללה\". עכשיו הוא אומר את זה למאמן אחרי כל הוראה."
       }
     ],
     "options": [
       {
-        "id": "go",
-        "text": "ללכת",
+        "id": "teach",
+        "text": "ללמד אותו משפטים נחמדים",
         "default": true,
         "effects": [
-          "rel(mate) += 8",
+          "rel(mate) += 6",
+          "morale += 2",
+          "flag(adapted) += 1"
+        ]
+      },
+      {
+        "id": "prank",
+        "text": "ללמד אותו משהו מביך בכוונה",
+        "hint": "מצחיק, עד שהוא יגלה",
+        "effects": [
           "morale += 4",
-          "flag(adapted) += 1"
+          "rel(mate) -= 2",
+          "fame += 1"
         ]
       },
       {
-        "id": "rest",
-        "text": "להתנצל ולנוח",
+        "id": "trade",
+        "text": "\"מילה בעברית תמורת מילה בשפה שלך\"",
         "effects": [
-          "fitness += 5",
-          "rel(mate) -= 2"
-        ]
-      },
-      {
-        "id": "gift",
-        "text": "ללכת ולהביא מתנה מהארץ",
-        "effects": [
-          "rel(mate) += 10",
-          "money -= 400",
-          "flag(adapted) += 1"
+          "rel(mate) += 8",
+          "flag(adapted) += 1",
+          "history(learned_language)"
         ]
       }
     ]
@@ -7649,7 +7667,7 @@
         "body": "רשות המסים המקומית פותחת ביקורת על \"המבנה החכם\". {agent} פתאום לא זוכר שהוא הציע אותו."
       },
       {
-        "title": "הרשימה",
+        "title": "השם שלך בכתבה",
         "body": "{journo} חושף שחקנים זרים שהעבירו שכר דרך חברות. השם שלך ברשימה, שלישי מלמעלה."
       }
     ],
@@ -7684,7 +7702,7 @@
     ]
   },
   {
-    "id": "vet_one_year_deal",
+    "id": "vet_medical_clause",
     "category": "money",
     "weight": 11,
     "cooldown": 30,
@@ -7698,32 +7716,33 @@
     },
     "variants": [
       {
-        "title": "שנה אחת",
-        "body": "{boss} מציע הארכה, אבל רק לשנה. \"בגיל שלך, ככה זה עובד אצלנו. אל תיקח את זה אישית.\""
+        "title": "סעיף רפואי",
+        "body": "{boss} מוכן להאריך, אבל עם סעיף: בדיקה רפואית כל חצי שנה. אם נכשלת, החוזה מתבטל. \"זה לא אישי, זה ביטוח.\""
       },
       {
-        "title": "המספר בדף",
-        "body": "{agent} מראה לך את ההצעה. שנה אחת, שכר נמוך בשליש, ובונוס על כל הופעה. \"זה מה שיש לוותיקים.\""
+        "title": "שכר לפי הופעות",
+        "body": "{agent} מראה לך את ההצעה: שכר בסיס נמוך ותשלום על כל הופעה. \"אם תשחק, תרוויח יותר מעכשיו. אם לא...\""
       },
       {
-        "title": "שאלה של גיל",
-        "body": "בחדר הישיבות אף אחד לא אומר את המילה \"גיל\", אבל כולם חושבים עליה. {boss} מחייך: \"נראה איך הגוף מחזיק.\""
+        "title": "התנאי",
+        "body": "\"עוד שנה, אם תעבור את הבדיקות של הצוות הרפואי בקיץ.\" {boss} לוחץ לך יד חזק מדי, כאילו לבדוק."
       }
     ],
     "options": [
       {
-        "id": "sign",
-        "text": "לחתום. שנה זה שנה",
+        "id": "accept",
+        "text": "לקבל את הסעיף",
         "default": true,
         "effects": [
           "rel(boss) += 4",
-          "morale += 1"
+          "morale -= 1",
+          "flag(medical_clause) = 1"
         ]
       },
       {
-        "id": "two",
-        "text": "לדרוש שנתיים",
-        "hint": "הוא עלול להגיד תודה ושלום",
+        "id": "guaranteed",
+        "text": "לדרוש חוזה מובטח, בלי תנאים",
+        "hint": "הוא עלול לוותר עליך",
         "effects": [
           "rel(boss) -= 6",
           "flag(want_renewal) = 1",
@@ -7731,11 +7750,12 @@
         ]
       },
       {
-        "id": "market",
-        "text": "לבקש מ{agent} לבדוק בחוץ",
+        "id": "per_game",
+        "text": "ללכת על תשלום לפי הופעות",
         "effects": [
-          "offer(any)",
-          "rel(agent) += 2"
+          "rel(agent) += 2",
+          "goal(apps, 20, עשרים הופעות בעונה)",
+          "morale += 1"
         ]
       }
     ]
@@ -7824,7 +7844,7 @@
         "body": "{journo} מזמין אותך לקפה. \"כשתפרוש, יש לך מקום באולפן. אבל תתחיל עכשיו, שיתרגלו לפרצוף.\""
       },
       {
-        "title": "הכסף הקל",
+        "title": "שעתיים באולפן",
         "body": "שעתיים באולפן, חליפה, ושכר של שבוע. {coach} מרים גבה: \"רק שלא תנתח לי את הקבוצה.\""
       },
       {
@@ -7880,7 +7900,7 @@
     },
     "variants": [
       {
-        "title": "שידור חי",
+        "title": "הדקה העשרים",
         "body": "בדקה העשרים המגיש שואל אותך על הטקטיקה של {coach}. על הקבוצה שלך. בשידור חי. המפיק מסמן לך: \"חריף!\""
       },
       {
@@ -7921,58 +7941,61 @@
     ]
   },
   {
-    "id": "vet_slow_recovery",
+    "id": "vet_knee_verdict",
     "category": "injury",
     "weight": 12,
-    "cooldown": 12,
+    "once": true,
     "when": [
       "age >= 30",
       "injured == 1"
     ],
     "cast": {
       "coach": "coach",
-      "kid": "youngster"
+      "mother": "mother"
     },
     "variants": [
       {
-        "title": "לאט יותר",
-        "body": "בגיל עשרים, פציעה כזאת לקחה שבועיים. עכשיו כבר חודש, והרופא עדיין אומר \"סבלנות\". {kid} משחק במקום שלך."
+        "title": "שתי עונות",
+        "body": "הרופא מראה לך את הצילום ומדבר בשקט: \"לברך הזאת נשארו עוד שתי עונות טובות. אולי שלוש. תחליט איך אתה רוצה להשתמש בהן.\""
       },
       {
-        "title": "הבדיקה",
-        "body": "הפיזיותרפיסט מודד את השריר ומשתתק לרגע. \"זה מחלים, רק לא בקצב שהיית רגיל אליו.\""
+        "title": "הסחוס",
+        "body": "\"הסחוס כמעט נגמר.\" הרופא לא מסתכל עליך כשהוא אומר את זה. {coach} מחכה בחוץ עם שתי כוסות קפה."
       },
       {
-        "title": "מנוחה פעילה",
-        "body": "{coach} מציע לך לעזור לצוות האימון בזמן השיקום. \"תסתכל מהצד. אתה רואה דברים שאנחנו לא.\""
+        "title": "חוות דעת",
+        "body": "הרופא של המועדון מציע טיפול ניסיוני בחו״ל. יקר, לא בטוח, ומחזיר אולי שנה. {mother} כבר שואלת כמה זה עולה."
       }
     ],
     "options": [
       {
-        "id": "patient",
-        "text": "לתת לגוף את הזמן",
+        "id": "plan",
+        "text": "לתכנן את השנתיים האחרונות",
         "default": true,
         "effects": [
-          "fitness += 8",
-          "morale -= 2"
+          "morale -= 2",
+          "flag(knee_plan) = 1",
+          "history(knee_verdict)"
         ]
       },
       {
-        "id": "staff",
-        "text": "לעזור לצוות בזמן השיקום",
+        "id": "treatment",
+        "text": "לנסות את הטיפול בחו״ל",
+        "hint": "יקר והימור",
         "effects": [
-          "rel(coach) += 6",
-          "rel(kid) += 4",
-          "attr(vision) += 1"
+          "money -= 40000",
+          "fitness += 10",
+          "potential += 1",
+          "morale += 3"
         ]
       },
       {
-        "id": "private",
-        "text": "מרפאה פרטית בחו״ל",
+        "id": "ignore",
+        "text": "לשחק כאילו לא שמעת כלום",
         "effects": [
-          "money -= 15000",
-          "fitness += 15",
-          "morale += 2"
+          "morale += 2",
+          "fitness -= 8",
+          "rel(mother) -= 4"
         ]
       }
     ]
@@ -8267,10 +8290,10 @@
     ]
   },
   {
-    "id": "bad_game_talk",
+    "id": "bad_game_break",
     "category": "minutes",
-    "weight": 12,
-    "cooldown": 8,
+    "weight": 11,
+    "cooldown": 20,
     "when": [
       "lastRating <= 5.5",
       "starter == 1"
@@ -8282,111 +8305,113 @@
     "variants": [
       {
         "title": "יום רע",
-        "body": "שום דבר לא הלך. כל מסירה הגיעה לרגל הלא נכונה. {coach} עוצר אותך ביציאה מהחדר: \"יש לך דקה?\""
+        "body": "שום דבר לא הלך. כל מסירה הגיעה לרגל הלא נכונה. {coach}: \"אני חושב לתת לך לנקות את הראש משחק אחד. מה אתה אומר?\""
       },
       {
         "title": "הציון בעיתון",
-        "body": "בעיתון קיבלת את הציון הכי נמוך בקבוצה, עם משפט אחד: \"נעלם\". {mate} מחביא את העיתון מתחת למגבת."
+        "body": "בעיתון קיבלת את הציון הכי נמוך בקבוצה, עם מילה אחת: \"נעלם\". {coach} שואל אם אתה רוצה הפסקה קטנה."
       },
       {
         "title": "המבט",
-        "body": "{coach} לא אמר כלום אחרי המשחק. רק הסתכל. המבט הזה היה גרוע מכל צעקה."
+        "body": "{coach} לא צעק אחרי המשחק. הוא רק אמר: \"אתה עייף בראש. אני רואה. בוא נחליט ביחד מה עושים בשבת.\""
       },
       {
-        "title": "הסרטון",
-        "body": "{coach} שולח לך קליפ של שמונה פעולות שלך מהמשחק. כל אחת מסומנת באדום. בסוף: \"מחר בתשע אצלי.\""
+        "title": "{mate} מציע",
+        "body": "{mate} שומע שהמאמן שוקל להושיב אותך. \"תבקש לשחק בעמדה שלי בשבת. שם פחות לחץ, ואני אסתדר.\""
       }
     ],
     "options": [
       {
-        "id": "own",
-        "text": "\"אני יודע. זה עליי\"",
+        "id": "pause",
+        "text": "לקחת משחק הפסקה",
         "default": true,
         "effects": [
-          "rel(coach) += 4",
+          "morale += 4",
+          "fitness += 6",
+          "squadRole(rotation)"
+        ]
+      },
+      {
+        "id": "play",
+        "text": "\"תשאיר אותי. אני אתקן בשבת\"",
+        "hint": "אם זה לא יעבוד, תשמע על זה",
+        "effects": [
+          "rel(coach) += 2",
+          "form += 1",
           "morale -= 2"
         ]
       },
       {
-        "id": "excuse",
-        "text": "להסביר שהמערך לא מתאים לך",
-        "hint": "אולי נכון. לא בטוח שהוא רוצה לשמוע",
+        "id": "role",
+        "text": "לבקש תפקיד פשוט יותר בשבת",
         "effects": [
-          "rel(coach) -= 5",
-          "morale += 1"
-        ]
-      },
-      {
-        "id": "extra",
-        "text": "לבקש אימון אישי מחר בבוקר",
-        "effects": [
-          "rel(coach) += 5",
-          "fitness -= 6",
-          "form += 1"
+          "rel(coach) += 4",
+          "rel(mate) += 3",
+          "attr(passing) += 1"
         ]
       }
     ]
   },
   {
-    "id": "win_night_out",
+    "id": "win_bonus_split",
     "category": "team",
-    "weight": 11,
-    "cooldown": 8,
+    "weight": 10,
+    "cooldown": 30,
     "when": [
       "lastResult == 1"
     ],
     "cast": {
       "mate": "teammate",
       "captain": "captain",
-      "coach": "coach"
+      "kid": "youngster"
     },
     "variants": [
       {
-        "title": "חוגגים",
-        "body": "ניצחון גדול, וכולם רוצים לצאת. {mate} כבר הזמין שולחן במקום שאסור להגיד ל{coach} את השם שלו."
+        "title": "בונוס הניצחון",
+        "body": "{captain} מציע לחלק את בונוס הניצחון שווה בשווה, כולל המחסנאי והנוער שעלו לספסל. מי שפתח בהרכב מפסיד הכי הרבה."
       },
       {
-        "title": "הארוחה של הקפטן",
-        "body": "{captain} מזמין את כל הקבוצה למסעדה על חשבונו. \"מי שלא בא, שיסביר למה.\" מחר בבוקר יש אימון שחרור."
+        "title": "הקופה המשותפת",
+        "body": "אחרי הניצחון {captain} מעביר כובע בחדר. \"כל אחד שם חלק מהבונוס. השומר של המגרש חולה, צריך לעזור לו.\""
       },
       {
-        "title": "שירה באוטובוס",
-        "body": "כל האוטובוס שר. {mate} עומד על המושב ומחזיק מיקרופון של מדריך טיולים. בדרך מתוכננת עצירה בבר."
+        "title": "הילד מהנוער",
+        "body": "{kid} ישב על הספסל ולא קיבל שקל מהבונוס. {mate} לוחש לך: \"לפי החוזה שלו, אין לו כלום. זה לא נראה טוב.\""
       },
       {
-        "title": "תמונה קבוצתית",
-        "body": "כולם מצטלמים עם הנקודות בחדר, חצי ערומים, מאושרים. {captain}: \"הערב יוצאים. כולם.\""
+        "title": "החשבון של {mate}",
+        "body": "{mate} עשה חשבון: מי שנכנס בדקה התשעים מקבל כמו מי ששיחק תשעים דקות. \"זה לא הוגן,\" הוא אומר, ומחכה שתסכים."
       }
     ],
     "options": [
       {
-        "id": "go",
-        "text": "לבוא ולהישאר עד הסוף",
-        "effects": [
-          "morale += 5",
-          "fitness -= 8",
-          "rel(teammate) += 5",
-          "flag(party) += 1",
-          "history(party)"
-        ]
-      },
-      {
-        "id": "early",
-        "text": "לבוא לשעה ולחזור לישון",
+        "id": "share",
+        "text": "להסכים לחלוקה שווה",
         "default": true,
         "effects": [
-          "morale += 3",
-          "rel(captain) += 2",
-          "fitness -= 2"
+          "money -= 2000",
+          "rel(captain) += 5",
+          "rel(kid) += 5",
+          "rel(teammate) += 3"
         ]
       },
       {
-        "id": "home",
-        "text": "לחגוג בבית עם המשפחה",
+        "id": "keep",
+        "text": "\"מי ששיחק, מקבל\"",
+        "hint": "הגיוני. לא כולם יאהבו",
         "effects": [
-          "fitness += 4",
-          "rel(mate) -= 3",
-          "morale += 2"
+          "rel(mate) += 4",
+          "rel(captain) -= 5"
+        ]
+      },
+      {
+        "id": "extra",
+        "text": "לתת את החלק שלך כולו לילד מהנוער",
+        "effects": [
+          "money -= 4000",
+          "rel(kid) += 12",
+          "fame += 1",
+          "history(gave_bonus_to_kid)"
         ]
       }
     ]
@@ -8395,7 +8420,7 @@
     "id": "loss_bus_silence",
     "category": "team",
     "weight": 11,
-    "cooldown": 8,
+    "cooldown": 20,
     "when": [
       "lastResult == -1"
     ],
@@ -8453,65 +8478,58 @@
     ]
   },
   {
-    "id": "top_scorer_race",
-    "category": "media",
+    "id": "scorer_rest_dispute",
+    "category": "minutes",
     "weight": 12,
-    "cooldown": 10,
+    "once": true,
     "when": [
       "goalsSeason >= 8"
     ],
     "cast": {
-      "journo": "journalist",
-      "rival": "rival",
-      "mate": "teammate",
-      "captain": "captain"
+      "coach": "coach",
+      "agent": "agent"
     },
     "variants": [
       {
-        "title": "מלך השערים",
-        "body": "{journo} פותח מדור שבועי: \"המרוץ למלך השערים\". התמונה שלך ליד התמונה של {rival}, עם המספרים מתחת."
+        "title": "מנוחה בזמן לא טוב",
+        "body": "{coach} רוצה לתת לך מנוחה בשני המשחקים הבאים \"כדי לשמור עליך\". אתה במרוץ למלך השערים, ושני המשחקים נגד התחתית."
       },
       {
-        "title": "הפנדל",
-        "body": "בקבוצה מדברים על מי בועט את הפנדל הבא. {mate} אומר שזה שלך, \"בשביל המרוץ\". {captain} לא נשמע מרוצה."
+        "title": "הסעיף בחוזה",
+        "body": "{agent} מזכיר: בחוזה יש בונוס על חמישה עשר גולים. \"אם הוא מושיב אותך עכשיו, זה עולה לך הרבה כסף.\""
       },
       {
-        "title": "השאלה בכל ראיון",
-        "body": "כל ראיון מתחיל באותה שאלה: \"כמה גולים בסוף העונה?\" הטלפון מלא בהודעות עם מספרים."
-      },
-      {
-        "title": "העמוד הראשון",
-        "body": "השם שלך בעמודה הראשונה של כל עיתון ספורט. הדודה שלך גוזרת כל כתבה ומודדת אותה בסרגל."
+        "title": "הרוטציה",
+        "body": "{coach} מודיע על רוטציה לקראת סוף העונה. השם שלך ברשימת המנוחה, ליד שחקנים שלא הבקיעו כל העונה."
       }
     ],
     "options": [
       {
-        "id": "team",
-        "text": "\"מה שחשוב זה הקבוצה\"",
+        "id": "rest",
+        "text": "לקבל את המנוחה",
         "default": true,
         "effects": [
-          "rel(teammate) += 3",
-          "fame += 1"
+          "fitness += 12",
+          "rel(coach) += 4",
+          "morale -= 2"
         ]
       },
       {
-        "id": "number",
-        "text": "להגיד מספר בקול",
-        "hint": "עכשיו כולם יספרו",
+        "id": "insist",
+        "text": "להתעקש לשחק",
+        "hint": "אגואיסט או רעב, תלוי במי ששואל",
         "effects": [
-          "fame += 3",
-          "goal(goals, 15, להגיע לחמישה עשר גולים)",
+          "rel(coach) -= 5",
+          "goal(goals, 3, שלושה גולים עד סוף העונה)",
           "morale += 2"
         ]
       },
       {
-        "id": "rival",
-        "text": "לעקוץ את {rival}",
+        "id": "sub",
+        "text": "להציע להיכנס רק מהספסל",
         "effects": [
-          "fame += 2",
-          "rel(rival) -= 5",
-          "flag(trash_talk) += 1",
-          "history(trash_talk)"
+          "fitness += 6",
+          "rel(coach) += 2"
         ]
       }
     ]
@@ -8638,7 +8656,7 @@
     "id": "fan_selfie_mob",
     "category": "fans",
     "weight": 10,
-    "cooldown": 12,
+    "cooldown": 20,
     "when": [
       "lastResult == 1",
       "fame >= 20"
@@ -8695,7 +8713,7 @@
     "id": "goal_drought",
     "category": "pressure",
     "weight": 12,
-    "cooldown": 10,
+    "cooldown": 20,
     "when": [
       "goalsSeason == 0",
       "seasonWeek >= 10",
@@ -8754,7 +8772,7 @@
     "id": "owner_rant_after_loss",
     "category": "media",
     "weight": 11,
-    "cooldown": 10,
+    "cooldown": 20,
     "when": [
       "theme(new_owner) == 1",
       "lastResult == -1"
@@ -8815,7 +8833,7 @@
     "id": "frustrating_draw",
     "category": "team",
     "weight": 10,
-    "cooldown": 10,
+    "cooldown": 20,
     "when": [
       "lastResult == 0"
     ],
@@ -8865,6 +8883,774 @@
         "effects": [
           "morale += 1",
           "rel(teammate) += 2"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "youth_coach_son",
+    "category": "minutes",
+    "weight": 11,
+    "once": true,
+    "when": [
+      "stage(youth)"
+    ],
+    "cast": {
+      "coach": "coach",
+      "father": "father"
+    },
+    "variants": [
+      {
+        "title": "הבן של המאמן",
+        "body": "הבן של {coach} משחק בעמדה שלך בנוער. הוא פותח כל שבוע, גם כשהוא איטי. כולם רואים, אף אחד לא אומר."
+      },
+      {
+        "title": "אבא רוצה לדבר",
+        "body": "{father} רוצה ללכת ל{coach} ולשאול למה הבן שלו משחק ואתה לא. \"אני אדבר יפה. מבטיח.\""
+      },
+      {
+        "title": "חילוף בדקה השמונים",
+        "body": "שוב נכנסת בדקה השמונים, במקום הבן של המאמן. הוא לוחץ לך יד ביציאה ולוחש: \"גם לי זה לא נעים.\""
+      },
+      {
+        "title": "פרוטקציה?",
+        "body": "בקבוצה של הורי הנוער מישהו כתב \"יש פה פרוטקציה\". {father} כבר הקליד תשובה ומחכה שתגיד לו אם לשלוח."
+      }
+    ],
+    "options": [
+      {
+        "id": "outwork",
+        "text": "לעבוד קשה עד שאי אפשר להתעלם ממך",
+        "default": true,
+        "effects": [
+          "form += 2",
+          "fitness -= 6",
+          "rel(coach) += 2"
+        ]
+      },
+      {
+        "id": "dad",
+        "text": "לתת לאבא לדבר עם המאמן",
+        "hint": "אולי יעזור. אולי יסמן אותך",
+        "effects": [
+          "rel(father) += 5",
+          "rel(coach) -= 6",
+          "flag(father_pressure) += 1",
+          "history(father_pressure)"
+        ]
+      },
+      {
+        "id": "friend",
+        "text": "להתחבר דווקא לבן של המאמן",
+        "effects": [
+          "rel(teammate) += 6",
+          "rel(coach) += 4",
+          "morale += 1"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "youth_class_trip",
+    "category": "life",
+    "weight": 10,
+    "once": true,
+    "when": [
+      "stage(youth)",
+      "age <= 17"
+    ],
+    "cast": {
+      "coach": "coach",
+      "friend": "friend"
+    },
+    "variants": [
+      {
+        "title": "הטיול השנתי",
+        "body": "הטיול השנתי של השכבה, שלושה ימים באילת. באותו סוף שבוע יש טורניר נוער ש{coach} קורא לו \"חלון ראווה\"."
+      },
+      {
+        "title": "השכבה נוסעת",
+        "body": "{friend} כבר סידר חדר לשלושה: אתה, הוא, ועוד מישהו שאתה לא מכיר טוב. הטורניר של הנוער באותם ימים."
+      },
+      {
+        "title": "המכתב מבית הספר",
+        "body": "בית הספר שלח טופס הרשמה לטיול. {coach} שלח לוח זמנים של טורניר. שני הדפים מונחים על המיטה."
+      }
+    ],
+    "options": [
+      {
+        "id": "trip",
+        "text": "לנסוע לטיול עם החבר׳ה",
+        "hint": "זיכרון של פעם בחיים",
+        "effects": [
+          "morale += 7",
+          "rel(friend) += 8",
+          "rel(coach) -= 5"
+        ]
+      },
+      {
+        "id": "tournament",
+        "text": "לשחק בטורניר",
+        "default": true,
+        "effects": [
+          "rel(coach) += 5",
+          "rel(friend) -= 4",
+          "fame += 1"
+        ]
+      },
+      {
+        "id": "half",
+        "text": "יום בטיול, ואז אוטובוס לטורניר",
+        "effects": [
+          "fitness -= 10",
+          "morale += 3",
+          "rel(coach) += 1"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "debut_nerves",
+    "category": "pressure",
+    "weight": 14,
+    "once": true,
+    "when": [
+      "age <= 18",
+      "overall >= 40"
+    ],
+    "cast": {
+      "coach": "coach",
+      "vet": "veteran",
+      "mother": "mother"
+    },
+    "variants": [
+      {
+        "title": "ספסל הבוגרים",
+        "body": "{coach} הודיע: בשבת אתה על ספסל הבוגרים. פעם ראשונה. אתה ער כבר שלוש שעות, וזה רק יום רביעי."
+      },
+      {
+        "title": "הבטן",
+        "body": "מאז שהשם שלך הופיע בסגל הבוגרים לא אכלת כמו שצריך. {mother} מבשלת את מה שאתה אוהב, ואתה מזיז את האוכל בצלחת."
+      },
+      {
+        "title": "המילה של הוותיק",
+        "body": "{vet} רואה אותך רועד בחימום של האימון. \"גם אני הקאתי לפני הבכורה. אחר כך שיחקתי חמש מאות משחקים.\""
+      },
+      {
+        "title": "החולצה עם השם",
+        "body": "המחסנאי מראה לך את החולצה שלך לבוגרים, עם השם בגב. הידיים שלך קרות, והוא צוחק: \"אל תדאג, זה לא נדבק.\""
+      }
+    ],
+    "options": [
+      {
+        "id": "routine",
+        "text": "לעשות בדיוק מה שאתה עושה בנוער",
+        "default": true,
+        "effects": [
+          "morale += 3",
+          "form += 1"
+        ]
+      },
+      {
+        "id": "vet",
+        "text": "לבקש מ{vet} לשבת לידך בספסל",
+        "effects": [
+          "rel(vet) += 6",
+          "morale += 4"
+        ]
+      },
+      {
+        "id": "visualize",
+        "text": "לדמיין כל נגיעה עד שתירדם",
+        "hint": "או שלא תירדם",
+        "effects": [
+          "attr(vision) += 1",
+          "fitness -= 5",
+          "morale += 2"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "youth_trial_abroad",
+    "category": "transfer",
+    "weight": 10,
+    "once": true,
+    "when": [
+      "age <= 18",
+      "foreign == 0",
+      "overall >= 42"
+    ],
+    "cast": {
+      "agent": "agent",
+      "mother": "mother",
+      "coach": "coach"
+    },
+    "variants": [
+      {
+        "title": "שבוע מבחן",
+        "body": "אקדמיה בחו״ל מזמינה אותך לשבוע מבחן. בדיוק בשבוע של מבחני המחצית. {mother} מסתכלת על הלוח שנה ושותקת."
+      },
+      {
+        "title": "הכרטיס",
+        "body": "{agent} מניח על השולחן כרטיס טיסה. \"הם משלמים. שבוע אחד, ואתה חוזר עם תשובה. או עם חוזה.\""
+      },
+      {
+        "title": "המאמן לא מרוצה",
+        "body": "{coach} שמע על ההזמנה לחו״ל. \"אם אתה נוסע באמצע העונה, אל תצפה שהמקום יחכה לך.\""
+      }
+    ],
+    "options": [
+      {
+        "id": "go",
+        "text": "לטוס לשבוע מבחן",
+        "hint": "דלת לעולם, באמצע השנה",
+        "effects": [
+          "rel(coach) -= 6",
+          "rel(mother) -= 3",
+          "history(trial_abroad)"
+        ],
+        "chain": [
+          {
+            "after": 2,
+            "event": "trial_week_report"
+          }
+        ]
+      },
+      {
+        "id": "summer",
+        "text": "לבקש לדחות לחופש הגדול",
+        "default": true,
+        "effects": [
+          "rel(agent) -= 2",
+          "rel(mother) += 4",
+          "rel(coach) += 3"
+        ]
+      },
+      {
+        "id": "no",
+        "text": "\"אני לא מוכן לעזוב עכשיו\"",
+        "effects": [
+          "rel(agent) -= 5",
+          "morale += 1",
+          "flag(loyal_club) += 1"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "trial_week_report",
+    "category": "transfer",
+    "weight": 16,
+    "chainOnly": true,
+    "because": "trial_abroad",
+    "cast": {
+      "agent": "agent",
+      "mother": "mother",
+      "coach": "coach"
+    },
+    "variants": [
+      {
+        "title": "התשובה מהאקדמיה",
+        "body": "{agent} מתקשר בחיוך שאפשר לשמוע: \"הם רוצים אותך. חוזה נוער, דירה עם עוד שלושה ילדים, ובית ספר באנגלית.\""
+      },
+      {
+        "title": "שיחה במטבח",
+        "body": "{mother} קוראת את המכתב מהאקדמיה פעמיים. \"אתה בן {age}. אני לא יודעת אם לבכות משמחה או מפחד.\""
+      }
+    ],
+    "options": [
+      {
+        "id": "sign",
+        "text": "לחתום ולעבור",
+        "effects": [
+          "offer(abroad)",
+          "rel(mother) -= 4",
+          "morale += 5"
+        ]
+      },
+      {
+        "id": "wait",
+        "text": "לבקש שנה נוספת בבית",
+        "default": true,
+        "effects": [
+          "rel(mother) += 6",
+          "rel(coach) += 4",
+          "potential += 1"
+        ]
+      },
+      {
+        "id": "family",
+        "text": "לעבור רק אם אמא באה איתך לחודש הראשון",
+        "effects": [
+          "offer(abroad)",
+          "rel(mother) += 4",
+          "money -= 4000"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "senior_initiation_song",
+    "category": "team",
+    "weight": 10,
+    "once": true,
+    "when": [
+      "age <= 19"
+    ],
+    "cast": {
+      "captain": "captain",
+      "mate": "teammate"
+    },
+    "variants": [
+      {
+        "title": "שיר החניכה",
+        "body": "מסורת: כל צעיר שעולה לבוגרים עומד על כיסא בארוחת הצוות ושר. {captain} מקיש בכוס. כולם מסתכלים עליך."
+      },
+      {
+        "title": "הכיסא",
+        "body": "\"עלה על הכיסא, ילד.\" {captain} מחזיק את הטלפון לצלם. {mate} מסמן לך בשקט: \"תבחר שיר שכולם מכירים.\""
+      },
+      {
+        "title": "הופעה במלון",
+        "body": "במלון לפני משחק חוץ מישהו מצא מיקרופון. {captain} מודיע שהערב \"יש הופעה של החדש\". אין לך לאן לברוח."
+      }
+    ],
+    "options": [
+      {
+        "id": "sing",
+        "text": "לשיר בכל הכוח, גם אם זה מזייף",
+        "default": true,
+        "effects": [
+          "rel(teammate) += 5",
+          "rel(captain) += 4",
+          "morale += 3"
+        ]
+      },
+      {
+        "id": "mizrahi",
+        "text": "לבחור שיר מזרחי ולהרים את כל השולחן",
+        "hint": "או שזה מצליח, או שזה מצליח מאוד",
+        "effects": [
+          "rel(teammate) += 8",
+          "fame += 1",
+          "morale += 4"
+        ]
+      },
+      {
+        "id": "refuse",
+        "text": "לסרב בחיוך",
+        "effects": [
+          "rel(captain) -= 5",
+          "morale -= 1"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "youth_teacher_rival_fan",
+    "category": "life",
+    "weight": 8,
+    "once": true,
+    "when": [
+      "stage(youth)"
+    ],
+    "cast": {
+      "mother": "mother"
+    },
+    "variants": [
+      {
+        "title": "המורה להיסטוריה",
+        "body": "המורה להיסטוריה אוהד מושבע של {opp}. מאז שהוא שמע איפה אתה משחק, הוא שואל אותך ראשון בכל שיעור."
+      },
+      {
+        "title": "הציון",
+        "body": "קיבלת ציון נמוך בעבודה. המורה רשם בצד: \"שיהיה בהצלחה בשבת.\" {mother} רוצה לדבר עם המנהלת."
+      },
+      {
+        "title": "הכרטיסים",
+        "body": "המורה להיסטוריה שואל, בקול שכל הכיתה שומעת, אם תוכל להשיג לו כרטיסים למשחק נגד {opp}. ליציע של האורחים."
+      }
+    ],
+    "options": [
+      {
+        "id": "humor",
+        "text": "לענות בהומור ולהביא לו כרטיס",
+        "default": true,
+        "effects": [
+          "morale += 2",
+          "money -= 150",
+          "fame += 1"
+        ]
+      },
+      {
+        "id": "mom",
+        "text": "לתת לאמא לדבר עם המנהלת",
+        "effects": [
+          "rel(mother) += 4",
+          "morale -= 1"
+        ]
+      },
+      {
+        "id": "study",
+        "text": "ללמוד כפול ולסתום לו את הפה בציון",
+        "effects": [
+          "flag(school) += 1",
+          "fitness -= 4",
+          "morale += 3",
+          "history(school_exam)"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "youth_first_salary",
+    "category": "money",
+    "weight": 10,
+    "once": true,
+    "when": [
+      "stage(youth)"
+    ],
+    "cast": {
+      "father": "father",
+      "mother": "mother"
+    },
+    "variants": [
+      {
+        "title": "המשכורת הראשונה",
+        "body": "המשכורת הראשונה מהמועדון נכנסה: אלף וחמש מאות שקל. אתה מסתכל על המספר באפליקציה כמו על תעודת הצטיינות."
+      },
+      {
+        "title": "הכסף הראשון",
+        "body": "תלוש ראשון, עם השם שלך ולוגו של המועדון. {father} מבקש לראות אותו, ומחזיק אותו בשתי ידיים."
+      },
+      {
+        "title": "מה עושים עם זה",
+        "body": "יש לך כסף משלך בפעם הראשונה. {mother} מציעה לפתוח חיסכון. החברים מציעים לפתוח שולחן במסעדה."
+      }
+    ],
+    "options": [
+      {
+        "id": "parents",
+        "text": "לקנות להורים ארוחה במסעדה",
+        "default": true,
+        "effects": [
+          "money -= 600",
+          "rel(father) += 6",
+          "rel(mother) += 6",
+          "morale += 3"
+        ]
+      },
+      {
+        "id": "boots",
+        "text": "לקנות נעליים מקצועיות",
+        "effects": [
+          "money -= 900",
+          "morale += 2",
+          "attr(dribbling) += 1"
+        ]
+      },
+      {
+        "id": "save",
+        "text": "לשים הכל בחיסכון",
+        "effects": [
+          "flag(money_smart) += 1",
+          "rel(mother) += 3"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "youth_ride_problem",
+    "category": "family",
+    "weight": 9,
+    "once": true,
+    "when": [
+      "stage(youth)"
+    ],
+    "cast": {
+      "father": "father",
+      "coach": "coach",
+      "rival": "rival"
+    },
+    "variants": [
+      {
+        "title": "אין מי שיסיע",
+        "body": "{father} התחיל עבודה חדשה במשמרות. מעכשיו אין מי שיסיע אותך לאימונים. האוטובוס לוקח שעה וחצי לכל כיוון."
+      },
+      {
+        "title": "ההצעה של המשפחה",
+        "body": "ההורים של {rival} מציעים להסיע אותך יחד איתו, כל יום. בדרך תשבו שעה ברכב אחד עם המתחרה שלך על העמדה."
+      },
+      {
+        "title": "המאמן מציע",
+        "body": "{coach} גר לא רחוק ומציע לאסוף אותך. \"רק אל תספר לשאר. אני לא נהג של כולם.\""
+      },
+      {
+        "title": "אבא מתנצל",
+        "body": "{father} מתנצל: \"לא אוכל לבוא לאימונים יותר.\" הוא אומר את זה כאילו אכזב אותך במשהו גדול."
+      }
+    ],
+    "options": [
+      {
+        "id": "bus",
+        "text": "לנסוע באוטובוס ולהכין שיעורים בדרך",
+        "default": true,
+        "effects": [
+          "fitness -= 4",
+          "flag(school) += 1",
+          "rel(father) += 3"
+        ]
+      },
+      {
+        "id": "rival",
+        "text": "לנסוע עם {rival}",
+        "hint": "שעה ביום לבד איתו",
+        "effects": [
+          "rel(rival) += 8",
+          "morale += 1"
+        ]
+      },
+      {
+        "id": "coach",
+        "text": "לקבל את ההצעה של המאמן",
+        "effects": [
+          "rel(coach) += 6",
+          "rel(teammate) -= 2"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "youth_coach_laps",
+    "category": "discipline",
+    "weight": 10,
+    "cooldown": 40,
+    "when": [
+      "stage(youth)",
+      "lastResult == -1"
+    ],
+    "cast": {
+      "coach": "coach",
+      "mate": "teammate"
+    },
+    "variants": [
+      {
+        "title": "עשרים הקפות",
+        "body": "אחרי ההפסד מאמן הנוער שולח את כל הקבוצה לעשרים הקפות. {mate} מקלל בשקט. אתה חושב שזה לא הוגן כלפי מי שנתן הכל."
+      },
+      {
+        "title": "עונש קבוצתי",
+        "body": "{coach} מודיע: \"עד שמישהו לא לוקח אחריות על השער השני, כולם רצים.\" כולם מסתכלים על הרצפה."
+      },
+      {
+        "title": "השמש של צהריים",
+        "body": "שתיים בצהריים, שלושים וחמש מעלות, וריצות של מאה מטר עד ש{coach} יגיד די. {mate} כבר חיוור."
+      }
+    ],
+    "options": [
+      {
+        "id": "run",
+        "text": "לרוץ בשקט, בלי להתלונן",
+        "default": true,
+        "effects": [
+          "fitness -= 8",
+          "rel(coach) += 4",
+          "attr(stamina) += 1"
+        ]
+      },
+      {
+        "id": "protest",
+        "text": "להגיד למאמן שזה לא הוגן",
+        "hint": "אמיץ. הוא לא ישכח",
+        "effects": [
+          "rel(coach) -= 6",
+          "rel(teammate) += 6",
+          "flag(defiant) += 1"
+        ]
+      },
+      {
+        "id": "lead",
+        "text": "לרוץ ראשון ולסחוב את {mate}",
+        "effects": [
+          "fitness -= 10",
+          "rel(mate) += 8",
+          "rel(coach) += 3",
+          "history(youth_leader)"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "youth_growth_pains",
+    "category": "injury",
+    "weight": 9,
+    "once": true,
+    "when": [
+      "age <= 17"
+    ],
+    "cast": {
+      "mother": "mother",
+      "coach": "coach"
+    },
+    "variants": [
+      {
+        "title": "כאבי גדילה",
+        "body": "גדלת שבעה סנטימטרים בחצי שנה, והברכיים כואבות בכל ריצה. הרופא אומר \"כאבי גדילה\" כאילו זה משהו קטן."
+      },
+      {
+        "title": "הגוף החדש",
+        "body": "הנעליים קטנות, המכנסיים קצרים, והתיאום נעלם. פתאום אתה נתקל בכדור שפעם היה חלק מהרגל."
+      },
+      {
+        "title": "הרופאה של אמא",
+        "body": "{mother} לקחה אותך לרופאה פרטית. \"חודש בלי קפיצות ובלי ספרינטים.\" {coach} לא אוהב לשמוע את זה."
+      }
+    ],
+    "options": [
+      {
+        "id": "rest",
+        "text": "חודש של מנוחה ופיזיותרפיה",
+        "default": true,
+        "effects": [
+          "fitness += 10",
+          "form -= 2",
+          "rel(mother) += 4",
+          "potential += 1"
+        ]
+      },
+      {
+        "id": "play",
+        "text": "לשחק עם הכאב",
+        "hint": "הגוף עוד גדל",
+        "effects": [
+          "rel(coach) += 4",
+          "fitness -= 10",
+          "potential -= 1"
+        ]
+      },
+      {
+        "id": "technique",
+        "text": "לעבוד על טכניקה בעמידה בזמן ההחלמה",
+        "effects": [
+          "attr(passing) += 1",
+          "fitness += 4"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "youth_viral_goal",
+    "category": "media",
+    "weight": 10,
+    "once": true,
+    "when": [
+      "age <= 18",
+      "lastRating >= 7.5"
+    ],
+    "cast": {
+      "mate": "teammate",
+      "agent": "agent"
+    },
+    "variants": [
+      {
+        "title": "שער ויראלי",
+        "body": "מישהו צילם מהיציע את הגול שלך במשחק הנוער. מאה אלף צפיות בלילה. אתה מתעורר לשלוש מאות הודעות."
+      },
+      {
+        "title": "עוקבים חדשים",
+        "body": "בבוקר היו לך מאתיים עוקבים. בערב יש עשרים אלף. {mate} מבקש שתתייג אותו, כי הוא נתן את המסירה."
+      },
+      {
+        "title": "ההודעות",
+        "body": "סוכנים, אוהדים, ומישהו שמציע \"לנהל לך את הרשתות\". {agent} כותב: \"אל תענה לאף אחד. אני מטפל.\""
+      }
+    ],
+    "options": [
+      {
+        "id": "tag",
+        "text": "לתייג את {mate} ולתת לו קרדיט",
+        "default": true,
+        "effects": [
+          "rel(mate) += 6",
+          "fame += 2"
+        ]
+      },
+      {
+        "id": "ride",
+        "text": "לנצל את הגל ולפרסם עוד",
+        "hint": "המאמן לא אוהב כוכבי רשת בני שבע עשרה",
+        "effects": [
+          "fame += 4",
+          "rel(coach) -= 4",
+          "morale += 2"
+        ]
+      },
+      {
+        "id": "quiet",
+        "text": "להשתיק את הטלפון לשבוע",
+        "effects": [
+          "morale += 1",
+          "rel(agent) += 2"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "youth_older_boys",
+    "category": "team",
+    "weight": 10,
+    "once": true,
+    "when": [
+      "stage(youth)",
+      "age <= 16"
+    ],
+    "cast": {
+      "captain": "captain",
+      "mate": "teammate"
+    },
+    "variants": [
+      {
+        "title": "הגדולים",
+        "body": "השחקנים בני השמונה עשרה בנוער שולחים אותך לאסוף את כל הכדורים אחרי האימון. כל יום. {captain} מחייך ולא עוזר."
+      },
+      {
+        "title": "התיק שנעלם",
+        "body": "התיק שלך נעלם מהחדר. מצאת אותו על הגג של המחסן. {mate} אומר שזה \"מסורת לחדשים\" ושזה יעבור."
+      },
+      {
+        "title": "המושב באוטובוס",
+        "body": "במשחק חוץ ישבת במקום \"של הגדולים\". {captain} מסמן לך לקום, מול כולם."
+      }
+    ],
+    "options": [
+      {
+        "id": "endure",
+        "text": "לבלוע את זה. זה יעבור",
+        "default": true,
+        "effects": [
+          "morale -= 2",
+          "rel(captain) += 3"
+        ]
+      },
+      {
+        "id": "stand",
+        "text": "לסרב מול כולם",
+        "hint": "כבוד או צרות",
+        "effects": [
+          "rel(captain) -= 6",
+          "fame += 1",
+          "morale += 3",
+          "flag(hothead) += 1"
+        ]
+      },
+      {
+        "id": "ally",
+        "text": "להתאחד עם {mate} ושאר החדשים",
+        "effects": [
+          "rel(mate) += 8",
+          "rel(captain) -= 2",
+          "morale += 2"
         ]
       }
     ]

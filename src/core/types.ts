@@ -203,7 +203,14 @@ export interface Career {
   lastMatch?: { absWeek: number; result: number; rating: number; started: boolean; minutes: number };
   /** R&D addition: Hebrew start story line ("סקאוט של אקדמיה..."). */
   startStory?: string;
+  /** R&D addition: this week's matchday decision, made when the week reaches pre-match (startMatch honours it). */
+  prematch?: PrematchDecision | null;
+  /** R&D addition: the current week runs as a quick week (goes straight into the match after events). */
+  quickFlow?: boolean;
 }
+
+/** R&D addition: matchday status of the user, decided before the match. */
+export interface PrematchDecision { absWeek: number; lineup: 'starter' | 'bench' | 'youth' | 'out'; subMinute: number | null; reason: string; firstMatch: boolean }
 
 export interface CareerSeasonRecord { season: number; year: number; clubId: number; leagueId: number; apps: number; goals: number; assists: number; avgRating: number; position: number }
 
@@ -230,6 +237,8 @@ export interface Negotiation {
   currentOffer: { wage: number; role: SquadRole; years: number; releaseClause: number | null };
   log: string[];
   status: 'open' | 'signed' | 'walked_away';
+  /** R&D addition: true when currentOffer is the club's last offer (after round 3): only accept or walk away. */
+  final?: boolean;
   /** R&D addition: the phase to return to when the negotiation closes. */
   returnPhase?: GamePhase;
 }
@@ -309,6 +318,8 @@ export interface LiveMatch {
   finished?: boolean;
   /** R&D addition: youth-team (U19) match. The user was not in the senior matchday squad; result does not touch the league table or senior stats. */
   youth?: boolean;
+  /** R&D addition: the user's first career match (exactly 3 moments, a gentle first one, one scoring chance). */
+  firstMatch?: boolean;
 }
 
 // ---------------------------------------------------------------- the world
@@ -353,6 +364,8 @@ export interface WeekReport {
   openLoops: string[]; // "מה מחכה לך" items
   nearGoals: { text: string; progress: number; target: number }[];
   notable: boolean; // true -> show "world reacts" screen
+  /** R&D addition: Hebrew line shown under "מה השתפר" when no attribute moved by 0.1 or more. */
+  gainsNote?: string;
 }
 
 // ---------------------------------------------------------------- view snapshot sent to UI
@@ -394,6 +407,8 @@ export interface View {
   leagueZones?: { promote: number; relegate: number; champion?: number };
   /** R&D addition: user settings. */
   settings?: { autoMoments: boolean };
+  /** R&D addition: the user's matchday status for this week, present in the prematch phase. */
+  prematch?: { lineup: 'starter' | 'bench' | 'youth' | 'out'; reason: string; subMinute: number | null };
 }
 
 // ---------------------------------------------------------------- commands (UI -> core)

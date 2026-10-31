@@ -1,5 +1,6 @@
 import { act, busy, view } from '../../app/store';
 import { ROLE_HE, weekLabel } from '../i18n';
+import { vx, type PrematchInfo } from '../viewExtras';
 import { Crest } from '../components/Crest';
 import { TapedCard } from '../components/TapedCard';
 import { Bar } from '../components/Bars';
@@ -11,7 +12,19 @@ export function PreMatchScreen() {
   const club = v.club;
   if (!fx || !club) return <main class="screen" />;
   const role = v.player.contract?.role ?? 'prospect';
-  const starter = v.live ? v.live.started : role === 'star' || role === 'starter' || v.player.form >= 0;
+  // The engine decides the line-up on entering prematch; older engines don't send it, so guess as before.
+  const pm: PrematchInfo = vx(v).prematch ?? {
+    lineup: (v.live ? v.live.started : role === 'star' || role === 'starter' || v.player.form >= 0) ? 'starter' : 'bench',
+    reason: '',
+  };
+  const youth = pm.lineup === 'youth';
+  const LINEUP: Record<PrematchInfo['lineup'], { title: string; stamp: string; tone: string; note: string }> = {
+    starter: { title: 'פותח בהרכב', stamp: 'בהרכב', tone: 'ok', note: 'אתה פותח. תראה לי מה יש לך' },
+    bench: { title: 'על הספסל', stamp: 'ספסל', tone: '', note: pm.subMinute ? `תיכנס בדקה ${pm.subMinute}. תהיה מוכן` : 'תהיה מוכן. אולי תקבל דקות' },
+    youth: { title: 'משחק בנוער', stamp: 'U19', tone: 'blue', note: 'תוכיח את עצמך בנוער' },
+    out: { title: 'לא בסגל', stamp: 'בחוץ', tone: '', note: 'השבוע אתה צופה מהיציע' },
+  };
+  const L = LINEUP[pm.lineup];
   const rain = v.live?.weather === 'rain';
   const hostile = !fx.home && (fx.derby || fx.opp.reputation > (club.reputation ?? 50));
   const rivalHere = v.rival && v.rival.clubId === fx.opp.id;
@@ -22,6 +35,7 @@ export function PreMatchScreen() {
     <main class="screen has-actions prematch-screen">
       <div class="event-top">
         <span class="chip chip-orange">יום משחק</span>
+        {youth && <span class="chip chip-blue">U19 · משחק נוער</span>}
         <span class="wall-label">{weekLabel(v)}</span>
       </div>
 
@@ -29,7 +43,7 @@ export function PreMatchScreen() {
         {[home, away].map((c, i) => (
           <div key={c.id} class={`mu-team ${c.id === club.id ? 'mine' : ''}`}>
             <Crest spec={c.crest} colors={c.colors} name={c.name} short={c.short} size={84} />
-            <span class="mu-name">{c.name}</span>
+            <span class="mu-name">{c.name}{youth && <small class="youth-suffix"> נוער</small>}</span>
             <span class="mu-tag">{i === 0 ? 'בית' : 'חוץ'}</span>
           </div>
         ))}
@@ -49,12 +63,13 @@ export function PreMatchScreen() {
         <div class="lineup-row">
           <div>
             <span class="label">ההרכב של המאמן</span>
-            <div class="lineup-status">{starter ? 'פותח בהרכב' : 'על הספסל'}</div>
+            <div class="lineup-status">{L.title}</div>
             <div class="muted">תפקיד בחוזה: {ROLE_HE[role]}</div>
           </div>
-          <span class={`stamp-rect ${starter ? 'ok' : ''}`}>{starter ? 'בהרכב' : 'ספסל'}</span>
+          <span class={`stamp-rect ${L.tone}`}>{L.stamp}</span>
         </div>
-        <p class="hand marker-red coach-line">{starter ? 'אתה פותח. תראה לי מה יש לך' : 'תיכנס בדקה 60. תהיה מוכן'}</p>
+        {pm.reason && <p class="lineup-reason">{pm.reason}</p>}
+        <p class="hand marker-red coach-line">{L.note}</p>
         <div class="meter-row">
           <span class="meter-label">כושר</span>
           <Bar value={v.player.fitness} color={v.player.fitness < 50 ? 'red' : 'green'} />
@@ -67,7 +82,7 @@ export function PreMatchScreen() {
 
       <div class="action-bar">
         <button class="btn btn-primary" type="button" disabled={busy.value} onClick={() => act({ type: 'startMatch' })}>
-          <IconWhistle size={22} /> צא למגרש
+          <IconWhistle size={22} /> {pm.lineup === 'out' ? 'לסמלץ את השבת' : youth ? 'למשחק הנוער' : 'צא למגרש'}
         </button>
       </div>
     </main>

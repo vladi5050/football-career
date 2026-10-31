@@ -1,16 +1,19 @@
 // Match simulation: 18 segments of 5 minutes. Same goal model for every sim level so averages match.
 // Full (user match, stepped via LiveMatch + key moments), medium (scorers + stats), result (score only).
 import type {
-  Club, ContextMods, Fixture, Footballer, LiveMatch, MatchHighlight, MomentKind, MomentResult, MomentSpec, Position, World,
+  Club, ContextMods, Fixture, PrematchDecision, Footballer, LiveMatch, MatchHighlight, MomentKind, MomentResult, MomentSpec, Position, World,
 } from './types';
 import type { Rng } from './rng';
 import {
-  POS_HE, changeRelation, clamp, firstName, overallOf, ovr, posGroup, pushHistory, relationOf, userPlayer,
+  POS_HE, changeRelation, clamp, firstName, overallOf, ovr, posGroup, pushHistory, relationOf, userPlayer, pre,
 } from './helpers';
 import { STARTER_SLOTS } from './worldGen';
 import { fixtureFor, tablePosition } from './schedule';
 
 // ------------------------------------------------------------------ tuning
+/** Rating every player starts a match on. */
+export const RATING_START = 6.4;
+
 export const MATCH_TUNING = {
   base: 1.25, // expected goals per team, equal sides, neutral
   home: 1.22,
@@ -34,6 +37,7 @@ export function selectionScore(world: World, p: Footballer, c: Club, pos: Positi
     s += role === 'star' ? 4 : role === 'starter' ? 2 : role === 'rotation' ? 0 : role === 'prospect' ? -1.5 : -3;
     if (coach?.traits.includes('prefers_youth') && p.age < 21) s += 2;
     s += (p.morale - 60) / 20;
+    s -= youthSelectionPenalty(p.age);
   }
   return s;
 }
@@ -332,43 +336,85 @@ export function isUserOnPitch(live: LiveMatch): boolean {
   return false;
 }
 
-export interface StartOptions { forceStart?: boolean }
+export type LineupStatus = PrematchDecision['lineup'];
+export type LineupDecision = PrematchDecision;
 
-/** Build the live match for the user's club this week. Returns null if no fixture. */
-export function startLiveMatch(world: World, rng: Rng): LiveMatch | null {
+/** True until the user has played his first match of the career (senior or youth). */
+export function isFirstCareerMatch(world: World): boolean {
+  const u = userPlayer(world);
+  return !(world.history.flags.first_match_done ?? 0) && u.careerStats.apps === 0 && !(world.history.flags.youth_apps ?? 0);
+}
+
+/** Youth penalty in the coach's eyes: a 15-16 year old is mostly a U19 player. */
+export function youthSelectionPenalty(age: number): number {
+  return age <= 15 ? 13 : age === 16 ? 10 : age === 17 ? 5 : age === 18 ? 1.5 : 0;
+}
+
+/** Decide the user's matchday status for this week's fixture. Called when the week reaches pre-match; startLiveMatch honours it. */
+export function decideLineup(world: World, rng: Rng): LineupDecision | null {
   const user = userPlayer(world);
   if (user.clubId == null) return null;
   const f = fixtureFor(world, user.clubId, world.season.week);
   if (!f || f.played) return null;
+  const c = world.clubs[user.clubId];
+  const coach = world.people[c.managerId];
+  const first = isFirstCareerMatch(world);
+  const mk = (lineup: LineupStatus, subMinute: number | null, reason: string): LineupDecision => ({ absWeek: world.absWeek, lineup, subMinute, reason, firstMatch: first });
+  if (user.injury) return mk('out', null, `אתה פצוע (${user.injury.kind}). השבוע אתה ביציע.`);
+  const xi = selectXI(world, user.clubId);
+  const started = xi.xi.includes(user.id);
+  if (started) {
+    const reasons = first
+      ? ['המשחק הראשון שלך בבוגרים. תהנה, ותשחק פשוט.']
+      : user.contract?.role === 'star' || user.contract?.role === 'starter'
+        ? ['אתה בהרכב. תן לי 90 דקות כמו שאתה יודע.', 'פותח, כרגיל. אני סומך עליך.']
+        : user.form > 3 ? ['אתה בהרכב. הכושר שלך לא השאיר לי ברירה.'] : ['אתה פותח היום. זאת ההזדמנות שלך.'];
+    return mk('starter', null, rng.pick(reasons));
+  }
+  let p = 0.32 + relationOf(coach, user.id) / 250 + (user.form > 3 ? 0.08 : 0);
+  if (user.contract?.role === 'prospect' && coach?.traits.includes('prefers_youth')) p += 0.12;
+  if (user.contract?.role === 'rotation') p += 0.15;
+  if (user.fitness < 40) p -= 0.2;
+  // a senior debut at 15-17 is rare
+  p *= user.age <= 16 ? 0.15 : user.age === 17 ? 0.5 : 1;
+  // the first career match is a youth match unless he starts (3 key moments, a gentle start)
+  if (!first && rng.chance(clamp(p, 0.02, 0.85))) {
+    const subMinute = rng.int(56, 75);
+    const senior = user.careerStats.apps > 0;
+    return mk('bench', subMinute, senior ? 'מתחיל על הספסל. תיכנס בחצי השני, תראה לי מה יש לך.' : 'על הספסל של הבוגרים. אם תיכנס, זאת תהיה הבכורה שלך.');
+  }
+  if (user.age <= 18) return mk('youth', null, first ? 'המשחק הראשון שלך במדים. בנוער, מול קהל קטן. תתחיל בשקט.' : 'לא בסגל הבוגר השבוע. תשחק בנוער ותראה לי משהו.');
+  return mk('out', null, user.fitness < 40 ? 'אתה גמור פיזית. השבוע אתה נח.' : 'לא נכנסת לסגל. תעבוד קשה באימונים.');
+}
+
+/** Build the live match for the user's club this week. Returns null if no fixture. Honours a pre-match lineup decision. */
+export function startLiveMatch(world: World, rng: Rng, decision?: LineupDecision | null): LiveMatch | null {
+  const user = userPlayer(world);
+  if (user.clubId == null) return null;
+  const f = fixtureFor(world, user.clubId, world.season.week);
+  if (!f || f.played) return null;
+  const dec = decision && decision.absWeek === world.absWeek ? decision : decideLineup(world, rng);
+  if (!dec) return null;
   const userClub = world.clubs[user.clubId];
   const isHome = f.home === user.clubId;
   const oppId = isHome ? f.away : f.home;
   const opp = world.clubs[oppId];
-  const xi = selectXI(world, user.clubId);
-  const started = !user.injury && xi.xi.includes(user.id);
-  let subMinute: number | null = null;
-  if (!started && !user.injury) {
-    const coach = world.people[userClub.managerId];
-    let p = 0.32 + relationOf(coach, user.id) / 250 + (user.form > 3 ? 0.08 : 0);
-    if (user.contract?.role === 'prospect' && coach?.traits.includes('prefers_youth')) p += 0.12;
-    if (user.contract?.role === 'rotation') p += 0.15;
-    if (user.fitness < 40) p -= 0.2;
-    if (rng.chance(clamp(p, 0.05, 0.85))) subMinute = rng.int(56, 78);
-  }
+  const started = dec.lineup === 'starter';
+  const subMinute = dec.lineup === 'bench' ? dec.subMinute ?? 65 : null;
   const derby = userClub.rivalClubId === oppId || opp.rivalClubId === userClub.id;
-  // not in the senior matchday squad at 18 or younger: he plays for the youth team
-  const youth = !started && subMinute == null && !user.injury && user.age <= 18;
+  const youth = dec.lineup === 'youth';
   const weatherRoll = rng.next();
   const weather: LiveMatch['weather'] = weatherRoll < 0.15 ? 'rain' : weatherRoll < 0.25 ? 'wind' : 'clear';
   const live: LiveMatch = {
     fixture: f, leagueId: userClub.leagueId, userClubId: userClub.id, oppClubId: oppId, isHome, segment: 0, score: [0, 0],
-    moments: [], pendingMomentIndex: 0, highlights: [], userRating: 6.0, userMinutes: 0, userGoals: 0, userAssists: 0,
+    moments: [], pendingMomentIndex: 0, highlights: [], userRating: RATING_START, userMinutes: 0, userGoals: 0, userAssists: 0,
     weather, started: started || youth, derby, subMinute, finished: false,
   };
+  if (dec.firstMatch) live.firstMatch = true;
   if (youth) {
     live.youth = true;
     live.fixture = { week: f.week, home: f.home, away: f.away, played: false, hg: 0, ag: 0, scorers: [] };
-    live.highlights.push({ minute: 0, kind: 'moment', text: 'לא נכנסת לסגל הבוגר. היום אתה משחק בנוער' });
+    live.highlights.push({ minute: 0, kind: 'moment', text: 'משחק נוער. הבוגרים משחקים בלעדיך היום' });
   }
   if (subMinute != null) live.highlights.push({ minute: subMinute, kind: 'sub', text: `${firstName(user.name)} נכנס מהספסל בדקה ${subMinute}` });
   if (live.started || subMinute != null) planMoments(world, live, rng);
@@ -381,15 +427,16 @@ function planMoments(world: World, live: LiveMatch, rng: Rng): void {
   const startSeg = live.started ? 0 : Math.floor((live.subMinute ?? 60) / 5) + 1;
   const segsAvail = 18 - startSeg;
   let n: number;
-  if (live.youth) n = rng.int(3, 4);
+  if (live.firstMatch) n = 3;
+  else if (live.youth) n = rng.int(3, 4);
   else if (live.started) {
     n = rng.int(3, 4);
     const posU = tablePosition(world, live.userClubId), posO = tablePosition(world, live.oppClubId);
     if (live.derby || rivalOpp || (posU <= 3 && posO <= 3)) n++;
     if (user.attr.vision > 70 && rng.chance(0.3)) n++;
     n = Math.min(5, n);
-  } else n = segsAvail >= 5 ? rng.int(1, 2) : 1;
-  n = Math.min(n, segsAvail);
+  } else n = segsAvail >= 5 ? rng.int(2, 3) : 2;
+  n = Math.min(n, Math.max(2, segsAvail));
   const segs = new Set<number>();
   let guard = 0;
   while (segs.size < n && guard++ < 100) {
@@ -409,6 +456,12 @@ function planMoments(world: World, live: LiveMatch, rng: Rng): void {
       scoreBefore: [0, 0], stakes: '',
     });
   });
+  // first career match: one moment is always a scoring chance
+  if (live.firstMatch && user.pos !== 'GK' && live.moments.length && !live.moments.some((m) => SCORING.has(m.kind))) {
+    const last = live.moments[live.moments.length - 1];
+    last.kind = posGroup(user.pos) === 'DEF' ? 'header' : 'shot';
+    last.attackerSkill = SKILL_FOR[last.kind](user);
+  }
   // pre-pick opponents so the UI can show names on the timeline
   for (const m of live.moments) pickOpponent(world, live, m, rng);
 }
@@ -461,6 +514,7 @@ function refreshPending(world: World, live: LiveMatch): void {
   if (ctx.rain) d += 0.03;
   if (ctx.derby) d += 0.03;
   if (user.fitness < 50) d += 0.05;
+  if (live.firstMatch && live.pendingMomentIndex === 0) d -= 0.18; // a quiet tutorial moment
   m.difficulty = Math.round(clamp(d, 0.08, 0.95) * 100) / 100;
   const bits = [`דקה ${m.minute}, ${us}-${them}`];
   if (ctx.rivalInvolved) bits.push(`${firstName(opp!.name)} מולך`);
@@ -497,7 +551,7 @@ function bgHighlight(world: World, live: LiveMatch, side: 0 | 1, minute: number,
       else live.userRating -= g === 'DEF' || g === 'GK' ? 0.25 : 0.06;
     }
   } else if (xg > 0.25) {
-    live.highlights.push({ minute, kind: 'chance', text: `הזדמנות ל${c.name}` });
+    live.highlights.push({ minute, kind: 'chance', text: `הזדמנות ${pre('ל', c.name)}` });
   }
 }
 
@@ -562,7 +616,7 @@ export function applyMomentResult(world: World, live: LiveMatch, result: MomentR
       live.highlights.push({ minute: m.minute, kind: 'moment', text: `${KIND_HE[m.kind]} מוצלח של ${firstName(user.name)}` });
     }
   } else {
-    live.userRating -= 0.3;
+    live.userRating -= 0.22;
     user.morale = clamp(user.morale - 1, 0, 100);
     if (o.concedeOnFail > 0 && rng.chance(o.concedeOnFail)) {
       eff.goalAgainst = true;
@@ -637,7 +691,7 @@ export function finalizeLive(world: World, live: LiveMatch, rng: Rng): number | 
     const g = posGroup(user.pos);
     if (them === 0 && (g === 'DEF' || g === 'GK')) r += 0.5;
     r += rng.normal(0, 0.25);
-    if (!live.started) r = 6 + (r - 6) * 0.8;
+    if (!live.started) r = RATING_START + (r - RATING_START) * 0.8;
     live.userRating = Math.round(clamp(r, 4, 10) * 10) / 10;
     addApp(user, live.userRating, live.userGoals, live.userAssists, them === 0 && (g === 'DEF' || g === 'GK'));
     user.fitness = clamp(user.fitness - Math.round(live.userMinutes / 90 * (16 - user.attr.stamina / 12)), 0, 100);

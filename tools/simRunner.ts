@@ -8,6 +8,7 @@ import type { Content } from '../src/core/content';
 import type { Command, Footballer, Position, SquadRole, TransferOffer, World } from '../src/core/types';
 import { normalizeContent } from '../src/core/contentLoad';
 import { apply, newGame } from '../src/core/game';
+import { autoOptionId } from '../src/core/events';
 import { makeRng, seedState, type Rng } from '../src/core/rng';
 import { avg, ovr } from '../src/core/helpers';
 import { sortedTable, windowName } from '../src/core/schedule';
@@ -106,7 +107,9 @@ export function runCareer(content: Content, seed: number, maxSeasons: number, ag
     track();
     const u = world.people[world.career.playerId] as Footballer;
     switch (world.phase) {
-      case 'plan': case 'event': run({ type: 'quickWeek' }); break;
+      case 'plan': run({ type: 'quickWeek' }); break;
+      // a major decision quick week will not take: the human picks the default
+      case 'event': run({ type: 'resolveEvent', uid: world.inbox[0].uid, optionId: autoOptionId(content, world.inbox[0]) }); break;
       case 'prematch': run({ type: 'startMatch' }); break;
       case 'match': run({ type: 'simRestOfMatch' }); break;
       case 'postmatch':

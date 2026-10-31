@@ -42,7 +42,7 @@ export function SettingsScreen() {
   };
 
   return (
-    <main class={`screen settings-screen ${v?.phase === 'plan' ? 'has-nav' : ''}`}>
+    <main class={`screen settings-screen ${v?.phase === 'plan' || v?.phase === 'offseason' ? 'has-nav' : ''}`}>
       <TopBar v={null} title="הגדרות" sub="נשמר רק במכשיר הזה" onBack={() => navigate(v ? 'more' : 'title')} right={<span />} />
 
       <section class="paper settings-group">
@@ -50,7 +50,7 @@ export function SettingsScreen() {
         <Toggle
           label="סמלץ רגעי מפתח אוטומטית"
           sub="המשחק ירוץ בלי לעצור לרגעים. אפשר תמיד לשנות"
-          on={s.autoMoments}
+          on={v?.settings?.autoMoments ?? s.autoMoments}
           onChange={(val) => {
             setUiSetting('autoMoments', val);
             if (v) void act({ type: 'setAutoMoments', value: val });

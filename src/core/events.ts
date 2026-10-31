@@ -201,6 +201,8 @@ export function makeEnv(world: World, cast: Record<string, number>): EvalEnv {
         case 'lastResult': return world.career.lastMatch?.result ?? 0;
         case 'lastRating': return world.career.lastMatch?.rating ?? 0;
         case 'goalsSeason': return user.stats.goals;
+        case 'rivalScoredLast': return world.history.flags.rival_scored_last ?? 0;
+        case 'rivalGoalsSeason': { const r = world.people[world.career.rivalId] as Footballer | undefined; return r && !r.retired ? r.stats.goals : 0; }
         case 'window': return isWindowOpen(world) ? 1 : 0;
         case 'derbyNext': {
           const c = userClub(world);
@@ -349,7 +351,9 @@ export function fillText(world: World, text: string, cast: Record<string, number
       if (pid != null) return world.people[pid].name;
     }
     return all;
-  });
+  })
+    // a lone prefix letter before a number or a non-Hebrew word takes a maqaf ("ב-3", "ל-7,400")
+    .replace(/(^|[\s(])([בלמהו])(?=[0-9₪A-Za-z])/g, '$1$2-');
 }
 
 export function becauseLine(world: World, tag: string | undefined): string | null {

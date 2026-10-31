@@ -19,7 +19,7 @@ export function BottomNav() {
         return (
           <button key={route} type="button" aria-current={active ? 'page' : undefined} onClick={() => navigate(route)}>
             <Icon />
-            <span>{label}</span>
+            <span>{route === 'week' && view.value?.phase === 'offseason' ? 'קיץ' : label}</span>
             {route === 'agent' && offers > 0 && <span class="badge num">{offers}</span>}
           </button>
         );

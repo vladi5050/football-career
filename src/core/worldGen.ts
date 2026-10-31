@@ -5,7 +5,7 @@ import type {
   TraitId, World,
 } from './types';
 import { makeRng, hashString, seedState, type Rng } from './rng';
-import { ATTR_KEYS, POS_WEIGHTS, clamp, overallOf, changeRelation } from './helpers';
+import { ATTR_KEYS, POS_WEIGHTS, clamp, overallOf, changeRelation, pre } from './helpers';
 import { wageFor } from './wages';
 
 export const SAVE_VERSION = 2;
@@ -348,18 +348,18 @@ function startStory(rng: Rng, kind: Career['startKind'], clubName: string, count
   if (kind === 'israel') {
     return rng.pick([
       `מאמן הנוער של ${clubName} ראה אותך בטורניר שכונות ולא הפסיק להתקשר. ${posHe[pos]} בן 16, והחלום מתחיל כאן.`,
-      `אבא שלך הסיע אותך לכל מבחן בארץ. ב${clubName} אמרו כן. עכשיו צריך להוכיח.`,
-      `שיחה אחת מ${clubName} ופתאום אתה בסגל הנוער. בשכונה כבר מדברים עליך.`,
+      `אבא שלך הסיע אותך לכל מבחן בארץ. ${pre('ב', clubName)} אמרו כן. עכשיו צריך להוכיח.`,
+      `שיחה אחת ${pre('מ', clubName)} ופתאום אתה בסגל הנוער. בשכונה כבר מדברים עליך.`,
     ]);
   }
   if (kind === 'foreign_academy') {
     return rng.pick([
-      `סקאוט של ${clubName} ראה אותך בטורניר בנתניה. שבוע אחרי זה כבר היית על מטוס ל${country}.`,
-      `האקדמיה של ${clubName} ב${country} הציעה לך מקום. חדר קטן, שפה חדשה, והרבה געגועים.`,
+      `סקאוט של ${clubName} ראה אותך בטורניר בנתניה. שבוע אחרי זה כבר היית על מטוס ${pre('ל', country)}.`,
+      `האקדמיה של ${clubName} ${pre('ב', country)} הציעה לך מקום. חדר קטן, שפה חדשה, והרבה געגועים.`,
     ]);
   }
   return rng.pick([
-    `גדלת ב${country} במשפחה ישראלית. ${clubName} המקומית צירפה אותך לנוער, ובבית עדיין מדברים עברית.`,
+    `גדלת ${pre('ב', country)} במשפחה ישראלית. ${clubName} המקומית צירפה אותך לנוער, ובבית עדיין מדברים עברית.`,
     `בבית מדברים עברית, במגרש מדברים בשפה של ${country}. ${clubName} רוצה אותך בנוער.`,
   ]);
 }

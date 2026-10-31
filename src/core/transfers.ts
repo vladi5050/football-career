@@ -2,7 +2,7 @@
 import type { Content } from './content';
 import type { Club, Footballer, League, SquadRole, TransferOffer, World } from './types';
 import type { Rng } from './rng';
-import { addNews, avg, changeRelation, clamp, fmtMoney, ovr, pushHistory, userClub, userPlayer } from './helpers';
+import { addNews, avg, changeRelation, clamp, fmtMoney, ovr, pushHistory, userClub, userPlayer, pre } from './helpers';
 import { isWindowOpen, sortedTable } from './schedule';
 import { clubLevel, makePerson } from './worldGen';
 import { clubViewRole, marketWage, playerValue } from './negotiation';
@@ -164,11 +164,11 @@ export function npcTransfers(world: World, content: Content, rng: Rng): string[]
     best.clubId = buyer.id;
     buyer.budget -= Math.round(fee * 0.2);
     seller.budget += Math.round(fee * 0.2);
-    const line = `${buyer.name} החתימה את ${best.name} מ${seller.name}`;
+    const line = `${buyer.name} החתימה את ${best.name} ${pre('מ', seller.name)}`;
     if (best.id === world.career.rivalId) {
-      lines.unshift(`המתחרה שלך ${best.name} עבר ל${buyer.name}`);
-      pushHistory(world, 'rival_moved', `${best.name} עבר ל${buyer.name}`);
-      addNews(world, { kind: 'rival', headline: `${best.name} עובר ל${buyer.name}` });
+      lines.unshift(`המתחרה שלך ${best.name} עבר ${pre('ל', buyer.name)}`);
+      pushHistory(world, 'rival_moved', `${best.name} עבר ${pre('ל', buyer.name)}`);
+      addNews(world, { kind: 'rival', headline: `${best.name} עובר ${pre('ל', buyer.name)}` });
     } else if (buyer.leagueId === userClub(world)?.leagueId || seller.leagueId === userClub(world)?.leagueId) {
       lines.push(line);
       if (fee > 0) addNews(world, { kind: 'transfer', headline: line, body: `לפי הדיווחים: ${fmtMoney(fee)}` });

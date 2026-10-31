@@ -4,7 +4,7 @@
       "scenario": "setup",
       "step": "vite build",
       "ok": true,
-      "ms": 4151,
+      "ms": 3664,
       "detail": ""
     },
     {
@@ -18,22 +18,22 @@
       "scenario": "a-first-kick#1",
       "step": "open page -> title",
       "ok": true,
-      "ms": 470,
-      "detail": "470ms"
+      "ms": 448,
+      "detail": "448ms"
     },
     {
       "scenario": "a-first-kick#1",
       "step": "title -> new career -> reveal -> week",
       "ok": true,
-      "ms": 1459,
-      "detail": "3 taps, 1929ms"
+      "ms": 1307,
+      "detail": "3 taps, 1755ms"
     },
     {
       "scenario": "a-first-kick#1",
       "step": "quick week -> first key moment",
       "ok": true,
-      "ms": 9518,
-      "detail": "5 taps, 11.2s total, path prematch>match, lineup \"פותח בהרכב\", moment at 87'"
+      "ms": 5220,
+      "detail": "5 taps, 6.8s total, path prematch>match, lineup \"פותח בהרכב\", moment at 45'"
     },
     {
       "scenario": "a-first-kick#1",
@@ -45,53 +45,53 @@
     {
       "scenario": "a-first-kick#1",
       "step": "PRD: first match has 3 key moments",
-      "ok": false,
-      "ms": 554,
-      "detail": "first match had 1 key moment(s); PRD §5.5 says 3 (pre-match: \"פותח בהרכב\", first moment at 87', feed: 78'שער! ויקטור דפוי (ספורטינג) / 76'שער! ספן וואוטרס (רויאל) / 66'דניאל נכנס מהספסל בדקה 66 / 52'שער! טיס פנספרנגה (ספורטינג) / 38'שער! ליאנדר מרשאל (רויאל))"
-    },
-    {
-      "scenario": "a-first-kick#1",
-      "step": "no page/console errors",
       "ok": true,
-      "ms": 0,
-      "detail": ""
-    },
-    {
-      "scenario": "a-first-kick#2",
-      "step": "open page -> title",
-      "ok": true,
-      "ms": 460,
-      "detail": "460ms"
-    },
-    {
-      "scenario": "a-first-kick#2",
-      "step": "title -> new career -> reveal -> week",
-      "ok": true,
-      "ms": 1236,
-      "detail": "3 taps, 1698ms"
-    },
-    {
-      "scenario": "a-first-kick#2",
-      "step": "quick week -> first key moment",
-      "ok": true,
-      "ms": 4397,
-      "detail": "5 taps, 5.9s total, path prematch>match, lineup \"פותח בהרכב\", moment at 36'"
-    },
-    {
-      "scenario": "a-first-kick#2",
-      "step": "PRD: quick week skips pre-match",
-      "ok": false,
-      "ms": 0,
-      "detail": "quick week went through pre-match (prematch>match); PRD §7 says it skips pre-match"
-    },
-    {
-      "scenario": "a-first-kick#2",
-      "step": "PRD: first match has 3 key moments",
-      "ok": true,
-      "ms": 6649,
+      "ms": 5785,
       "detail": "3 moments"
     },
     {
+      "scenario": "a-first-kick#1",
+      "step": "no page/console errors",
+      "ok": true,
+      "ms": 0,
+      "detail": ""
+    },
+    {
+      "scenario": "a-first-kick#2",
+      "step": "open page -> title",
+      "ok": true,
+      "ms": 420,
+      "detail": "420ms"
+    },
+    {
+      "scenario": "a-first-kick#2",
+      "step": "title -> new career -> reveal -> week",
+      "ok": true,
+      "ms": 1290,
+      "detail": "3 taps, 1710ms"
+    },
+    {
+      "scenario": "a-first-kick#2",
+      "step": "quick week -> first key moment",
+      "ok": true,
+      "ms": 8249,
+      "detail": "5 taps, 9.8s total, path prematch>match, lineup \"פותח בהרכב\", moment at 75'"
+    },
+    {
+      "scenario": "a-first-kick#2",
+      "step": "PRD: quick week skips pre-match",
+      "ok": false,
+      "ms": 0,
+      "detail": "quick week went through pre-match (prematch>match); PRD §7 says it skips pre-match"
+    },
+    {
+      "scenario": "a-first-kick#2",
+      "step": "PRD: first match has 3 key moments",
+      "ok": false,
+      "ms": 2311,
+      "detail": "first match had 2 key moment(s); PRD §5.5 says 3 (pre-match: \"פותח בהרכב\", first moment at 75', feed: 66'שער! טומאש קאמפוש (האוטלנד) / 59'איתי נכנס מהספסל בדקה 59 / 33'שער! טים ואן דייק (הארלמסה) / 30'שער! ייסה דה הס (האוטלנד))"
+    },
+    {
       "scenario": "a-first-kick#2",
       "step": "no page/console errors",
       "ok": true,
@@ -102,22 +102,22 @@
       "scenario": "a-first-kick#3",
       "step": "open page -> title",
       "ok": true,
-      "ms": 446,
-      "detail": "446ms"
+      "ms": 439,
+      "detail": "439ms"
     },
     {
       "scenario": "a-first-kick#3",
       "step": "title -> new career -> reveal -> week",
       "ok": true,
-      "ms": 1268,
-      "detail": "3 taps, 1714ms"
+      "ms": 1185,
+      "detail": "3 taps, 1624ms"
     },
     {
       "scenario": "a-first-kick#3",
       "step": "quick week -> first key moment",
       "ok": true,
-      "ms": 1325,
-      "detail": "5 taps, 2.8s total, path prematch>match, lineup \"פותח בהרכב\", moment at 5'"
+      "ms": 1406,
+      "detail": "5 taps, 2.9s total, path prematch>match, lineup \"פותח בהרכב\", moment at 6'"
     },
     {
       "scenario": "a-first-kick#3",
@@ -130,7 +130,7 @@
       "scenario": "a-first-kick#3",
       "step": "PRD: first match has 3 key moments",
       "ok": true,
-      "ms": 10209,
+      "ms": 10361,
       "detail": "4 moments"
     },
     {
@@ -144,8 +144,8 @@
       "scenario": "b-season",
       "step": "new career",
       "ok": true,
-      "ms": 5009,
-      "detail": "עירוני הגבול"
+      "ms": 4919,
+      "detail": "בני הכנרת"
     },
     {
       "scenario": "d-save-continue",
@@ -158,21 +158,21 @@
       "scenario": "d-save-continue",
       "step": "reload -> title shows continue with same club/week",
       "ok": true,
-      "ms": 290,
-      "detail": "אורי לוי · עירוני הגבול · שבוע 6"
+      "ms": 362,
+      "detail": "יואב אזולאי · בני הכנרת · שבוע 6"
     },
     {
       "scenario": "d-save-continue",
       "step": "continue -> same week/club/money",
       "ok": true,
-      "ms": 486,
-      "detail": "266ms"
+      "ms": 439,
+      "detail": "254ms"
     },
     {
       "scenario": "d-save-continue",
       "step": "reload mid-week (after closing the plan) keeps the phase",
       "ok": false,
-      "ms": 2044,
+      "ms": 2020,
       "detail": "was on \"prematch\" before reload, continue landed on \"week\" (progress lost)"
     },
     {
@@ -180,7 +180,7 @@
       "step": "season played to the end (38 weeks)",
       "ok": true,
       "ms": 0,
-      "detail": "events 17, matches 22, moments played 8, quick 19, planned 19"
+      "detail": "events 16, matches 30, moments played 10, quick 19, planned 19"
     },
     {
       "scenario": "b-season",
@@ -194,14 +194,14 @@
       "step": "league table updates",
       "ok": true,
       "ms": 0,
-      "detail": "w1:0 w5:48 w9:96 w13:144 w17:192 w21:240 w25:264 w29:264 w33:264 w37:264"
+      "detail": "w1:0 w5:64 w9:128 w13:192 w17:256 w21:320 w25:384 w29:448 w33:480 w37:480"
     },
     {
       "scenario": "b-season",
-      "step": "no event title repeats in the season",
-      "ok": false,
+      "step": "no event variant repeats in the season",
+      "ok": true,
       "ms": 0,
-      "detail": "הלילה שלפני x2"
+      "detail": ""
     },
     {
       "scenario": "b-season",
@@ -214,56 +214,56 @@
       "scenario": "c-offseason",
       "step": "offseason: offers reachable before next season",
       "ok": false,
-      "ms": 815,
+      "ms": 810,
       "detail": "on offseason screen the agent/offers tab is unreachable (hash #/agent shows \"weekend\", no bottom nav)"
     },
     {
       "scenario": "c-offseason",
       "step": "go to next season",
       "ok": true,
-      "ms": 758,
+      "ms": 784,
       "detail": "עונה 2 · שבוע 1"
     },
     {
       "scenario": "c-offseason",
       "step": "open negotiation (offer or renewal)",
       "ok": true,
-      "ms": 820,
-      "detail": "offer"
+      "ms": 789,
+      "detail": "renewal"
     },
     {
       "scenario": "c-offseason",
       "step": "negotiate 3 rounds",
       "ok": true,
-      "ms": 1456,
-      "detail": "סבב 1/3: offer ₪7,900 -> \"מ.ס. הדרום משפרים ל8,400 ₪.\" ; סבב 2/3: offer ₪8,400 -> \"מ.ס. הדרום משפרים ל9,100 ₪. זו ההצעה האחרונה.\" ; final offer ₪9,100 (label \"סבב 3/3\")"
+      "ms": 1408,
+      "detail": "סבב 1/3: offer ₪5,000 -> \"בני הכנרת משפרים ל5,800 ₪.\" ; סבב 2/3: offer ₪5,800 -> \"בני הכנרת משפרים ל5,900 ₪. זו ההצעה האחרונה.\" ; final offer ₪5,900 (label \"סבב 3/3\")"
     },
     {
       "scenario": "c-offseason",
       "step": "UI marks the engine's final offer (no more asks)",
       "ok": false,
-      "ms": 167,
-      "detail": "engine said \"מ.ס. הדרום משפרים ל9,100 ₪. זו ההצעה האחרונה.\" but UI shows \"סבב 3/3\" and \"לבקש\" is still enabled (one more ask = talks collapse)"
+      "ms": 131,
+      "detail": "engine said \"בני הכנרת משפרים ל5,900 ₪. זו ההצעה האחרונה.\" but UI shows \"סבב 3/3\" and \"לבקש\" is still enabled (one more ask = talks collapse)"
     },
     {
       "scenario": "c-offseason",
       "step": "final offer: accept",
       "ok": true,
-      "ms": 1493,
-      "detail": "signed ₪9,100, club shows ₪9,100, landed on agent"
+      "ms": 1533,
+      "detail": "signed ₪5,900, club shows ₪5,900, landed on agent"
     },
     {
       "scenario": "c-offseason",
       "step": "walk away from a second negotiation",
       "ok": true,
-      "ms": 700,
+      "ms": 710,
       "detail": "no negotiation opened; toast \"המועדון לא ממהר לחדש. החוזה שלך עוד ארוך.\""
     },
     {
       "scenario": "e-desktop",
       "step": "title -> week",
       "ok": true,
-      "ms": 2282,
+      "ms": 2022,
       "detail": ""
     },
     {
@@ -277,14 +277,14 @@
       "scenario": "e-desktop",
       "step": "tabs render",
       "ok": true,
-      "ms": 1743,
+      "ms": 1759,
       "detail": ""
     },
     {
       "scenario": "e-desktop",
       "step": "week -> match screens",
       "ok": true,
-      "ms": 7805,
+      "ms": 3389,
       "detail": ""
     },
     {
@@ -298,21 +298,21 @@
       "scenario": "e-small",
       "step": "title -> week",
       "ok": true,
-      "ms": 2286,
+      "ms": 2129,
       "detail": ""
     },
     {
       "scenario": "e-small",
       "step": "tabs render",
       "ok": true,
-      "ms": 1826,
+      "ms": 1833,
       "detail": ""
     },
     {
       "scenario": "e-small",
       "step": "week -> match screens",
       "ok": true,
-      "ms": 4412,
+      "ms": 4702,
       "detail": ""
     },
     {
@@ -326,47 +326,314 @@
       "scenario": "f-pwa",
       "step": "manifest linked and valid",
       "ok": true,
-      "ms": 73,
+      "ms": 82,
       "detail": "קריירה: מהשכונה לפסגה / he / rtl (remarks: no 192/512 PNG icon (only SVG: Chrome installability and iOS home-screen icon need PNG))"
     },
     {
       "scenario": "f-pwa",
       "step": "html lang=he dir=rtl",
       "ok": true,
-      "ms": 3,
+      "ms": 8,
       "detail": ""
     },
     {
       "scenario": "f-pwa",
       "step": "service worker registered",
       "ok": true,
-      "ms": 218,
+      "ms": 172,
       "detail": "ready: http://localhost:4173/ active=true"
     },
     {
       "scenario": "f-pwa",
       "step": "offline reload renders title",
       "ok": true,
-      "ms": 1238,
+      "ms": 1251,
       "detail": "ok"
     },
     {
       "scenario": "f-pwa",
       "step": "offline: new career starts (worker + content cached)",
       "ok": true,
-      "ms": 1146,
+      "ms": 1123,
       "detail": "ok"
     }
   ],
-  "issues": [],
+  "issues": [
+    {
+      "type": "pre-match lineup contradicts match",
+      "detail": "week 1: pre-match \"פותח בהרכב\", match \"לא נכנסת לסגל הבוגר. היום אתה משחק בנוער / 0'לא נכנסת לסגל הבוגר. היום אתה משחק \"",
+      "screen": "prematch",
+      "shot": "tests/e2e/shots/016-lineup-mismatch-w1.png",
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 1: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 2: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 3: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 4: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 5: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 6: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 7: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 8: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 9: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 10: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 11: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 12: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 13: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 14: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 15: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 16: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 17: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "pre-match lineup contradicts match",
+      "detail": "week 18: pre-match \"על הספסל\", match \"שריקת פתיחה. אתה על הדשא. / המשחק מתחיל...\"",
+      "screen": "prematch",
+      "shot": "tests/e2e/shots/046-lineup-mismatch-w18.png",
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 18: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 19: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 20: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 21: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 22: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 23: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 24: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 25: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 26: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "pre-match lineup contradicts match",
+      "detail": "week 27: pre-match \"על הספסל\", match \"שריקת פתיחה. אתה על הדשא. / המשחק מתחיל...\"",
+      "screen": "prematch",
+      "shot": "tests/e2e/shots/054-lineup-mismatch-w27.png",
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 27: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 28: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 29: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 30: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 31: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 32: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 33: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 34: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 1
+    },
+    {
+      "type": "more than 2 near-goal bars",
+      "detail": "week 38: 3",
+      "screen": "weekend",
+      "shot": null,
+      "count": 2
+    }
+  ],
   "log": {
     "firstKick": {
-      "title": 446,
-      "week": 1714,
+      "title": 439,
+      "week": 1624,
       "lineup": "פותח בהרכב",
       "feed": "המשחק מתחיל...",
-      "momentMinute": "5'",
-      "moment": 2821,
+      "momentMinute": "6'",
+      "moment": 2863,
       "taps": 5,
       "path": "prematch>match",
       "momentsInFirstMatch": 4
@@ -380,210 +647,210 @@
         },
         {
           "label": "עונה 1 · שבוע 2",
-          "money": "₪2,462",
-          "fitness": "94"
+          "money": "₪3,338",
+          "fitness": "96"
         },
         {
           "label": "עונה 1 · שבוע 3",
-          "money": "₪2,924",
-          "fitness": "94"
+          "money": "₪4,676",
+          "fitness": "100"
         },
         {
           "label": "עונה 1 · שבוע 4",
-          "money": "₪3,386",
-          "fitness": "94"
+          "money": "₪6,014",
+          "fitness": "96"
         },
         {
           "label": "עונה 1 · שבוע 5",
-          "money": "₪3,848",
-          "fitness": "90"
+          "money": "₪7,352",
+          "fitness": "100"
         },
         {
           "label": "עונה 1 · שבוע 6",
-          "money": "₪4,310",
-          "fitness": "88"
+          "money": "₪8,690",
+          "fitness": "96"
         },
         {
           "label": "עונה 1 · שבוע 7",
-          "money": "₪5,272",
-          "fitness": "89"
+          "money": "₪10K",
+          "fitness": "91"
         },
         {
           "label": "עונה 1 · שבוע 8",
-          "money": "₪5,734",
-          "fitness": "82"
+          "money": "₪11K",
+          "fitness": "96"
         },
         {
           "label": "עונה 1 · שבוע 9",
-          "money": "₪6,196",
-          "fitness": "82"
+          "money": "₪12K",
+          "fitness": "96"
         },
         {
           "label": "עונה 1 · שבוע 10",
-          "money": "₪6,658",
-          "fitness": "94"
+          "money": "₪14K",
+          "fitness": "96"
         },
         {
           "label": "עונה 1 · שבוע 11",
-          "money": "₪7,120",
-          "fitness": "94"
+          "money": "₪15K",
+          "fitness": "100"
         },
         {
           "label": "עונה 1 · שבוע 12",
-          "money": "₪7,582",
-          "fitness": "94"
+          "money": "₪16K",
+          "fitness": "84"
         },
         {
           "label": "עונה 1 · שבוע 13",
-          "money": "₪9,044",
-          "fitness": "94"
+          "money": "₪18K",
+          "fitness": "96"
         },
         {
           "label": "עונה 1 · שבוע 14",
-          "money": "₪9,506",
-          "fitness": "94"
+          "money": "₪19K",
+          "fitness": "96"
         },
         {
           "label": "עונה 1 · שבוע 15",
-          "money": "₪9,968",
-          "fitness": "94"
+          "money": "₪20K",
+          "fitness": "96"
         },
         {
           "label": "עונה 1 · שבוע 16",
-          "money": "₪10K",
-          "fitness": "94"
+          "money": "₪22K",
+          "fitness": "100"
         },
         {
           "label": "עונה 1 · שבוע 17",
-          "money": "₪11K",
-          "fitness": "94"
+          "money": "₪23K",
+          "fitness": "100"
         },
         {
           "label": "עונה 1 · שבוע 18",
-          "money": "₪11K",
-          "fitness": "94"
+          "money": "₪24K",
+          "fitness": "100"
         },
         {
           "label": "עונה 1 · שבוע 19",
-          "money": "₪12K",
-          "fitness": "94"
+          "money": "₪26K",
+          "fitness": "93"
         },
         {
           "label": "עונה 1 · שבוע 20",
-          "money": "₪13K",
-          "fitness": "94"
+          "money": "₪27K",
+          "fitness": "100"
         },
         {
           "label": "עונה 1 · שבוע 21",
-          "money": "₪13K",
-          "fitness": "94"
+          "money": "₪28K",
+          "fitness": "96"
         },
         {
           "label": "עונה 1 · שבוע 22",
-          "money": "₪14K",
-          "fitness": "94"
+          "money": "₪30K",
+          "fitness": "100"
         },
         {
           "label": "עונה 1 · שבוע 23",
-          "money": "₪14K",
-          "fitness": "94"
+          "money": "₪31K",
+          "fitness": "93"
         },
         {
           "label": "עונה 1 · שבוע 24",
-          "money": "₪15K",
-          "fitness": "100"
+          "money": "₪33K",
+          "fitness": "93"
         },
         {
           "label": "עונה 1 · שבוע 25",
-          "money": "₪15K",
-          "fitness": "100"
+          "money": "₪34K",
+          "fitness": "99"
         },
         {
           "label": "עונה 1 · שבוע 26",
-          "money": "₪19K",
-          "fitness": "100"
+          "money": "₪35K",
+          "fitness": "93"
         },
         {
           "label": "עונה 1 · שבוע 27",
-          "money": "₪20K",
-          "fitness": "100"
+          "money": "₪36K",
+          "fitness": "96"
         },
         {
           "label": "עונה 1 · שבוע 28",
-          "money": "₪20K",
-          "fitness": "100"
+          "money": "₪33K",
+          "fitness": "93"
         },
         {
           "label": "עונה 1 · שבוע 29",
-          "money": "₪20K",
-          "fitness": "100"
+          "money": "₪34K",
+          "fitness": "96"
         },
         {
           "label": "עונה 1 · שבוע 30",
-          "money": "₪21K",
+          "money": "₪36K",
           "fitness": "100"
         },
         {
           "label": "עונה 1 · שבוע 31",
-          "money": "₪21K",
-          "fitness": "100"
+          "money": "₪37K",
+          "fitness": "93"
         },
         {
           "label": "עונה 1 · שבוע 32",
-          "money": "₪22K",
+          "money": "₪38K",
           "fitness": "100"
         },
         {
           "label": "עונה 1 · שבוע 33",
-          "money": "₪22K",
+          "money": "₪40K",
           "fitness": "100"
         },
         {
           "label": "עונה 1 · שבוע 34",
-          "money": "₪23K",
+          "money": "₪41K",
           "fitness": "100"
         },
         {
           "label": "עונה 1 · שבוע 35",
-          "money": "₪23K",
+          "money": "₪42K",
           "fitness": "100"
         },
         {
           "label": "עונה 1 · שבוע 36",
-          "money": "₪18K",
+          "money": "₪44K",
           "fitness": "100"
         },
         {
           "label": "עונה 1 · שבוע 37",
-          "money": "₪19K",
-          "fitness": "100"
+          "money": "₪45K",
+          "fitness": "94"
         },
         {
           "label": "עונה 1 · שבוע 38",
-          "money": "₪19K",
+          "money": "₪47K",
           "fitness": "100"
         }
       ],
       "events": [
         {
-          "title": "החשד",
-          "body": "טספאי אביטו שואל אותך ישירות אם דיברת עם סרגיי דראושה. ראו אתכם יחד בבית קפה בשבוע שעבר.",
+          "title": "הקבוצה של ההורים",
+          "body": "איהאב אזולאי פתח קבוצה של הורי השחקנים ושולח ניתוחים אחרי כל משחק. נדב אביטו קיבל צילום מסך מאחד ההורים.",
           "because": null,
-          "category": "תקשורת",
-          "who": "טספאי אביטו",
+          "category": "משפחה",
+          "who": "איהאב אזולאי",
           "options": [
-            "לשים את הטלפון על השולחן",
-            "לגלות בעצמך מי זהאולי לא תאהב את התשובה",
-            "\"אנחנו לא חשודים, זה לא מקובל\""
+            "לבקש מאבא לצפות בשקטיכאב לו",
+            "\"הוא רק רוצה בשבילי טוב\"",
+            "להפוך את זה לבדיחה בחדר"
           ],
           "week": 1
         },
         {
-          "title": "שתי הודעות",
-          "body": "המורה: \"מחר מבחן, אין מועד ב׳\". טספאי אביטו: \"שבע בבוקר על הדשא\". סיגל לוי כבר שלחה שלושה סימני שאלה.",
+          "title": "בגרות או אימון",
+          "body": "מחר בבוקר בגרות במתמטיקה. נדב אביטו קבע אימון כפול לאותה שעה ואמר: \"מי שלא בא, לא בסגל.\"",
           "because": null,
           "category": "חיים",
-          "who": "טספאי אביטו",
+          "who": "נדב אביטו",
           "options": [
             "ללכת למבחןאמא מרוצה, המאמן פחות",
             "לוותר על המבחן וללכת לאימוןהמאמן יזכור. גם בית הספר",
@@ -592,919 +859,954 @@
           "week": 3
         },
         {
-          "title": "המבט",
-          "body": "טספאי אביטו לא אמר כלום אחרי המשחק. רק הסתכל. המבט הזה היה גרוע מכל צעקה.",
-          "because": null,
-          "category": "דקות משחק",
-          "who": "טספאי אביטו",
-          "options": [
-            "\"אני יודע. זה עליי\"",
-            "להסביר שהמערך לא מתאים לךאולי נכון. לא בטוח שהוא רוצה לשמוע",
-            "לבקש אימון אישי מחר בבוקר"
-          ],
-          "week": 5
-        },
-        {
-          "title": "אחרי האימון",
-          "body": "ארטיום שמואלי מחכה לך ליד השער עם שק כדורים. \"עשרים בעיטות כל אחד. מי שמפסיד אוסף את הקונוסים.\"",
+          "title": "הראל מלכה נפצע",
+          "body": "הראל מלכה נפצע באימון. קרע, לפחות חודש. הוא שולח לך הודעה: \"תשמור לי על המקום חם.\" לא ברור אם הוא צוחק.",
           "because": null,
           "category": "יריבות",
-          "who": "ארטיום שמואלי",
-          "options": [
-            "להישאר ולבעוט עד שהרגליים נופלותסיומת עולה, הכוח יורד",
-            "\"אני חוסך כוח לשבת\"שומר אנרגיה. הוא יזכור",
-            "\"רק אם המפסיד קונה שווארמה לכולם\"יותר כיף, יותר לחץ"
-          ],
-          "week": 7
-        },
-        {
-          "title": "המשכורת לא נכנסה",
-          "body": "העשירי בחודש והחשבון ריק. מקסים מזרחי שולח הודעה קולית: \"עוד שבוע, אחי. אני על זה.\" אלעד אזולאי כבר לא משלם שכירות.",
-          "because": null,
-          "category": "כסף",
-          "who": "מקסים מזרחי",
-          "options": [
-            "לחתום על פריסההמועדון יזכור מי עמד לידו",
-            "לחכות בשקט עוד שבוע",
-            "לבקש מאחמד אבוטבול למצוא יציאה"
-          ],
-          "week": 9
-        },
-        {
-          "title": "השיחה באוטו",
-          "body": "בדרך הביתה טספאי לוי מנתח כל נגיעה שלך. \"בדקה עשרים, למה לא בעטת?\" אתה מסתכל מהחלון ושותק.",
-          "because": null,
-          "category": "משפחה",
-          "who": "טספאי לוי",
-          "options": [
-            "לבקש מאבא לצפות בשקטיכאב לו",
-            "\"הוא רק רוצה בשבילי טוב\"",
-            "להפוך את זה לבדיחה בחדר"
-          ],
-          "week": 11
-        },
-        {
-          "title": "שאלה מהמאמן",
-          "body": "טספאי אביטו שואל אם מישהו פנה אליך. \"ראיתי מי ישב ביציע. אני רק רוצה לדעת אם אני צריך לדאוג.\"",
-          "because": null,
-          "category": "העברות",
-          "who": "אחמד אבוטבול",
-          "options": [
-            "לבקש מאחמד אבוטבול לבדוק מי זה",
-            "לא להתרגש. עוד משחק כזה וזה יגיע",
-            "לספר למאמן את האמת"
-          ],
-          "week": 13
-        },
-        {
-          "title": "קפה של בוקר",
-          "body": "פליקס וולף מזמין אותך לקפה לפני האימון. \"עשרים שנה בכדורגל. תשאל מה שבא לך, פעם אחת.\"",
-          "because": null,
-          "category": "הקבוצה",
-          "who": "פליקס וולף",
-          "options": [
-            "לשמוע עד הסוף ולרשום",
-            "לשאול אותו על כסף, לא על כדורגלהוא ראה הרבה שחקנים נשרפים",
-            "\"תודה, אני מסתדר\""
-          ],
-          "week": 15
-        },
-        {
-          "title": "המקום פתוח",
-          "body": "האלונקה לוקחת את ארטיום שמואלי מהמגרש. טספאי אביטו מסתכל על הספסל, ואז עליך.",
-          "because": null,
-          "category": "יריבות",
-          "who": "ארטיום שמואלי",
+          "who": "הראל מלכה",
           "options": [
             "לבקר אותו לפני הניתוח",
             "לתפוס את ההזדמנות בשתי ידייםאימונים קשים, ראש בקיר",
             "לפרסם איחולי החלמה ברשתות"
           ],
-          "week": 17
+          "week": 9
+        },
+        {
+          "title": "הקונוסים מחכים",
+          "body": "יום חם, כולם גמורים. הראל מלכה מסדר חמישה קונוסים מול השער ומסמן לך לבוא. הוא לא אומר מילה, רק מחכה.",
+          "because": null,
+          "category": "יריבות",
+          "who": "הראל מלכה",
+          "options": [
+            "להישאר ולבעוט עד שהרגליים נופלותסיומת עולה, הכוח יורד",
+            "\"אני חוסך כוח לשבת\"שומר אנרגיה. הוא יזכור",
+            "\"רק אם המפסיד קונה שווארמה לכולם\"יותר כיף, יותר לחץ"
+          ],
+          "week": 11
         },
         {
           "title": "שקט באוטובוס",
-          "body": "שלוש שעות נסיעה בשקט מוחלט. ואז אליאור יאסו שם מוזיקה בטלפון. מיכאל כנעאן מסתובב אליו לאט.",
+          "body": "שלוש שעות נסיעה בשקט מוחלט. ואז אחמד אדמסו שם מוזיקה בטלפון. ליאור קליין מסתובב אליו לאט.",
           "because": null,
           "category": "הקבוצה",
-          "who": "אליאור יאסו",
+          "who": "אחמד אדמסו",
           "options": [
             "לשבור את השקט עם בדיחהאם הוא מצחיק",
             "לשתוק עם כולם",
-            "ללכת לשבת ליד טספאי אביטו"
+            "ללכת לשבת ליד נדב אביטו"
+          ],
+          "week": 13
+        },
+        {
+          "title": "הכרית",
+          "body": "הלילה שלפני הניצחונות האחרונים ישנת על הכרית של סבתא. הערב שכחת אותה אצל ההורים, ברמלה.",
+          "because": null,
+          "category": "חיים",
+          "who": "שירה אזולאי",
+          "options": [
+            "לעשות הכל כדי לשמור על הטקסיקר ומגוחך",
+            "לצחוק על זה ולשחק רגיל",
+            "להפוך את זה לטקס של כל הקבוצה"
+          ],
+          "week": 15
+        },
+        {
+          "title": "שלוש בלילה, שוב",
+          "body": "בקבוק, טיטול, שיר. בשש וחצי צריך להיות על הדשא. שירה אזולאי מציעה לבוא לישון אצלכם כמה לילות.",
+          "because": "כי בשבוע 16 (זה מתחיל) בחרת: להישאר עד הסוף",
+          "category": "משפחה",
+          "who": "נדב אביטו",
+          "options": [
+            "לקבל את העזרה של אמא",
+            "לחלק את הלילות שווה בשווהבבית יעריכו. הרגליים פחות",
+            "לישון במלון של הקבוצה לפני משחקים"
           ],
           "week": 19
         },
         {
-          "title": "הלילה שלפני",
-          "body": "אחת עשרה בלילה. המחברת פתוחה, הנעליים ליד הדלת. מחר יש גם בוחן וגם אימון שהמאמן קרא לו \"הכי חשוב העונה\".",
+          "title": "השיחה באוטו",
+          "body": "בדרך הביתה איהאב אזולאי מנתח כל נגיעה שלך. \"בדקה עשרים, למה לא בעטת?\" אתה מסתכל מהחלון ושותק.",
           "because": null,
-          "category": "חיים",
-          "who": "טספאי אביטו",
+          "category": "משפחה",
+          "who": "איהאב אזולאי",
           "options": [
-            "ללכת למבחןאמא מרוצה, המאמן פחות",
-            "לוותר על המבחן וללכת לאימוןהמאמן יזכור. גם בית הספר",
-            "לבקש מהמאמן להגיע באמצע האימוןפשרה שעולה בכוח"
+            "לבקש מאבא לצפות בשקטיכאב לו",
+            "\"הוא רק רוצה בשבילי טוב\"",
+            "להפוך את זה לבדיחה בחדר"
           ],
           "week": 21
         },
         {
-          "title": "חוזה ראשון של ציוד",
-          "body": "אחמד אבוטבול שולח חוזה של עמוד אחד: שלוש שנים, נעליים, ואחוז קטן אם תגיע לנבחרת. \"תחתום לפני שהם מתחרטים.\"",
+          "title": "הלוח",
+          "body": "על הלוח עדיין התוכנית של המשחק. ליאור קליין מוחק חצי ממנה עם היד ואומר: \"זה מה שהיינו צריכים לעשות.\"",
           "because": null,
-          "category": "כסף",
-          "who": "אחמד אבוטבול",
+          "category": "הקבוצה",
+          "who": "ליאור קליין",
           "options": [
-            "לחתום ולקחת את הכסף",
-            "לחכות למותג גדולהימור על עצמך",
-            "לבקש כפול ולראות מה קורהאולי יסכימו, אולי ייעלמו"
+            "לעמוד לצד המאמן",
+            "להסכים עם ליאור קליין",
+            "\"מחר זה כבר המשחק הבא\""
+          ],
+          "week": 23
+        },
+        {
+          "title": "פקק באיילון",
+          "body": "תאונה באיילון ואתה תקוע. האימון מתחיל בעוד עשר דקות. נדב אביטו פעם קנס שחקן על דקה אחת.",
+          "because": null,
+          "category": "משמעת",
+          "who": "נדב אביטו",
+          "options": [
+            "להתקשר למאמן ולהגיד את האמתקנס קטן, מצפון נקי",
+            "להמציא תירוץ טוב יותראם יתגלה, יהיה רע",
+            "לרוץ מהתחנה האחרונה"
           ],
           "week": 25
         },
         {
-          "title": "מי בועט?",
-          "body": "טספאי אביטו רוצה בועט פנדלים קבוע. מיכאל כנעאן בעט עד עכשיו, אבל החמיץ שניים מהשלושה האחרונים. כולם מסתכלים עליך.",
+          "title": "שכר דירה",
+          "body": "יוסף אוחיון גר עם אשתו ושני ילדים בדירת שני חדרים. היום הוא שואל אם תעזור עם השכירות. \"רק עד שהחוזה יתחדש.\"",
           "because": null,
           "category": "הקבוצה",
-          "who": "מיכאל כנעאן",
-          "options": [
-            "\"אני בועט\"תהילה או חלום רע",
-            "להשאיר את זה למיכאל כנעאן",
-            "להציע לחלק: כל אחד חצי עונה"
-          ],
-          "week": 29
-        },
-        {
-          "title": "הלילה שלפני",
-          "body": "מאז שאתה הבועט, אתה רואה את הפנדל בחלומות. השוער של היריבה ידוע כמי שעוצר. מיכאל כנעאן שולח: \"אם אתה רוצה, אני פה.\"",
-          "because": "כי בשבוע 29 (מי בועט?) בחרת: \"אני בועט\"",
-          "category": "לחץ",
-          "who": "מיכאל כנעאן",
-          "options": [
-            "חמישים פנדלים באימון",
-            "להחזיר את הכדור למיכאל כנעאן",
-            "להחליט עכשיו: צ׳יפ באמצעאגדה או מם"
-          ],
-          "week": 33
-        },
-        {
-          "title": "חובות",
-          "body": "שמעת שמתן סויסה חייב כסף לאנשים לא נחמדים. הערב הוא שואל אם תוכל לעזור. \"רק הפעם, נשבע.\"",
-          "because": null,
-          "category": "הקבוצה",
-          "who": "מתן סויסה",
+          "who": "יוסף אוחיון",
           "options": [
             "לתת לו את כל הסכום",
             "לתת חצי ולהגיד שזו מתנה",
             "לסרב בעדינותהכסף נשאר. החבר פחות"
           ],
+          "week": 27
+        },
+        {
+          "title": "עצה מהוותיק",
+          "body": "אבבה טאהא מחכה לך ביציאה מהמגרש. \"אני רואה את עצמי בך. אתה רוצה עצה, או שאתה כבר יודע הכל?\"",
+          "because": null,
+          "category": "הקבוצה",
+          "who": "אבבה טאהא",
+          "options": [
+            "לשמוע עד הסוף ולרשום",
+            "לשאול אותו על כסף, לא על כדורגלהוא ראה הרבה שחקנים נשרפים",
+            "\"תודה, אני מסתדר\""
+          ],
+          "week": 29
+        },
+        {
+          "title": "תיקול באימון",
+          "body": "תיקול שלך באימון, ופלוריאן מורל נשאר על הדשא מחזיק את הקרסול. הפיזיותרפיסט אומר שלושה שבועות.",
+          "because": null,
+          "category": "פציעה",
+          "who": "פלוריאן מורל",
+          "options": [
+            "לבקר אותו בבית עם פיצה",
+            "\"זה כדורגל. אימון זה מלחמה\"המאמן אוהב עוצמה. פלוריאן מורל פחות",
+            "להוריד הילוך באימונים"
+          ],
+          "week": 31
+        },
+        {
+          "title": "שיחה בצד",
+          "body": "נדב אביטו ביקש לדבר איתך. \"אבא שלך נכנס לחדר אחרי המשחק. אני מכבד אותו, אבל זה לא יכול לחזור.\"",
+          "because": null,
+          "category": "משפחה",
+          "who": "איהאב אזולאי",
+          "options": [
+            "לבקש מאבא לצפות בשקטיכאב לו",
+            "\"הוא רק רוצה בשבילי טוב\"",
+            "להפוך את זה לבדיחה בחדר"
+          ],
           "week": 33
         },
         {
-          "title": "אחמד אבוטבול בטלפון",
-          "body": "אחמד אבוטבול: \"המועדון שלך טובע. יש לי שני מקומות שמשלמים בזמן. תגיד מילה ואני מתחיל.\"",
+          "title": "בצורת",
+          "body": "חמישה משחקים בלי לעשות משהו. ברשת כבר כותבים \"פלופ\". איהאב אזולאי שולח לך סרטונים שלך מלפני שנה.",
           "because": null,
-          "category": "כסף",
-          "who": "מקסים מזרחי",
+          "category": "לחץ",
+          "who": "איהאב אזולאי",
           "options": [
-            "לחתום על פריסההמועדון יזכור מי עמד לידו",
-            "לחכות בשקט עוד שבוע",
-            "לבקש מאחמד אבוטבול למצוא יציאה"
+            "לקבוע פגישה עם פסיכולוג ספורטעולה כסף, עוזר לראש",
+            "אימון נוסף כל יום עד שזה חוזר",
+            "למחוק את האפליקציות לשבוע"
           ],
           "week": 35
         },
         {
-          "title": "החולצה על הרצפה",
-          "body": "מיכאל כנעאן זורק את החולצה שלו על הרצפה. \"מי שלא מתבייש עכשיו, שיקום וילך.\" אף אחד לא קם, והוא מסתכל דווקא עליך.",
+          "title": "תיקו מתסכל",
+          "body": "תיקו שמרגיש כמו הפסד. בחדר ליאור קליין אומר שח׳ליל חדד היה צריך להחליף מוקדם יותר. ח׳ליל חדד שומע את זה מהמסדרון.",
           "because": null,
           "category": "הקבוצה",
-          "who": "מיכאל כנעאן",
+          "who": "ליאור קליין",
           "options": [
-            "לקחת אחריות מול כולם",
-            "\"גם אתה לא היית משהו היום\"חלק יעריכו. הוא לא",
-            "לשתוק ולהוריד את הראש"
+            "לעמוד לצד המאמן",
+            "להסכים עם ליאור קליין",
+            "\"מחר זה כבר המשחק הבא\""
           ],
           "week": 37
         }
       ],
       "weekends": [
         {
-          "headline": "תיקו מול בני הכפר",
-          "score": "1-1",
-          "rating": "6.1",
+          "headline": "בנוער: יואב כבש נגד מכבי המושבה",
+          "score": null,
+          "rating": null,
           "gains": [
-            "סיומת44+0.2",
-            "מסירה43+0.0",
-            "דריבל46+0.2",
-            "מהירות40+0.0",
-            "סיבולת42+0.0"
+            "סיומת32+0.1",
+            "מסירה40+0.0",
+            "דריבל38+0.1",
+            "מהירות39+0.0",
+            "סיבולת29+0.0"
           ],
           "near": [
-            "עוד 1 להשער הראשון בקריירה0/1",
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 לסיבולת 309/10",
+            "עוד 1 למהירות 409/10",
+            "עוד 1 להשער הראשון בקריירה0/1"
           ],
-          "meanwhile": [],
+          "meanwhile": [
+            "אוליבוס דראמיה החתימה את הראל גולדשטיין מעירוני הגבעות"
+          ],
           "loops": [
-            "ארטיום עם 0 שערים, אתה עם 0"
+            "הראל עם 0 שערים, אתה עם 0"
           ],
           "button": "לשבוע הבא",
           "week": 1
         },
         {
-          "headline": "ערב קשה לאורי",
-          "score": "1-0",
-          "rating": "4.2",
+          "headline": "הפסד להפועל המושבה",
+          "score": "2-0",
+          "rating": "5.4",
           "gains": [
-            "סיומת44+0.1",
-            "מסירה43+0.0",
-            "דריבל46+0.2",
-            "מהירות40+0.0",
-            "סיבולת42+0.0"
+            "סיומת32+0.1",
+            "מסירה40+0.0",
+            "דריבל38+0.1",
+            "מהירות39+0.0",
+            "סיבולת29+0.0"
           ],
           "near": [
-            "עוד 1 להשער הראשון בקריירה0/1",
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 לסיבולת 309/10",
+            "עוד 1 למהירות 409/10",
+            "עוד 1 להשער הראשון בקריירה0/1"
           ],
-          "meanwhile": [
-            "מכבי הקריות 4-0 הפועל השכונה"
-          ],
+          "meanwhile": [],
           "loops": [
-            "ארטיום עם 0 שערים, אתה עם 0"
+            "הראל עם 0 שערים, אתה עם 0"
           ],
           "button": "לשבוע הבא",
           "week": 2
         },
         {
-          "headline": "ערב קשה לאורי",
-          "score": "0-0",
-          "rating": "4.5",
+          "headline": "בנוער: יואב כבש נגד אחווה הגליל",
+          "score": null,
+          "rating": null,
           "gains": [
-            "סיומת44+0.1",
-            "מסירה43+0.0",
-            "דריבל46+0.2",
-            "מהירות40+0.0",
-            "סיבולת43+0.0"
+            "סיומת32+0.1",
+            "מסירה40+0.0",
+            "דריבל38+0.1",
+            "מהירות39+0.0",
+            "סיבולת30+0.0"
           ],
           "near": [
+            "עוד 1 למהירות 409/10",
             "עוד 1 להשער הראשון בקריירה0/1",
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 למהירות 4039/40"
           ],
           "meanwhile": [
-            "מכבי הפרדס החתימה את מיכאל איבנוב מהפועל המעיין"
+            "הפועל המושבה 0-3 מכבי הנמל",
+            "מכבי העמק החתימה את נדב טל מהפועל המעיין",
+            "אוליבוס דראמיה החתימה את אושר מזרחי ממ.ס. הדרום"
           ],
           "loops": [
-            "טספאי אביטו עוד יחזור לעניין",
-            "ארטיום עם 0 שערים, אתה עם 0"
+            "נדב אביטו עוד יחזור לעניין",
+            "הראל עם 0 שערים, אתה עם 0"
           ],
           "button": "לשבוע הבא",
           "week": 3
         },
         {
-          "headline": "ערב קשה לאורי",
-          "score": "1-0",
-          "rating": "4.4",
+          "headline": "תיקו מול מכבי הנמל",
+          "score": "0-0",
+          "rating": "5.6",
           "gains": [
-            "סיומת44+0.1",
-            "מסירה43+0.0",
-            "דריבל47+0.2",
-            "מהירות40+0.0",
-            "סיבולת43+0.0"
+            "סיומת32+0.1",
+            "מסירה40+0.0",
+            "דריבל38+0.1",
+            "מהירות39+0.0",
+            "סיבולת30+0.0"
           ],
           "near": [
+            "עוד 1 למהירות 409/10",
             "עוד 1 להשער הראשון בקריירה0/1",
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 למהירות 4039/40"
           ],
-          "meanwhile": [],
+          "meanwhile": [
+            "הפועל הערבה 3-0 מ.ס. הדרום"
+          ],
           "loops": [
-            "טספאי אביטו עוד יחזור לעניין",
-            "ארטיום עם 0 שערים, אתה עם 0"
+            "נדב אביטו עוד יחזור לעניין",
+            "הראל עם 0 שערים, אתה עם 0"
           ],
           "button": "לשבוע הבא",
           "week": 4
         },
         {
-          "headline": "ניצחון על הפועל הסלע",
-          "score": "1-2",
-          "rating": "6.4",
+          "headline": "בנוער: 2-1 נגד בית״ר השרון",
+          "score": null,
+          "rating": null,
           "gains": [
-            "סיומת44+0.1",
-            "מסירה43+0.0",
-            "דריבל47+0.1",
-            "מהירות40+0.0",
-            "סיבולת43+0.0"
+            "סיומת32+0.1",
+            "מסירה40+0.0",
+            "דריבל38+0.1",
+            "מהירות39+0.0",
+            "סיבולת30+0.0"
           ],
           "near": [
-            "עוד 1 להשער הראשון בקריירה0/1",
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 למהירות 409/10",
+            "עוד 2 לדריבל 408/10",
+            "עוד 1 להשער הראשון בקריירה0/1"
           ],
           "meanwhile": [
-            "בית״ר הגבעה 4-1 מכבי הפרדס"
+            "הפועל הירקון 5-1 מכבי העמק"
           ],
           "loops": [
-            "טספאי אביטו עוד יחזור לעניין",
-            "ארטיום עם 0 שערים, אתה עם 0"
+            "נדב אביטו עוד יחזור לעניין",
+            "הראל עם 0 שערים, אתה עם 0"
           ],
           "button": "לשבוע הבא",
           "week": 5
         },
         {
-          "headline": "השער הראשון של אורי!",
-          "score": "2-2",
-          "rating": "6.5",
+          "headline": "בנוער: 0-0 נגד עירוני הגבעות",
+          "score": null,
+          "rating": null,
           "gains": [
-            "סיומת44+0.1",
-            "מסירה43+0.0",
-            "דריבל47+0.2",
-            "מהירות40+0.0",
-            "סיבולת43+0.0"
+            "סיומת32+0.1",
+            "מסירה40+0.0",
+            "דריבל38+0.1",
+            "מהירות39+0.0",
+            "סיבולת30+0.0"
           ],
           "near": [
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 למהירות 409/10",
+            "עוד 2 לדריבל 408/10",
+            "עוד 1 להשער הראשון בקריירה0/1"
           ],
           "meanwhile": [
-            "מטרה הושגה: השער הראשון בקריירה"
+            "עירוני הוואדי 3-0 מכבי העמק"
           ],
           "loops": [
-            "סיגל לוי הבטיח משהו. עוד 6 שבועות נראה",
-            "ארטיום עם 0 שערים, אתה עם 1"
+            "יש הצעה ממכבי הפרדס על השולחן",
+            "שירה אזולאי הבטיח משהו. עוד 6 שבועות נראה",
+            "הראל עם 0 שערים, אתה עם 0"
           ],
           "button": "לשבוע הבא",
           "week": 6
         },
         {
-          "headline": "תיקו מול הפועל המעיין",
-          "score": "1-1",
-          "rating": "5.3",
+          "headline": "בנוער: 2-0 נגד מ.ס. הדרום",
+          "score": null,
+          "rating": null,
           "gains": [
-            "סיומת46+0.2",
-            "מסירה43+0.0",
-            "דריבל47+0.2",
-            "מהירות40+0.0",
-            "סיבולת43+0.0"
+            "סיומת32+0.1",
+            "מסירה40+0.0",
+            "דריבל38+0.1",
+            "מהירות39+0.0",
+            "סיבולת30+0.0"
           ],
           "near": [
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 למהירות 409/10",
+            "עוד 2 לדריבל 408/10",
+            "עוד 1 להשער הראשון בקריירה0/1"
           ],
           "meanwhile": [
-            "הפועל הנחל 0-3 מכבי הפרדס"
+            "אחווה הגליל 4-1 בית״ר השרון"
           ],
           "loops": [
-            "סיגל לוי הבטיח משהו. עוד 5 שבועות נראה",
-            "ארטיום עם 0 שערים, אתה עם 1"
+            "יש הצעה ממכבי הפרדס על השולחן",
+            "שירה אזולאי הבטיח משהו. עוד 5 שבועות נראה",
+            "הראל עם 0 שערים, אתה עם 0"
           ],
           "button": "לשבוע הבא",
           "week": 7
         },
         {
-          "headline": "ניצחון על מ.ס. החולות",
-          "score": "2-1",
-          "rating": "5.3",
+          "headline": "בנוער: 3-1 נגד הפועל הים",
+          "score": null,
+          "rating": null,
           "gains": [
-            "סיומת46+0.1",
-            "מסירה43+0.0",
-            "דריבל47+0.2",
-            "מהירות40+0.0",
-            "סיבולת43+0.0"
+            "סיומת33+0.1",
+            "מסירה40+0.0",
+            "דריבל38+0.1",
+            "מהירות39+0.0",
+            "סיבולת30+0.0"
           ],
           "near": [
-            "עוד 2 ל10 הופעות בקבוצה הבוגרת8/10",
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 למהירות 409/10",
+            "עוד 2 לדריבל 408/10",
+            "עוד 1 להשער הראשון בקריירה0/1"
           ],
           "meanwhile": [
-            "בני המעלה פיטרה את שי קוזלוב. קונסטנטין רבינוביץ׳ מחליף אותו"
+            "בית״ר השרון פיטרה את אוהד מסארווה. מוחמד רבינוביץ׳ מחליף אותו",
+            "מכבי העמק פיטרה את הראל עואודה. אוהד מסארווה מחליף אותו"
           ],
           "loops": [
-            "סיגל לוי הבטיח משהו. עוד 4 שבועות נראה",
-            "ארטיום עם 0 שערים, אתה עם 1"
+            "יש הצעה ממכבי הפרדס על השולחן",
+            "שירה אזולאי הבטיח משהו. עוד 4 שבועות נראה",
+            "הראל עם 0 שערים, אתה עם 0"
           ],
           "button": "לשבוע הבא",
           "week": 8
         },
         {
-          "headline": "תיקו מול בני המעלה",
-          "score": "1-1",
-          "rating": "5.3",
+          "headline": "בנוער: 5-0 נגד מכבי הגולן",
+          "score": null,
+          "rating": null,
           "gains": [
-            "סיומת46+0.1",
-            "מסירה43+0.0",
-            "דריבל47+0.2",
-            "מהירות40+0.0",
-            "סיבולת43+0.0"
+            "סיומת33+0.1",
+            "מסירה40+0.0",
+            "דריבל38+0.1",
+            "מהירות39+0.0",
+            "סיבולת30+0.0"
           ],
           "near": [
-            "עוד 1 ל10 הופעות בקבוצה הבוגרת9/10",
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 למהירות 409/10",
+            "עוד 1 לדריבל 409/10",
+            "עוד 1 להשער הראשון בקריירה0/1"
           ],
-          "meanwhile": [],
+          "meanwhile": [
+            "הפועל המושבה 5-1 הפועל הבירה",
+            "מ.ס. הדרום פיטרה את מקסים קרסנוב. עמית אסרס מחליף אותו"
+          ],
           "loops": [
-            "סיגל לוי הבטיח משהו. עוד 3 שבועות נראה",
-            "ארטיום עם 0 שערים, אתה עם 1"
+            "יש הצעה ממכבי הפרדס על השולחן",
+            "שירה אזולאי הבטיח משהו. עוד 3 שבועות נראה",
+            "הראל עם 0 שערים, אתה עם 0"
           ],
           "button": "לשבוע הבא",
           "week": 9
         },
         {
-          "headline": "ניצחון על מכבי הפרדס",
-          "score": "2-1",
-          "rating": "7.4",
+          "headline": "הפסד להפועל הבירה",
+          "score": "3-4",
+          "rating": "5.4",
           "gains": [
-            "סיומת46+0.1",
-            "מסירה43+0.0",
-            "דריבל47+0.1",
-            "מהירות40+0.0",
-            "סיבולת43+0.0"
+            "סיומת33+0.1",
+            "מסירה40+0.0",
+            "דריבל39+0.1",
+            "מהירות39+0.0",
+            "סיבולת30+0.0"
           ],
           "near": [
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 למהירות 409/10",
+            "עוד 1 לדריבל 409/10",
+            "עוד 1 להשער הראשון בקריירה0/1"
           ],
           "meanwhile": [
-            "מכבי האלונים 4-0 בני המעלה",
-            "ארטיום שמואלי כבש להפועל המעיין",
-            "מטרה הושגה: 10 הופעות בקבוצה הבוגרת"
+            "מכבי המושבה 4-1 הפועל הירקון",
+            "הפועל הים פיטרה את אוהד יאסו. ליאור ברק מחליף אותו"
           ],
           "loops": [
-            "סיגל לוי הבטיח משהו. עוד 2 שבועות נראה",
-            "ארטיום עם 1 שערים, אתה עם 1"
+            "שירה אזולאי הבטיח משהו. עוד 2 שבועות נראה",
+            "הראל עם 0 שערים, אתה עם 0"
           ],
           "button": "לשבוע הבא",
           "week": 10
         },
         {
-          "headline": "ערב קשה לאורי",
-          "score": "2-2",
-          "rating": "4.9",
+          "headline": "בנוער: יואב כבש נגד מכבי העמק",
+          "score": null,
+          "rating": null,
           "gains": [
-            "סיומת46+0.1",
-            "מסירה43+0.0",
-            "דריבל48+0.2",
-            "מהירות40+0.0",
-            "סיבולת43+0.0"
+            "סיומת34+0.1",
+            "מסירה40+0.0",
+            "דריבל39+0.1",
+            "מהירות39+0.0",
+            "סיבולת30+0.0"
           ],
           "near": [
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 למהירות 409/10",
+            "עוד 1 לדריבל 409/10",
+            "עוד 1 להשער הראשון בקריירה0/1"
           ],
-          "meanwhile": [],
+          "meanwhile": [
+            "בני הכנרת 6-0 מכבי העמק"
+          ],
           "loops": [
-            "סיגל לוי הבטיח משהו. עוד 1 שבועות נראה",
-            "ארטיום עם 1 שערים, אתה עם 1"
+            "שירה אזולאי הבטיח משהו. עוד 1 שבועות נראה",
+            "הראל עם 0 שערים, אתה עם 0"
           ],
           "button": "לשבוע הבא",
           "week": 11
         },
         {
-          "headline": "צמד של אורי נגד בני הכפר",
-          "score": "3-1",
-          "rating": "8.7",
+          "headline": "בנוער: 2-3 נגד הפועל הירקון",
+          "score": null,
+          "rating": null,
           "gains": [
-            "סיומת46+0.2",
-            "מסירה43+0.0",
-            "דריבל48+0.2",
-            "מהירות40+0.0",
-            "סיבולת43+0.0"
+            "סיומת34+0.1",
+            "מסירה40+0.0",
+            "דריבל39+0.1",
+            "מהירות39+0.0",
+            "סיבולת30+0.0"
           ],
           "near": [
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 לדריבל 409/10",
+            "עוד 1 למהירות 409/10",
+            "עוד 1 להשער הראשון בקריירה0/1"
           ],
           "meanwhile": [
-            "מכבי האלונים 3-0 בית״ר הגבעה",
-            "סיגל לוי עמד בהבטחה"
+            "מכבי הנמל 3-0 מכבי העמק",
+            "שירה אזולאי עמד בהבטחה"
           ],
           "loops": [
-            "ארטיום עם 1 שערים, אתה עם 3"
+            "הראל עם 0 שערים, אתה עם 0"
           ],
           "button": "לשבוע הבא",
           "week": 12
         },
         {
-          "headline": "ניצחון על הפועל הנחל",
-          "score": "3-2",
-          "rating": "6.9",
+          "headline": "בנוער: 1-1 נגד עירוני הוואדי",
+          "score": null,
+          "rating": null,
           "gains": [
-            "סיומת46+0.1",
-            "מסירה43+0.0",
-            "דריבל48+0.2",
-            "מהירות40+0.0",
-            "סיבולת43+0.0"
+            "סיומת34+0.1",
+            "מסירה40+0.0",
+            "דריבל39+0.1",
+            "מהירות39+0.0",
+            "סיבולת30+0.0"
           ],
           "near": [
-            "עוד 2 לדריבל 508/10",
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 לדריבל 409/10",
+            "עוד 1 למהירות 409/10",
+            "עוד 1 להשער הראשון בקריירה0/1"
           ],
           "meanwhile": [
-            "בני המעלה פיטרה את קונסטנטין רבינוביץ׳. שי קוזלוב מחליף אותו"
+            "מ.ס. הדרום 4-0 מכבי הגולן"
           ],
           "loops": [
-            "יש הצעה מאוליבוס דראמיה על השולחן",
-            "ארטיום עם 1 שערים, אתה עם 3"
+            "הראל עם 0 שערים, אתה עם 0"
           ],
           "button": "לשבוע הבא",
           "week": 13
         },
         {
-          "headline": "תיקו מול מכבי הקריות",
-          "score": "2-2",
-          "rating": "6.0",
+          "headline": "בנוער: 1-0 נגד הכח המרכז",
+          "score": null,
+          "rating": null,
           "gains": [
-            "סיומת47+0.1",
-            "מסירה44+0.0",
-            "דריבל48+0.2",
-            "מהירות40+0.0",
-            "סיבולת43+0.0"
+            "סיומת34+0.1",
+            "מסירה40+0.0",
+            "דריבל39+0.1",
+            "מהירות39+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 2 לדריבל 508/10",
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 לדריבל 409/10",
+            "עוד 1 למהירות 409/10",
+            "עוד 1 להשער הראשון בקריירה0/1"
           ],
           "meanwhile": [
-            "הפועל השכונה 3-0 הפועל הסלע"
+            "מ.ס. הדרום 0-3 הפועל הבירה"
           ],
           "loops": [
-            "יש הצעה מאוליבוס דראמיה על השולחן",
-            "ארטיום עם 1 שערים, אתה עם 3"
+            "הראל עם 0 שערים, אתה עם 0"
           ],
           "button": "לשבוע הבא",
           "week": 14
         },
         {
-          "headline": "ניצחון על הפועל השכונה",
-          "score": "2-1",
-          "rating": "6.6",
+          "headline": "ניצחון על הפועל הערבה",
+          "score": "3-1",
+          "rating": "6.2",
           "gains": [
-            "סיומת47+0.1",
-            "מסירה44+0.0",
-            "דריבל48+0.2",
-            "מהירות40+0.0",
-            "סיבולת43+0.0"
+            "סיומת34+0.1",
+            "מסירה40+0.0",
+            "דריבל39+0.1",
+            "מהירות39+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 2 לדריבל 509/10",
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 לדריבל 409/10",
+            "עוד 1 למהירות 409/10",
+            "עוד 1 להשער הראשון בקריירה0/1"
           ],
-          "meanwhile": [
-            "הפועל המעיין 4-1 הפועל הנחל"
-          ],
+          "meanwhile": [],
           "loops": [
-            "יש הצעה מאוליבוס דראמיה על השולחן",
-            "ארטיום עם 1 שערים, אתה עם 3"
+            "הראל עם 0 שערים, אתה עם 0"
           ],
           "button": "לשבוע הבא",
           "week": 15
         },
         {
-          "headline": "תיקו מול הפועל הסלע",
-          "score": "1-1",
-          "rating": "6.7",
+          "headline": "ניצחון על מכבי המושבה",
+          "score": "2-1",
+          "rating": "6.0",
           "gains": [
-            "סיומת47+0.1",
-            "מסירה44+0.0",
-            "דריבל48+0.2",
-            "מהירות40+0.0",
-            "סיבולת43+0.0"
+            "סיומת34+0.1",
+            "מסירה40+0.0",
+            "דריבל39+0.1",
+            "מהירות39+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 1 לדריבל 509/10",
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 לדריבל 4010/10",
+            "עוד 1 למהירות 409/10",
+            "עוד 1 להשער הראשון בקריירה0/1"
           ],
           "meanwhile": [
-            "מכבי האלונים 5-2 הפועל השכונה"
+            "אחווה הגליל פיטרה את מיכאל חדד. עוז גרינברג מחליף אותו"
           ],
           "loops": [
-            "יש הצעה מאוליבוס דראמיה על השולחן",
-            "ארטיום עם 1 שערים, אתה עם 3",
+            "נדב אביטו עוד יחזור לעניין",
+            "הראל עם 0 שערים, אתה עם 0",
             "חלון ההעברות של ינואר נפתח בקרוב"
           ],
           "button": "לשבוע הבא",
           "week": 16
         },
         {
-          "headline": "ערב קשה לאורי",
-          "score": "1-1",
-          "rating": "4.9",
+          "headline": "תיקו מול הפועל המושבה",
+          "score": "0-0",
+          "rating": "6.7",
           "gains": [
-            "סיומת47+0.2",
-            "מסירה44+0.0",
-            "דריבל49+0.2",
-            "מהירות40+0.0",
-            "סיבולת43+0.0"
+            "סיומת35+0.1",
+            "מסירה40+0.0",
+            "דריבל39+0.1",
+            "מהירות39+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 1 לדריבל 509/10",
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 למהירות 409/10",
+            "עוד 1 להשער הראשון בקריירה0/1",
+            "עוד 1 למהירות 4039/40"
           ],
           "meanwhile": [
-            "בני המעלה 4-0 הפועל הנחל"
+            "מ.ס. הדרום 0-3 עירוני הוואדי"
           ],
           "loops": [
-            "יש הצעה מאוליבוס דראמיה על השולחן",
-            "ארטיום עם 1 שערים, אתה עם 3",
+            "נדב אביטו עוד יחזור לעניין",
+            "הראל עם 0 שערים, אתה עם 0",
             "חלון ההעברות של ינואר נפתח בקרוב"
           ],
           "button": "לשבוע הבא",
           "week": 17
         },
         {
-          "headline": "ערב קשה לאורי",
-          "score": "4-0",
-          "rating": "4.1",
+          "headline": "תיקו מול אחווה הגליל",
+          "score": "1-1",
+          "rating": "5.4",
           "gains": [
-            "סיומת47+0.1",
-            "מסירה44+0.0",
-            "דריבל49+0.1",
-            "מהירות40+0.0",
-            "סיבולת43+0.0"
+            "סיומת35+0.1",
+            "מסירה40+0.0",
+            "דריבל40+0.1",
+            "מהירות39+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 1 לדריבל 509/10",
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 למהירות 409/10",
+            "עוד 1 להשער הראשון בקריירה0/1",
+            "עוד 1 למהירות 4039/40"
           ],
-          "meanwhile": [],
+          "meanwhile": [
+            "בית״ר השרון 1-4 מכבי המושבה"
+          ],
           "loops": [
-            "ארטיום עם 1 שערים, אתה עם 3",
+            "נדב אביטו עוד יחזור לעניין",
+            "הראל עם 0 שערים, אתה עם 0",
             "חלון ההעברות של ינואר נפתח בקרוב"
           ],
           "button": "לשבוע הבא",
           "week": 18
         },
         {
-          "headline": "תיקו מול מ.ס. החולות",
-          "score": "2-2",
-          "rating": "5.5",
+          "headline": "הפסד למכבי הנמל",
+          "score": "3-1",
+          "rating": "5.7",
           "gains": [
-            "סיומת47+0.1",
-            "מסירה44+0.0",
-            "דריבל49+0.1",
-            "מהירות40+0.0",
-            "סיבולת43+0.0"
+            "סיומת35+0.1",
+            "מסירה40+0.0",
+            "דריבל40+0.1",
+            "מהירות39+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 1 לדריבל 509/10",
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 למהירות 409/10",
+            "עוד 2 ל10 הופעות בקבוצה הבוגרת8/10",
+            "עוד 1 להשער הראשון בקריירה0/1"
           ],
-          "meanwhile": [],
+          "meanwhile": [
+            "מ.ס. הדרום 5-2 הפועל הערבה",
+            "מ.ס. הדרום החתימה את יונתן ביאדסה מהפועל העמק"
+          ],
           "loops": [
-            "ארטיום עם 1 שערים, אתה עם 4"
+            "הראל עם 0 שערים, אתה עם 0"
           ],
           "button": "לשבוע הבא",
           "week": 19
         },
         {
-          "headline": "ניצחון על בני המעלה",
-          "score": "1-2",
-          "rating": "6.4",
+          "headline": "בנוער: יואב כבש נגד בית״ר השרון",
+          "score": null,
+          "rating": null,
           "gains": [
-            "סיומת47+0.1",
-            "מסירה45+0.0",
-            "דריבל49+0.1",
-            "מהירות40+0.0",
-            "סיבולת43+0.0"
+            "סיומת35+0.1",
+            "מסירה40+0.0",
+            "דריבל40+0.1",
+            "מהירות39+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 1 לדריבל 509/10",
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 למהירות 409/10",
+            "עוד 2 ל10 הופעות בקבוצה הבוגרת8/10",
+            "עוד 1 להשער הראשון בקריירה0/1"
           ],
           "meanwhile": [
-            "בני הכפר 6-2 הפועל הנחל",
-            "מכבי האלונים החתימה את אוראל ברודסקי מבני המעלה"
+            "הפועל הים 5-0 הפועל הערבה",
+            "הפועל הבירה החתימה את איהאב אברהם מהפועל הסלע"
           ],
           "loops": [
-            "ארטיום עם 1 שערים, אתה עם 4"
+            "הראל עם 0 שערים, אתה עם 0"
           ],
           "button": "לשבוע הבא",
           "week": 20
         },
         {
-          "headline": "ערב קשה לאורי",
-          "score": "1-1",
-          "rating": "4.6",
+          "headline": "ניצחון על עירוני הגבעות",
+          "score": "1-2",
+          "rating": "7.1",
           "gains": [
-            "סיומת48+0.1",
-            "מסירה45+0.0",
-            "דריבל49+0.2",
-            "מהירות40+0.0",
-            "סיבולת44+0.0"
+            "סיומת35+0.1",
+            "מסירה40+0.0",
+            "דריבל40+0.1",
+            "מהירות39+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 1 לדריבל 509/10",
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 למהירות 409/10",
+            "עוד 1 ל10 הופעות בקבוצה הבוגרת9/10",
+            "עוד 1 להשער הראשון בקריירה0/1"
           ],
           "meanwhile": [
-            "מ.ס. החולות 5-0 הפועל המעיין",
-            "מכבי הקריות פיטרה את ליעד פטרוב. עלי יאסו מחליף אותו"
+            "הפועל הבירה 3-0 הכח המרכז"
           ],
           "loops": [
-            "טספאי אביטו עוד יחזור לעניין",
-            "ארטיום עם 1 שערים, אתה עם 4"
+            "הראל עם 0 שערים, אתה עם 0"
           ],
           "button": "לשבוע הבא",
           "week": 21
         },
         {
-          "headline": "הפסד לבית״ר הגבעה",
-          "score": "1-0",
-          "rating": "5.4",
+          "headline": "השער הראשון של יואב!",
+          "score": "2-2",
+          "rating": "6.0",
           "gains": [
-            "סיומת48+0.2",
-            "מסירה45+0.0",
-            "דריבל49+0.1",
-            "מהירות40+0.0",
-            "סיבולת44+0.0"
+            "סיומת35+0.1",
+            "מסירה40+0.0",
+            "דריבל40+0.1",
+            "מהירות39+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 למהירות 409/10",
+            "עוד 1 למהירות 4039/40",
+            "עוד 1 ללענות להראל מלכה עם גול0/1"
           ],
           "meanwhile": [
-            "בני הכפר 0-3 הפועל השכונה",
-            "ארטיום שמואלי כבש 2 להפועל המעיין"
+            "מטרה הושגה: 10 הופעות בקבוצה הבוגרת",
+            "מטרה הושגה: השער הראשון בקריירה"
           ],
           "loops": [
-            "טספאי אביטו עוד יחזור לעניין",
-            "ארטיום עם 3 שערים, אתה עם 4"
+            "הראל עם 0 שערים, אתה עם 1"
           ],
           "button": "לשבוע הבא",
           "week": 22
         },
         {
-          "headline": null,
-          "score": null,
-          "rating": null,
+          "headline": "תיקו מול הפועל הים",
+          "score": "1-1",
+          "rating": "5.3",
           "gains": [
-            "סיומת48+0.2",
-            "מסירה45+0.0",
-            "דריבל50+0.2",
-            "מהירות40+0.0",
-            "סיבולת44+0.0"
+            "סיומת35+0.1",
+            "מסירה40+0.0",
+            "דריבל40+0.2",
+            "מהירות39+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 למהירות 409/10",
+            "עוד 1 למהירות 4039/40",
+            "עוד 1 ללענות להראל מלכה עם גול0/1"
           ],
-          "meanwhile": [],
+          "meanwhile": [
+            "הפועל הבירה 0-3 מכבי המושבה",
+            "הפועל הערבה פיטרה את אלעד סלאמה. מלקאמו גרינברג מחליף אותו"
+          ],
           "loops": [
-            "טספאי אביטו עוד יחזור לעניין",
-            "ארטיום עם 3 שערים, אתה עם 4"
+            "הראל עם 0 שערים, אתה עם 1"
           ],
           "button": "לשבוע הבא",
           "week": 23
         },
         {
-          "headline": null,
-          "score": null,
-          "rating": null,
+          "headline": "הפסד למכבי הגולן",
+          "score": "1-0",
+          "rating": "6.2",
           "gains": [
-            "סיומת48+0.2",
-            "מסירה45+0.0",
-            "דריבל50+0.1",
-            "מהירות40+0.0",
-            "סיבולת44+0.0"
+            "סיומת35+0.1",
+            "מסירה40+0.0",
+            "דריבל40+0.2",
+            "מהירות39+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 2 לסיומת 508/10",
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 למהירות 409/10",
+            "עוד 1 למהירות 4039/40",
+            "עוד 1 ללענות להראל מלכה עם גול0/1"
           ],
-          "meanwhile": [],
+          "meanwhile": [
+            "מ.ס. הדרום 3-0 בית״ר השרון"
+          ],
           "loops": [
-            "סיגל לוי הבטיח משהו. עוד 6 שבועות נראה",
-            "ארטיום עם 3 שערים, אתה עם 4"
+            "הראל עם 0 שערים, אתה עם 1"
           ],
           "button": "לשבוע הבא",
           "week": 24
         },
         {
-          "headline": null,
-          "score": null,
-          "rating": null,
+          "headline": "הפסד להפועל הבירה",
+          "score": "3-0",
+          "rating": "5.5",
           "gains": [
-            "סיומת48+0.1",
-            "מסירה45+0.0",
-            "דריבל50+0.2",
-            "מהירות40+0.0",
-            "סיבולת44+0.0"
+            "סיומת36+0.1",
+            "מסירה40+0.0",
+            "דריבל41+0.2",
+            "מהירות39+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 2 לסיומת 508/10",
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 למהירות 409/10",
+            "עוד 1 למהירות 4039/40",
+            "עוד 1 ללענות להראל מלכה עם גול0/1"
           ],
           "meanwhile": [],
           "loops": [
-            "סיגל לוי הבטיח משהו. עוד 5 שבועות נראה",
-            "ארטיום עם 3 שערים, אתה עם 4"
+            "הראל עם 0 שערים, אתה עם 1"
           ],
           "button": "לשבוע הבא",
           "week": 25
         },
         {
-          "headline": null,
+          "headline": "בנוער: יואב כבש נגד מכבי העמק",
           "score": null,
           "rating": null,
           "gains": [
-            "סיומת48+0.1",
-            "מסירה45+0.0",
-            "דריבל50+0.2",
-            "מהירות40+0.0",
-            "סיבולת44+0.0"
+            "סיומת36+0.1",
+            "מסירה40+0.0",
+            "דריבל41+0.1",
+            "מהירות39+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 2 לסיומת 508/10",
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 למהירות 409/10",
+            "עוד 1 למהירות 4039/40",
+            "עוד 1 ללענות להראל מלכה עם גול0/1"
           ],
-          "meanwhile": [],
+          "meanwhile": [
+            "הכח המרכז 5-1 הפועל הערבה"
+          ],
           "loops": [
-            "סיגל לוי הבטיח משהו. עוד 4 שבועות נראה",
-            "ארטיום עם 3 שערים, אתה עם 4"
+            "הראל עם 0 שערים, אתה עם 1"
           ],
           "button": "לשבוע הבא",
           "week": 26
         },
         {
-          "headline": null,
-          "score": null,
-          "rating": null,
+          "headline": "ערב קשה ליואב",
+          "score": "2-1",
+          "rating": "5.1",
           "gains": [
-            "סיומת48+0.1",
-            "מסירה45+0.0",
-            "דריבל50+0.1",
-            "מהירות40+0.0",
-            "סיבולת44+0.0"
+            "סיומת36+0.1",
+            "מסירה40+0.0",
+            "דריבל41+0.2",
+            "מהירות39+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 2 לסיומת 508/10",
-            "עוד 10 למהירות 5040/50"
+            "עוד 1 למהירות 409/10",
+            "עוד 1 למהירות 4039/40",
+            "עוד 1 ללענות להראל מלכה עם גול0/1"
           ],
           "meanwhile": [],
           "loops": [
-            "סיגל לוי הבטיח משהו. עוד 3 שבועות נראה",
-            "ארטיום עם 3 שערים, אתה עם 4"
+            "הראל עם 0 שערים, אתה עם 1"
           ],
           "button": "לשבוע הבא",
           "week": 27
         },
         {
-          "headline": null,
+          "headline": "בנוער: 0-5 נגד עירוני הוואדי",
           "score": null,
           "rating": null,
           "gains": [
-            "סיומת49+0.1",
-            "מסירה45+0.0",
-            "דריבל50+0.2",
-            "מהירות40+0.0",
-            "סיבולת44+0.0"
+            "סיומת36+0.1",
+            "מסירה40+0.0",
+            "דריבל41+0.1",
+            "מהירות39+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 1 לסיומת 509/10",
-            "עוד 9 למהירות 5041/50"
+            "עוד 1 למהירות 409/10",
+            "עוד 1 למהירות 4039/40",
+            "עוד 1 ללענות להראל מלכה עם גול0/1"
           ],
-          "meanwhile": [],
+          "meanwhile": [
+            "עירוני הוואדי 4-0 בני הכנרת"
+          ],
           "loops": [
-            "סיגל לוי הבטיח משהו. עוד 2 שבועות נראה",
-            "ארטיום עם 3 שערים, אתה עם 4"
+            "הראל עם 0 שערים, אתה עם 1"
           ],
           "button": "לשבוע הבא",
           "week": 28
         },
         {
-          "headline": null,
-          "score": null,
-          "rating": null,
+          "headline": "הפסד להכח המרכז",
+          "score": "2-1",
+          "rating": "6.6",
           "gains": [
-            "סיומת49+0.2",
-            "מסירה45+0.0",
-            "דריבל50+0.1",
-            "מהירות41+0.0",
-            "סיבולת44+0.0"
+            "סיומת36+0.1",
+            "מסירה40+0.0",
+            "דריבל41+0.2",
+            "מהירות39+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 1 לסיומת 509/10",
-            "עוד 9 למהירות 5041/50"
+            "עוד 1 למהירות 409/10",
+            "עוד 1 למהירות 4039/40",
+            "עוד 1 ללענות להראל מלכה עם גול0/1"
           ],
-          "meanwhile": [],
+          "meanwhile": [
+            "עירוני הוואדי 3-0 מכבי הנמל"
+          ],
           "loops": [
-            "מיכאל כנעאן עוד יחזור לעניין",
-            "סיגל לוי הבטיח משהו. עוד 1 שבועות נראה",
-            "ארטיום עם 3 שערים, אתה עם 4"
+            "הראל עם 0 שערים, אתה עם 2"
           ],
           "button": "לשבוע הבא",
           "week": 29
         },
         {
-          "headline": null,
-          "score": null,
-          "rating": null,
+          "headline": "תיקו מול הפועל הערבה",
+          "score": "1-1",
+          "rating": "5.3",
           "gains": [
-            "סיומת49+0.1",
-            "מסירה45+0.0",
-            "דריבל51+0.1",
-            "מהירות41+0.0",
-            "סיבולת44+0.0"
+            "סיומת36+0.1",
+            "מסירה40+0.0",
+            "דריבל41+0.1",
+            "מהירות39+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 1 לסיומת 509/10",
-            "עוד 9 למהירות 5041/50"
+            "עוד 1 למהירות 409/10",
+            "עוד 1 למהירות 4039/40",
+            "עוד 1 ללענות להראל מלכה עם גול0/1"
           ],
-          "meanwhile": [
-            "סיגל לוי עמד בהבטחה"
-          ],
+          "meanwhile": [],
           "loops": [
-            "מיכאל כנעאן עוד יחזור לעניין",
-            "ארטיום עם 3 שערים, אתה עם 4"
+            "הראל עם 0 שערים, אתה עם 2"
           ],
           "button": "לשבוע הבא",
           "week": 30
@@ -1514,20 +1816,22 @@
           "score": null,
           "rating": null,
           "gains": [
-            "סיומת49+0.1",
-            "מסירה45+0.0",
-            "דריבל51+0.2",
-            "מהירות41+0.0",
-            "סיבולת44+0.0"
+            "סיומת36+0.1",
+            "מסירה40+0.0",
+            "דריבל41+0.2",
+            "מהירות39+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 1 לסיומת 509/10",
-            "עוד 9 למהירות 5041/50"
+            "עוד 1 למהירות 409/10",
+            "עוד 1 למהירות 4039/40",
+            "עוד 1 ללענות להראל מלכה עם גול0/1"
           ],
-          "meanwhile": [],
+          "meanwhile": [
+            "בית״ר השרון פיטרה את מוחמד רבינוביץ׳. מתן איבנוב מחליף אותו"
+          ],
           "loops": [
-            "מיכאל כנעאן עוד יחזור לעניין",
-            "ארטיום עם 3 שערים, אתה עם 4"
+            "הראל עם 0 שערים, אתה עם 2"
           ],
           "button": "לשבוע הבא",
           "week": 31
@@ -1537,20 +1841,20 @@
           "score": null,
           "rating": null,
           "gains": [
-            "סיומת49+0.2",
-            "מסירה45+0.0",
-            "דריבל51+0.2",
-            "מהירות41+0.0",
-            "סיבולת44+0.0"
+            "סיומת36+0.1",
+            "מסירה40+0.0",
+            "דריבל42+0.2",
+            "מהירות39+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 1 לסיומת 509/10",
-            "עוד 9 למהירות 5041/50"
+            "עוד 1 למהירות 409/10",
+            "עוד 1 למהירות 4039/40",
+            "עוד 1 ללענות להראל מלכה עם גול0/1"
           ],
           "meanwhile": [],
           "loops": [
-            "מיכאל כנעאן עוד יחזור לעניין",
-            "ארטיום עם 3 שערים, אתה עם 4"
+            "הראל עם 0 שערים, אתה עם 2"
           ],
           "button": "לשבוע הבא",
           "week": 32
@@ -1560,19 +1864,20 @@
           "score": null,
           "rating": null,
           "gains": [
-            "סיומת49+0.2",
-            "מסירה45+0.0",
-            "דריבל51+0.2",
-            "מהירות41+0.0",
-            "סיבולת44+0.0"
+            "סיומת36+0.1",
+            "מסירה40+0.0",
+            "דריבל42+0.1",
+            "מהירות39+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 1 לסיומת 509/10",
-            "עוד 9 למהירות 5041/50"
+            "עוד 1 למהירות 4010/10",
+            "עוד 1 למהירות 4039/40",
+            "עוד 1 ללענות להראל מלכה עם גול0/1"
           ],
           "meanwhile": [],
           "loops": [
-            "ארטיום עם 3 שערים, אתה עם 4"
+            "הראל עם 0 שערים, אתה עם 2"
           ],
           "button": "לשבוע הבא",
           "week": 33
@@ -1582,19 +1887,22 @@
           "score": null,
           "rating": null,
           "gains": [
-            "סיומת49+0.1",
-            "מסירה45+0.0",
-            "דריבל51+0.1",
-            "מהירות41+0.0",
-            "סיבולת44+0.0"
+            "סיומת37+0.1",
+            "מסירה40+0.0",
+            "דריבל42+0.1",
+            "מהירות39+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 1 לסיומת 5010/10",
-            "עוד 9 למהירות 5041/50"
+            "עוד 1 למהירות 4010/10",
+            "עוד 1 למהירות 4039/40",
+            "עוד 1 ללענות להראל מלכה עם גול0/1"
           ],
-          "meanwhile": [],
+          "meanwhile": [
+            "בני הכנרת פיטרה את נדב אביטו. ח׳ליל חדד מחליף אותו"
+          ],
           "loops": [
-            "ארטיום עם 3 שערים, אתה עם 4"
+            "הראל עם 0 שערים, אתה עם 2"
           ],
           "button": "לשבוע הבא",
           "week": 34
@@ -1604,18 +1912,21 @@
           "score": null,
           "rating": null,
           "gains": [
-            "סיומת50+0.2",
-            "מסירה45+0.0",
-            "דריבל51+0.2",
-            "מהירות41+0.0",
-            "סיבולת44+0.0"
+            "סיומת37+0.1",
+            "מסירה40+0.0",
+            "דריבל42+0.1",
+            "מהירות39+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 9 למהירות 5041/50"
+            "עוד 1 ללענות להראל מלכה עם גול0/1",
+            "עוד 1 ללענות להראל מלכה עם גול0/1"
           ],
-          "meanwhile": [],
+          "meanwhile": [
+            "מטרה הושגה: מהירות 40"
+          ],
           "loops": [
-            "ארטיום עם 3 שערים, אתה עם 4"
+            "הראל עם 0 שערים, אתה עם 2"
           ],
           "button": "לשבוע הבא",
           "week": 35
@@ -1625,19 +1936,19 @@
           "score": null,
           "rating": null,
           "gains": [
-            "סיומת50+0.1",
-            "מסירה45+0.0",
-            "דריבל52+0.2",
-            "מהירות41+0.0",
-            "סיבולת44+0.0"
+            "סיומת38+0.1",
+            "מסירה40+0.0",
+            "דריבל42+0.2",
+            "מהירות40+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 9 למהירות 5041/50",
-            "עוד 1 ללענות לארטיום שמואלי עם גול0/1"
+            "עוד 1 ללענות להראל מלכה עם גול0/1",
+            "עוד 1 ללענות להראל מלכה עם גול0/1"
           ],
           "meanwhile": [],
           "loops": [
-            "ארטיום עם 3 שערים, אתה עם 4"
+            "הראל עם 0 שערים, אתה עם 2"
           ],
           "button": "לשבוע הבא",
           "week": 36
@@ -1647,19 +1958,19 @@
           "score": null,
           "rating": null,
           "gains": [
-            "סיומת50+0.1",
-            "מסירה45+0.0",
-            "דריבל52+0.2",
-            "מהירות41+0.0",
-            "סיבולת44+0.0"
+            "סיומת38+0.1",
+            "מסירה40+0.0",
+            "דריבל42+0.1",
+            "מהירות40+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 9 למהירות 5041/50",
-            "עוד 1 ללענות לארטיום שמואלי עם גול0/1"
+            "עוד 1 ללענות להראל מלכה עם גול0/1",
+            "עוד 1 ללענות להראל מלכה עם גול0/1"
           ],
           "meanwhile": [],
           "loops": [
-            "ארטיום עם 3 שערים, אתה עם 4"
+            "הראל עם 0 שערים, אתה עם 2"
           ],
           "button": "לשבוע הבא",
           "week": 37
@@ -1669,19 +1980,20 @@
           "score": null,
           "rating": null,
           "gains": [
-            "סיומת50+0.1",
-            "מסירה45+0.0",
-            "דריבל52+0.2",
-            "מהירות41+0.0",
-            "סיבולת44+0.0"
+            "סיומת38+0.1",
+            "מסירה40+0.0",
+            "דריבל42+0.1",
+            "מהירות40+0.0",
+            "סיבולת31+0.0"
           ],
           "near": [
-            "עוד 9 למהירות 5041/50",
-            "עוד 1 ללענות לארטיום שמואלי עם גול0/1"
+            "עוד 2 לסיומת 408/10",
+            "עוד 1 ללענות להראל מלכה עם גול0/1",
+            "עוד 1 ללענות להראל מלכה עם גול0/1"
           ],
           "meanwhile": [],
           "loops": [
-            "ארטיום עם 3 שערים, אתה עם 4"
+            "הראל עם 0 שערים, אתה עם 2"
           ],
           "button": "לשבוע הבא",
           "week": 38
@@ -1692,16 +2004,16 @@
           "rating": null,
           "gains": [],
           "near": [
-            "עוד 9 למהירות 5041/50",
-            "עוד 1 ללענות לארטיום שמואלי עם גול0/1"
+            "עוד 2 לסיומת 408/10",
+            "עוד 1 ללענות להראל מלכה עם גול0/1",
+            "עוד 1 ללענות להראל מלכה עם גול0/1"
           ],
           "meanwhile": [
-            "מכבי האלונים אלופת ליגה א׳",
-            "מלך השערים: שגיא עבאס עם 11",
-            "ארטיום שמואלי סיים עם 3 שערים ב22 הופעות"
+            "הפועל הבירה אלופת הליגה הלאומית",
+            "מלך השערים: אנטון טסמה עם 14"
           ],
           "loops": [
-            "ארטיום עם 3 שערים, אתה עם 4"
+            "הראל עם 0 שערים, אתה עם 2"
           ],
           "button": "לעונה הבאה",
           "week": 38
@@ -1711,178 +2023,238 @@
         {
           "week": 1,
           "lineup": "פותח בהרכב",
-          "opening": " / המשחק מתחיל...",
-          "score": "1-1",
-          "ms": 24890
+          "opening": "לא נכנסת לסגל הבוגר. היום אתה משחק בנוער / 0'לא נכנסת לסגל הבוגר. היום אתה משחק בנוער",
+          "score": "4-3",
+          "ms": 24602
         },
         {
           "week": 2,
           "lineup": "על הספסל",
-          "opening": "שריקת פתיחה. אתה על הדשא. / המשחק מתחיל...",
-          "score": "1-0",
-          "ms": 2681
+          "opening": "אתה על הספסל. מחכה להזדמנות. / המשחק מתחיל...",
+          "score": "2-0",
+          "ms": 9274
         },
         {
           "week": 3,
           "lineup": "על הספסל",
-          "opening": "שריקת פתיחה. אתה על הדשא. / המשחק מתחיל...",
-          "score": "0-0",
-          "ms": 3602
+          "opening": "לא נכנסת לסגל הבוגר. היום אתה משחק בנוער / 0'לא נכנסת לסגל הבוגר. היום אתה משחק בנוער",
+          "score": "2-1",
+          "ms": 2044
         },
         {
           "week": 4,
           "lineup": "על הספסל",
-          "opening": " / המשחק מתחיל...",
-          "score": "1-0",
-          "ms": 21395
+          "opening": "אתה על הספסל. מחכה להזדמנות. / המשחק מתחיל...",
+          "score": "0-0",
+          "ms": 24210
         },
         {
           "week": 5,
           "lineup": "על הספסל",
-          "opening": "שריקת פתיחה. אתה על הדשא. / המשחק מתחיל...",
-          "score": "1-2",
-          "ms": 4235
+          "opening": "לא נכנסת לסגל הבוגר. היום אתה משחק בנוער / 0'לא נכנסת לסגל הבוגר. היום אתה משחק בנוער",
+          "score": "2-1",
+          "ms": 1866
         },
         {
           "week": 6,
           "lineup": "על הספסל",
-          "opening": "שריקת פתיחה. אתה על הדשא. / המשחק מתחיל...",
-          "score": "2-2",
-          "ms": 2532
+          "opening": " / 0'לא נכנסת לסגל הבוגר. היום אתה משחק בנוער",
+          "score": "0-0",
+          "ms": 1875
         },
         {
           "week": 7,
           "lineup": "על הספסל",
-          "opening": "שריקת פתיחה. אתה על הדשא. / המשחק מתחיל...",
-          "score": "1-1",
-          "ms": 16865
+          "opening": "לא נכנסת לסגל הבוגר. היום אתה משחק בנוער / 0'לא נכנסת לסגל הבוגר. היום אתה משחק בנוער",
+          "score": "2-0",
+          "ms": 19450
         },
         {
           "week": 8,
           "lineup": "על הספסל",
-          "opening": " / המשחק מתחיל...",
-          "score": "2-1",
-          "ms": 1898
+          "opening": "לא נכנסת לסגל הבוגר. היום אתה משחק בנוער / 0'לא נכנסת לסגל הבוגר. היום אתה משחק בנוער",
+          "score": "3-1",
+          "ms": 1862
         },
         {
           "week": 9,
           "lineup": "על הספסל",
-          "opening": "שריקת פתיחה. אתה על הדשא. / המשחק מתחיל...",
-          "score": "1-1",
-          "ms": 5172
+          "opening": "שער! רועי זלצמן (כנרת) / 2'שער! רועי זלצמן (כנרת) / 0'לא נכנסת לסגל הבוגר. היום אתה משחק בנוער",
+          "score": "5-0",
+          "ms": 5168
         },
         {
           "week": 10,
           "lineup": "על הספסל",
-          "opening": "שער! יוסי זלצמן (פרדס) / 3'שער! יוסי זלצמן (פרדס)",
-          "score": "2-1",
-          "ms": 23238
+          "opening": "אתה על הספסל. מחכה להזדמנות. / המשחק מתחיל...",
+          "score": "3-4",
+          "ms": 30519
         },
         {
           "week": 11,
           "lineup": "על הספסל",
-          "opening": "שער! פייטרו ריצ׳י (גבעה) / 4'שער! פייטרו ריצ׳י (גבעה)",
-          "score": "2-2",
-          "ms": 2185
+          "opening": "לא נכנסת לסגל הבוגר. היום אתה משחק בנוער / 0'לא נכנסת לסגל הבוגר. היום אתה משחק בנוער",
+          "score": "1-4",
+          "ms": 3450
         },
         {
           "week": 12,
           "lineup": "על הספסל",
-          "opening": "שריקת פתיחה. אתה על הדשא. / המשחק מתחיל...",
-          "score": "3-1",
-          "ms": 2042
+          "opening": "לא נכנסת לסגל הבוגר. היום אתה משחק בנוער / 0'לא נכנסת לסגל הבוגר. היום אתה משחק בנוער",
+          "score": "2-3",
+          "ms": 3918
         },
         {
           "week": 13,
-          "lineup": "פותח בהרכב",
-          "opening": "שריקת פתיחה. אתה על הדשא. / המשחק מתחיל...",
-          "score": "3-2",
-          "ms": 19521
+          "lineup": "על הספסל",
+          "opening": "לא נכנסת לסגל הבוגר. היום אתה משחק בנוער / 0'לא נכנסת לסגל הבוגר. היום אתה משחק בנוער",
+          "score": "1-1",
+          "ms": 20194
         },
         {
           "week": 14,
-          "lineup": "פותח בהרכב",
-          "opening": "שריקת פתיחה. אתה על הדשא. / המשחק מתחיל...",
-          "score": "2-2",
-          "ms": 3131
+          "lineup": "על הספסל",
+          "opening": "לא נכנסת לסגל הבוגר. היום אתה משחק בנוער / 0'לא נכנסת לסגל הבוגר. היום אתה משחק בנוער",
+          "score": "1-0",
+          "ms": 3115
         },
         {
           "week": 15,
-          "lineup": "פותח בהרכב",
-          "opening": "שריקת פתיחה. אתה על הדשא. / המשחק מתחיל...",
-          "score": "2-1",
-          "ms": 6084
+          "lineup": "על הספסל",
+          "opening": "אתה על הספסל. מחכה להזדמנות. / המשחק מתחיל...",
+          "score": "3-1",
+          "ms": 7354
         },
         {
           "week": 16,
-          "lineup": "פותח בהרכב",
-          "opening": "שריקת פתיחה. אתה על הדשא. / המשחק מתחיל...",
-          "score": "1-1",
-          "ms": 22208
+          "lineup": "על הספסל",
+          "opening": "אתה על הספסל. מחכה להזדמנות. / המשחק מתחיל...",
+          "score": "2-1",
+          "ms": 25750
         },
         {
           "week": 17,
-          "lineup": "פותח בהרכב",
-          "opening": "שריקת פתיחה. אתה על הדשא. / המשחק מתחיל...",
-          "score": "1-1",
-          "ms": 2501
+          "lineup": "על הספסל",
+          "opening": "אתה על הספסל. מחכה להזדמנות. / המשחק מתחיל...",
+          "score": "0-0",
+          "ms": 7817
         },
         {
           "week": 18,
           "lineup": "על הספסל",
-          "opening": " / המשחק מתחיל...",
-          "score": "4-0",
-          "ms": 1884
+          "opening": "שריקת פתיחה. אתה על הדשא. / המשחק מתחיל...",
+          "score": "1-1",
+          "ms": 4383
         },
         {
           "week": 19,
           "lineup": "על הספסל",
-          "opening": "שריקת פתיחה. אתה על הדשא. / המשחק מתחיל...",
-          "score": "2-2",
-          "ms": 26322
+          "opening": "שער! מנואל אורטגה (מכ״נ) / 1'שער! מנואל אורטגה (מכ״נ)",
+          "score": "3-1",
+          "ms": 19834
         },
         {
           "week": 20,
           "lineup": "על הספסל",
-          "opening": "שריקת פתיחה. אתה על הדשא. / המשחק מתחיל...",
-          "score": "1-2",
-          "ms": 5615
+          "opening": "לא נכנסת לסגל הבוגר. היום אתה משחק בנוער / 0'לא נכנסת לסגל הבוגר. היום אתה משחק בנוער",
+          "score": "3-1",
+          "ms": 4097
         },
         {
           "week": 21,
           "lineup": "על הספסל",
-          "opening": "שריקת פתיחה. אתה על הדשא. / המשחק מתחיל...",
-          "score": "1-1",
-          "ms": 2341
+          "opening": "אתה על הספסל. מחכה להזדמנות. / המשחק מתחיל...",
+          "score": "1-2",
+          "ms": 7979
         },
         {
           "week": 22,
+          "lineup": "פותח בהרכב",
+          "opening": "שריקת פתיחה. אתה על הדשא. / המשחק מתחיל...",
+          "score": "2-2",
+          "ms": 14735
+        },
+        {
+          "week": 23,
+          "lineup": "על הספסל",
+          "opening": " / המשחק מתחיל...",
+          "score": "1-1",
+          "ms": 1878
+        },
+        {
+          "week": 24,
+          "lineup": "על הספסל",
+          "opening": "אתה על הספסל. מחכה להזדמנות. / המשחק מתחיל...",
+          "score": "1-0",
+          "ms": 8455
+        },
+        {
+          "week": 25,
+          "lineup": "על הספסל",
+          "opening": " / המשחק מתחיל...",
+          "score": "3-0",
+          "ms": 22517
+        },
+        {
+          "week": 26,
+          "lineup": "על הספסל",
+          "opening": "לא נכנסת לסגל הבוגר. היום אתה משחק בנוער / 0'לא נכנסת לסגל הבוגר. היום אתה משחק בנוער",
+          "score": "1-1",
+          "ms": 3297
+        },
+        {
+          "week": 27,
           "lineup": "על הספסל",
           "opening": "שריקת פתיחה. אתה על הדשא. / המשחק מתחיל...",
-          "score": "1-0",
-          "ms": 18404
+          "score": "2-1",
+          "ms": 2536
+        },
+        {
+          "week": 28,
+          "lineup": "על הספסל",
+          "opening": "לא נכנסת לסגל הבוגר. היום אתה משחק בנוער / 0'לא נכנסת לסגל הבוגר. היום אתה משחק בנוער",
+          "score": "5-0",
+          "ms": 24429
+        },
+        {
+          "week": 29,
+          "lineup": "על הספסל",
+          "opening": "אתה על הספסל. מחכה להזדמנות. / המשחק מתחיל...",
+          "score": "2-1",
+          "ms": 8772
+        },
+        {
+          "week": 30,
+          "lineup": "על הספסל",
+          "opening": "שער! עידן טל (ערבה) / 4'שער! עידן טל (ערבה)",
+          "score": "1-1",
+          "ms": 3598
         }
       ],
       "toasts": [
         {
           "page": "first-kick-1",
-          "t": "האקדמיה של ספורטינג ולדרהם בבלגיה הציעה לך מקום. חדר קטן, שפה חדשה, והרבה געגועים."
+          "t": "סקאוט של פ.צ. סרה דורדה ראה אותך בטורניר בנתניה. שבוע אחרי זה כבר היית על מטוס לפורטוגל."
         },
         {
           "page": "first-kick-2",
-          "t": "מאמן הנוער של מכבי הפרדס ראה אותך בטורניר שכונות ולא הפסיק להתקשר. כנף בן 16, והחלום מתחיל כאן."
+          "t": "האקדמיה של ו.ו. הארלמסה בהולנד הציעה לך מקום. חדר קטן, שפה חדשה, והרבה געגועים."
         },
         {
           "page": "first-kick-3",
-          "t": "אבא שלך הסיע אותך לכל מבחן בארץ. בהפועל השכונה אמרו כן. עכשיו צריך להוכיח."
+          "t": "אבא שלך הסיע אותך לכל מבחן בארץ. במכבי הקריות אמרו כן. עכשיו צריך להוכיח."
         },
         {
           "page": "season",
-          "t": "שיחה אחת מעירוני הגבול ופתאום אתה בסגל הנוער. בשכונה כבר מדברים עליך."
+          "t": "אבא שלך הסיע אותך לכל מבחן בארץ. בבני הכנרת אמרו כן. עכשיו צריך להוכיח."
         },
         {
           "page": "season",
-          "t": "יש לי משהו גדול בשבילך. אוליבוס דראמיה רוצים אותך, ואני אוציא מהם יותר."
+          "t": "הגיעה פנייה ממכבי הפרדס. יש שם מקום לשחק, וזה מה שחשוב בגיל הזה."
+        },
+        {
+          "page": "season",
+          "t": "הגיעה פנייה ממכבי הפרדס. יש שם מקום לשחק, וזה מה שחשוב בגיל הזה."
         },
         {
           "page": "season",
@@ -1890,15 +2262,11 @@
         },
         {
           "page": "season",
-          "t": "מכבי האלונים אלופת ליגה א׳"
+          "t": "הפועל הבירה אלופת הליגה הלאומית"
         },
         {
           "page": "season",
-          "t": "מלך השערים: שגיא עבאס עם 11"
-        },
-        {
-          "page": "season",
-          "t": "ארטיום שמואלי סיים עם 3 שערים ב22 הופעות"
+          "t": "מלך השערים: אנטון טסמה עם 14"
         },
         {
           "page": "season",
@@ -1906,15 +2274,15 @@
         },
         {
           "page": "season",
-          "t": "מ.ס. הדרום משפרים ל8,400 ₪."
+          "t": "בני הכנרת משפרים ל5,800 ₪."
         },
         {
           "page": "season",
-          "t": "מ.ס. הדרום משפרים ל9,100 ₪. זו ההצעה האחרונה."
+          "t": "בני הכנרת משפרים ל5,900 ₪. זו ההצעה האחרונה."
         },
         {
           "page": "season",
-          "t": "חתמת במ.ס. הדרום!"
+          "t": "חתמת על חוזה חדש בבני הכנרת"
         },
         {
           "page": "season",
@@ -1922,24 +2290,28 @@
         },
         {
           "page": "desktop",
-          "t": "מאמן הנוער של מכבי האלונים ראה אותך בטורניר שכונות ולא הפסיק להתקשר. כנף בן 16, והחלום מתחיל כאן."
+          "t": "בבית מדברים עברית, במגרש מדברים בשפה של יוון. ארגונאפטס ולוס רוצה אותך בנוער."
         },
         {
           "page": "small",
-          "t": "האקדמיה של ויטוריה דה קמפוש בפורטוגל הציעה לך מקום. חדר קטן, שפה חדשה, והרבה געגועים."
+          "t": "סקאוט של אוניאו דה פראיה ראה אותך בטורניר בנתניה. שבוע אחרי זה כבר היית על מטוס לפורטוגל."
         },
         {
           "page": "pwa",
-          "t": "מאמן הנוער של הפועל המעיין ראה אותך בטורניר שכונות ולא הפסיק להתקשר. כנף בן 16, והחלום מתחיל כאן."
+          "t": "מאמן הנוער של בני הכנרת ראה אותך בטורניר שכונות ולא הפסיק להתקשר. כנף בן 16, והחלום מתחיל כאן."
         }
       ],
       "tables": [
         {
           "week": 1,
-          "rows": 12,
+          "rows": 16,
           "played": 0,
           "me": true,
           "pts": [
+            "0",
+            "0",
+            "0",
+            "0",
             "0",
             "0",
             "0",
@@ -1956,367 +2328,408 @@
         },
         {
           "week": 5,
-          "rows": 12,
-          "played": 48,
+          "rows": 16,
+          "played": 64,
           "me": true,
           "pts": [
-            "12",
+            "10",
+            "10",
             "7",
-            "7",
-            "7",
+            "6",
+            "6",
+            "6",
             "5",
             "5",
-            "5",
+            "4",
+            "4",
             "4",
             "4",
             "3",
+            "3",
+            "2",
+            "1"
+          ]
+        },
+        {
+          "week": 9,
+          "rows": 16,
+          "played": 128,
+          "me": true,
+          "pts": [
+            "22",
+            "17",
+            "14",
+            "13",
+            "13",
+            "12",
+            "11",
+            "11",
+            "10",
+            "9",
+            "9",
+            "8",
+            "7",
+            "6",
             "3",
             "2"
           ]
         },
         {
-          "week": 9,
-          "rows": 12,
-          "played": 96,
-          "me": true,
-          "pts": [
-            "19",
-            "13",
-            "13",
-            "11",
-            "11",
-            "11",
-            "11",
-            "10",
-            "10",
-            "9",
-            "5",
-            "5"
-          ]
-        },
-        {
           "week": 13,
-          "rows": 12,
-          "played": 144,
+          "rows": 16,
+          "played": 192,
           "me": true,
           "pts": [
-            "23",
+            "31",
+            "26",
+            "22",
             "20",
-            "20",
+            "19",
             "18",
-            "17",
-            "16",
             "16",
             "15",
             "15",
+            "14",
+            "14",
             "13",
-            "11",
-            "7"
+            "13",
+            "12",
+            "5",
+            "4"
           ]
         },
         {
           "week": 17,
-          "rows": 12,
-          "played": 192,
+          "rows": 16,
+          "played": 256,
           "me": true,
           "pts": [
+            "39",
+            "29",
             "28",
+            "27",
             "26",
-            "24",
-            "23",
-            "22",
             "22",
             "22",
             "21",
-            "19",
+            "20",
+            "20",
             "18",
-            "17",
-            "14"
+            "16",
+            "16",
+            "15",
+            "14",
+            "11"
           ]
         },
         {
           "week": 21,
-          "rows": 12,
-          "played": 240,
+          "rows": 16,
+          "played": 320,
           "me": true,
           "pts": [
+            "49",
+            "38",
+            "33",
             "32",
-            "31",
+            "32",
             "30",
-            "30",
-            "29",
             "27",
             "27",
             "25",
             "25",
             "23",
             "23",
-            "20"
+            "19",
+            "18",
+            "17",
+            "12"
           ]
         },
         {
           "week": 25,
-          "rows": 12,
-          "played": 264,
+          "rows": 16,
+          "played": 384,
           "me": true,
           "pts": [
-            "38",
+            "58",
+            "43",
+            "40",
+            "39",
+            "37",
+            "36",
             "33",
-            "32",
             "31",
-            "31",
-            "30",
             "30",
             "29",
             "28",
-            "28",
             "26",
-            "20"
+            "25",
+            "23",
+            "20",
+            "18"
           ]
         },
         {
           "week": 29,
-          "rows": 12,
-          "played": 264,
+          "rows": 16,
+          "played": 448,
           "me": true,
           "pts": [
-            "38",
+            "68",
+            "47",
+            "44",
+            "43",
+            "42",
+            "41",
+            "41",
+            "40",
+            "36",
             "33",
             "32",
-            "31",
-            "31",
-            "30",
-            "30",
+            "32",
             "29",
             "28",
-            "28",
             "26",
-            "20"
+            "24"
           ]
         },
         {
           "week": 33,
-          "rows": 12,
-          "played": 264,
+          "rows": 16,
+          "played": 480,
           "me": true,
           "pts": [
-            "38",
+            "74",
+            "48",
+            "48",
+            "46",
+            "46",
+            "46",
+            "45",
+            "42",
+            "41",
+            "35",
+            "34",
             "33",
             "32",
-            "31",
-            "31",
-            "30",
-            "30",
             "29",
-            "28",
-            "28",
             "26",
-            "20"
+            "25"
           ]
         },
         {
           "week": 37,
-          "rows": 12,
-          "played": 264,
+          "rows": 16,
+          "played": 480,
           "me": true,
           "pts": [
-            "38",
+            "74",
+            "48",
+            "48",
+            "46",
+            "46",
+            "46",
+            "45",
+            "42",
+            "41",
+            "35",
+            "34",
             "33",
             "32",
-            "31",
-            "31",
-            "30",
-            "30",
             "29",
-            "28",
-            "28",
             "26",
-            "20"
+            "25"
           ]
         }
       ],
       "club": [
         {
           "week": 1,
-          "ovr": "43",
+          "ovr": "37",
           "attrs": [
-            "44",
-            "43",
-            "46",
+            "32",
             "40",
-            "42",
             "38",
+            "39",
             "29",
-            "33"
+            "40",
+            "21",
+            "23"
           ],
-          "wage": "₪2,000",
-          "pot": "60-80"
+          "wage": "₪5,800",
+          "pot": "82-99"
         },
         {
           "week": 5,
-          "ovr": "43",
+          "ovr": "37",
           "attrs": [
-            "44",
-            "43",
-            "47",
+            "32",
             "40",
-            "43",
             "38",
-            "29",
-            "33"
+            "39",
+            "30",
+            "40",
+            "21",
+            "23"
           ],
-          "wage": "₪2,000",
-          "pot": "60-80"
+          "wage": "₪5,800",
+          "pot": "82-99"
         },
         {
           "week": 9,
-          "ovr": "44",
+          "ovr": "37",
           "attrs": [
-            "46",
-            "43",
-            "47",
+            "33",
             "40",
-            "43",
             "38",
-            "29",
-            "33"
+            "39",
+            "30",
+            "40",
+            "21",
+            "23"
           ],
-          "wage": "₪2,000",
-          "pot": "60-80"
+          "wage": "₪5,800",
+          "pot": "82-99"
         },
         {
           "week": 13,
-          "ovr": "44",
+          "ovr": "38",
           "attrs": [
-            "46",
-            "43",
-            "48",
+            "34",
             "40",
-            "43",
-            "38",
-            "29",
-            "33"
+            "39",
+            "39",
+            "30",
+            "40",
+            "21",
+            "23"
           ],
-          "wage": "₪2,000",
-          "pot": "60-80"
+          "wage": "₪5,800",
+          "pot": "82-99"
         },
         {
           "week": 17,
-          "ovr": "45",
+          "ovr": "38",
           "attrs": [
-            "47",
-            "44",
-            "49",
+            "34",
             "40",
-            "43",
-            "38",
-            "29",
-            "33"
+            "39",
+            "39",
+            "31",
+            "40",
+            "21",
+            "23"
           ],
-          "wage": "₪2,000",
-          "pot": "60-80"
+          "wage": "₪5,800",
+          "pot": "82-99"
         },
         {
           "week": 21,
-          "ovr": "45",
+          "ovr": "38",
           "attrs": [
-            "47",
-            "45",
-            "49",
+            "35",
             "40",
-            "43",
-            "38",
-            "29",
-            "33"
+            "40",
+            "39",
+            "31",
+            "40",
+            "21",
+            "23"
           ],
-          "wage": "₪2,000",
-          "pot": "60-80"
+          "wage": "₪5,800",
+          "pot": "82-99"
         },
         {
           "week": 25,
-          "ovr": "45",
+          "ovr": "38",
           "attrs": [
-            "48",
-            "45",
-            "50",
+            "35",
             "40",
-            "44",
-            "38",
-            "29",
-            "33"
+            "41",
+            "39",
+            "31",
+            "40",
+            "21",
+            "23"
           ],
-          "wage": "₪2,000",
-          "pot": "60-80"
+          "wage": "₪5,800",
+          "pot": "82-99"
         },
         {
           "week": 29,
-          "ovr": "46",
+          "ovr": "39",
           "attrs": [
-            "49",
-            "45",
-            "50",
+            "36",
+            "40",
             "41",
-            "44",
-            "38",
-            "29",
-            "33"
+            "39",
+            "31",
+            "40",
+            "21",
+            "23"
           ],
-          "wage": "₪2,000",
-          "pot": "60-80"
+          "wage": "₪5,800",
+          "pot": "82-99"
         },
         {
           "week": 33,
-          "ovr": "46",
+          "ovr": "39",
           "attrs": [
-            "49",
-            "45",
-            "51",
-            "41",
-            "44",
-            "38",
-            "29",
-            "33"
+            "36",
+            "40",
+            "42",
+            "39",
+            "31",
+            "40",
+            "21",
+            "23"
           ],
-          "wage": "₪2,000",
-          "pot": "60-80"
+          "wage": "₪5,800",
+          "pot": "82-99"
         },
         {
           "week": 37,
-          "ovr": "46",
+          "ovr": "39",
           "attrs": [
-            "50",
-            "45",
-            "52",
-            "41",
-            "44",
             "38",
-            "29",
-            "33"
+            "40",
+            "42",
+            "40",
+            "31",
+            "40",
+            "21",
+            "23"
           ],
-          "wage": "₪2,000",
-          "pot": "60-80"
+          "wage": "₪5,800",
+          "pot": "82-99"
         }
       ],
       "negotiation": [
         {
           "round": "סבב 1/3",
-          "offer": "₪7,900",
-          "last": "מ.ס. הדרום מציעים 7,900 ₪ לחודש, תפקיד: הרכב, 3 שנים.",
+          "offer": "₪5,000",
+          "last": "בני הכנרת מציעים 5,000 ₪ לחודש, תפקיד: רוטציה, 3 שנים.",
           "ask": true,
-          "toast": "מ.ס. הדרום משפרים ל8,400 ₪."
+          "toast": "בני הכנרת משפרים ל5,800 ₪."
         },
         {
           "round": "סבב 2/3",
-          "offer": "₪8,400",
-          "last": "מ.ס. הדרום משפרים ל8,400 ₪.",
+          "offer": "₪5,800",
+          "last": "בני הכנרת משפרים ל5,800 ₪.",
           "ask": true,
-          "toast": "מ.ס. הדרום משפרים ל9,100 ₪. זו ההצעה האחרונה."
+          "toast": "בני הכנרת משפרים ל5,900 ₪. זו ההצעה האחרונה."
         }
       ],
       "sequenceTail": [
         "week",
+        "event",
+        "prematch",
+        "match",
         "weekend",
         "week",
+        "prematch",
+        "match",
         "weekend",
         "week",
         "event",
@@ -2324,11 +2737,6 @@
         "week",
         "weekend",
         "week",
-        "weekend",
-        "week",
-        "weekend",
-        "week",
-        "event",
         "event",
         "weekend",
         "week",
@@ -2357,9 +2765,9 @@
       "more": 2,
       "news": 2,
       "goals": 2,
-      "event": 17,
-      "prematch": 22,
-      "match-moment": 30,
+      "event": 16,
+      "prematch": 30,
+      "match-moment": 36,
       "match-fulltime": 3,
       "weekend": 39,
       "offseason": 1,
@@ -2387,25 +2795,25 @@
       {
         "page": "season",
         "kind": "console.warning",
-        "text": "[.WebGL-0xabc03c56c00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+        "text": "[.WebGL-0x2bc0017fc00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
         "external": false
       },
       {
         "page": "season",
         "kind": "console.warning",
-        "text": "[.WebGL-0xabc03c56c00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+        "text": "[.WebGL-0x2bc0017fc00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
         "external": false
       },
       {
         "page": "season",
         "kind": "console.warning",
-        "text": "[.WebGL-0xabc03c56c00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+        "text": "[.WebGL-0x2bc0017fc00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
         "external": false
       },
       {
         "page": "season",
         "kind": "console.warning",
-        "text": "[.WebGL-0xabc03c56c00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+        "text": "[.WebGL-0x2bc0017fc00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
         "external": false
       },
       {
@@ -2428,42 +2836,42 @@
       }
     ],
     "notes": [
-      "user league fixtures end at week 22, season has 38 weeks",
+      "user league fixtures end at week 30, season has 38 weeks",
       "event weeks 16/38, silence share 58%",
-      "toasts at season change: אבא שלך הסיע אותך לכל מבחן בארץ. בהפועל השכונה אמרו כן. עכשיו צריך להוכיח. | שיחה אחת מעירוני הגבול ופתאום אתה בסגל הנוער. בשכונה כבר מדברים עליך. | יש לי משהו גדול בשבילך. אוליבוס דראמיה רוצים אותך, ואני אוציא מהם יותר. | חלון ההעברות של ינואר נפתח | מכבי האלונים אלופת ליגה א׳ | מלך השערים: שגיא עבאס עם 11 | ארטיום שמואלי סיים עם 3 שערים ב22 הופעות | עונה 2 מתחילה",
+      "toasts at season change: אבא שלך הסיע אותך לכל מבחן בארץ. במכבי הקריות אמרו כן. עכשיו צריך להוכיח. | אבא שלך הסיע אותך לכל מבחן בארץ. בבני הכנרת אמרו כן. עכשיו צריך להוכיח. | הגיעה פנייה ממכבי הפרדס. יש שם מקום לשחק, וזה מה שחשוב בגיל הזה. | הגיעה פנייה ממכבי הפרדס. יש שם מקום לשחק, וזה מה שחשוב בגיל הזה. | חלון ההעברות של ינואר נפתח | הפועל הבירה אלופת הליגה הלאומית | מלך השערים: אנטון טסמה עם 14 | עונה 2 מתחילה",
       "manifest: {\"name\":\"קריירה: מהשכונה לפסגה\",\"short_name\":\"קריירה\",\"start_url\":\"/\",\"display\":\"standalone\",\"background_color\":\"#22344F\",\"theme_color\":\"#22344F\",\"lang\":\"he\",\"scope\":\"/\",\"dir\":\"rtl\",\"orientation\":\"portrait\",\"icons\":[{\"src\":\"icon.svg\",\"sizes\":\"any\",\"type\":\"image/svg+xml\",\"purpose\":\"any maskable\"}]}",
       "manifest remarks: no 192/512 PNG icon (only SVG: Chrome installability and iOS home-screen icon need PNG)"
     ],
     "firstKicks": [
       {
-        "title": 470,
-        "week": 1929,
+        "title": 448,
+        "week": 1755,
         "lineup": "פותח בהרכב",
-        "feed": "78'שער! ויקטור דפוי (ספורטינג) / 76'שער! ספן וואוטרס (רויאל) / 66'דניאל נכנס מהספסל בדקה 66 / 52'שער! טיס פנספרנגה (ספורטינג) / 38'שער! ליאנדר מרשאל (רויאל)",
-        "momentMinute": "87'",
-        "moment": 11245,
-        "taps": 5,
-        "path": "prematch>match",
-        "momentsInFirstMatch": 1
-      },
-      {
-        "title": 460,
-        "week": 1698,
-        "lineup": "פותח בהרכב",
-        "feed": "35'שער! וולדה אדמסו (סלע) / 22'שער! רומן קליין (סלע)",
-        "momentMinute": "36'",
-        "moment": 5874,
+        "feed": "0'לא נכנסת לסגל הבוגר. היום אתה משחק בנוער",
+        "momentMinute": "45'",
+        "moment": 6832,
         "taps": 5,
         "path": "prematch>match",
         "momentsInFirstMatch": 3
       },
       {
-        "title": 446,
-        "week": 1714,
+        "title": 420,
+        "week": 1710,
+        "lineup": "פותח בהרכב",
+        "feed": "66'שער! טומאש קאמפוש (האוטלנד) / 59'איתי נכנס מהספסל בדקה 59 / 33'שער! טים ואן דייק (הארלמסה) / 30'שער! ייסה דה הס (האוטלנד)",
+        "momentMinute": "75'",
+        "moment": 9768,
+        "taps": 5,
+        "path": "prematch>match",
+        "momentsInFirstMatch": 2
+      },
+      {
+        "title": 439,
+        "week": 1624,
         "lineup": "פותח בהרכב",
         "feed": "המשחק מתחיל...",
-        "momentMinute": "5'",
-        "moment": 2821,
+        "momentMinute": "6'",
+        "moment": 2863,
         "taps": 5,
         "path": "prematch>match",
         "momentsInFirstMatch": 4

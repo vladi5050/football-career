@@ -10,12 +10,15 @@ import { AttrList } from '../components/AttrList';
 import { Avatar } from '../components/Avatar';
 import { RelationMeter } from '../components/Bars';
 
-function PersonRow({ p, rival }: { p: PersonView; rival?: boolean }) {
+function PersonRow({ p, rival, tag }: { p: PersonView; rival?: boolean; tag?: string }) {
   return (
     <div class="list-row person-row">
       <Avatar name={p.name} role={p.role} size="sm" rival={rival} />
       <div class="lr-main">
-        <div class="lr-title">{p.name}</div>
+        <div class="lr-title">
+          {tag && <span class="pr-tag">{tag}</span>}
+          {p.name}
+        </div>
         <div class="lr-sub">{p.traits.slice(0, 2).map((t) => TRAIT_HE[t]).join(' · ')}</div>
       </div>
       <div class="pr-rel">
@@ -32,6 +35,12 @@ export function ClubScreen() {
   const p = v.player;
   const c = p.contract;
   const mates = vx(v).teammates ?? [];
+  // At a glance: coach, closest teammate, the one who has a problem with you. The rest fold away.
+  const byRel = [...mates].sort((a, b) => b.relation - a.relation);
+  const friend = byRel[0] && byRel[0].relation > 0 ? byRel[0] : null;
+  const foeCand = byRel[byRel.length - 1];
+  const foe = foeCand && foeCand !== friend && foeCand.relation < 0 ? foeCand : null;
+  const rest = mates.filter((m) => m !== friend && m !== foe);
   return (
     <main class="screen has-nav club-screen">
       <TopBar v={v} title="המועדון" />
@@ -84,16 +93,19 @@ export function ClubScreen() {
 
       <h2 class="section-title">אנשים</h2>
       <div class="paper people">
-        {v.coach && (
-          <div class="coach-block">
-            <span class="label">המאמן</span>
-            <PersonRow p={v.coach} />
-          </div>
+        {v.coach && <PersonRow p={v.coach} tag="המאמן" />}
+        {friend && <PersonRow p={friend} tag="הכי קרוב אליך" />}
+        {foe && <PersonRow p={foe} tag="יש ביניכם מתח" />}
+        {rest.length > 0 && (
+          <details class="squad-more">
+            <summary>
+              כל הסגל <span class="num">({rest.length})</span>
+            </summary>
+            {rest.map((m) => (
+              <PersonRow key={m.id} p={m} />
+            ))}
+          </details>
         )}
-        {mates.length > 0 && <span class="label">חברים לקבוצה</span>}
-        {mates.map((m) => (
-          <PersonRow key={m.id} p={m} />
-        ))}
       </div>
 
       {v.rival && (

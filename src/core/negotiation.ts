@@ -2,7 +2,7 @@
 import type { Content } from './content';
 import type { Club, Footballer, GamePhase, Negotiation, SquadRole, TransferOffer, World } from './types';
 import type { Rng } from './rng';
-import { addNews, changeRelation, clamp, fmtMoney, ovr, pushHistory, userPlayer } from './helpers';
+import { addNews, avg, changeRelation, clamp, count, fmtMoney, ovr, pre, pushHistory, userPlayer } from './helpers';
 import { wageFor } from './wages';
 import { selectXI } from './matchSim';
 
@@ -83,6 +83,16 @@ export function agentRange(world: World, rng: Rng, ceiling: number): [number, nu
   return [r100(centre * (1 - w)), r100(centre * (1 + w))];
 }
 
+/** Why a renewal may come with a pay cut (benched or declining), or null when he is performing. */
+export function payCutReason(world: World, p: Footballer): string | null {
+  const mins = world.career.recentMinutes ?? [];
+  const ratings = world.career.recentRatings ?? [];
+  const share = p.stats.apps > 0 ? p.stats.apps / Math.max(1, world.season.week) : 0;
+  if (mins.length >= 3 && avg(mins) < 30 && share < 0.4 && p.age >= 19) return 'לא שיחקת מספיק';
+  if (p.age >= 31 && ratings.length >= 3 && avg(ratings) < 6.4) return 'הגיל והכושר מדברים';
+  return null;
+}
+
 export function openNegotiation(world: World, content: Content, rng: Rng, clubId: number, offer: TransferOffer | null, returnPhase: GamePhase): Negotiation | string {
   const user = userPlayer(world);
   const c = world.clubs[clubId];
@@ -96,18 +106,25 @@ export function openNegotiation(world: World, content: Content, rng: Rng, clubId
     if (left > 1 && !better) return 'המועדון לא ממהר לחדש. החוזה שלך עוד ארוך.';
     if (clubRole === 'backup' && user.age >= 22 && rng.chance(0.5)) return 'המועדון לא מעוניין לחדש כרגע.';
   }
-  const base = marketWage(world, content, clubId, user) * coachDesire(world, clubId, user) * budgetFactor(world, c);
+  let base = marketWage(world, content, clubId, user) * coachDesire(world, clubId, user) * budgetFactor(world, c);
   const value = playerValue(world, content, user);
   const years = offer?.years ?? (user.age < 29 ? 3 : 2);
+  // renewal at his own club: a player who performs is not offered a pay cut
+  const renewal = !offer && user.contract && user.contract.clubId === clubId;
+  const cur = renewal ? user.contract!.monthlyWage : 0;
+  const cut = renewal ? payCutReason(world, user) : null;
+  if (renewal && !cut) base = Math.max(base, cur * 1.08);
   const hidden = ceilingFor(base, clubRole, clubRole, null, value, years);
-  const startWage = offer ? offer.wage : Math.round((hidden * rng.float(0.72, 0.85)) / 100) * 100;
+  let startWage = offer ? offer.wage : Math.round((hidden * rng.float(0.72, 0.85)) / 100) * 100;
+  if (renewal && !cut) startWage = Math.max(startWage, Math.round((cur * rng.float(0.96, 1.02)) / 100) * 100);
   const neg: Negotiation = {
     clubId, offerId: offer ? offer.id : null, round: 1, patience: 100, hiddenCeiling: Math.round(base),
     agentRange: agentRange(world, rng, hidden),
     currentOffer: { wage: startWage, role: offer?.role ?? clubRole, years, releaseClause: null },
-    log: [`${c.name} מציעים ${fmtMoney(startWage)} לחודש, תפקיד: ${ROLE_HE[offer?.role ?? clubRole]}, ${years} שנים.`],
-    status: 'open', returnPhase,
+    log: [`${c.name} מציעים ${fmtMoney(startWage)} לחודש, תפקיד: ${ROLE_HE[offer?.role ?? clubRole]}, ${count(years, 'שנה', 'שנים', true)}.`],
+    status: 'open', returnPhase, final: false,
   };
+  if (renewal && cut && startWage < cur) neg.log.push(`הסוכן: הם מציעים פחות ממה שאתה מרוויח היום, כי ${cut}. ככה זה בשוק.`);
   world.career.negotiation = neg;
   return neg;
 }
@@ -116,6 +133,7 @@ export function openNegotiation(world: World, content: Content, rng: Rng, clubId
 export function negotiateRound(world: World, content: Content, rng: Rng, demand: Demand): string {
   const neg = world.career.negotiation;
   if (!neg || neg.status !== 'open') return 'אין משא ומתן פתוח';
+  if (neg.final) return 'זו ההצעה האחרונה. לחתום או לקום מהשולחן.';
   const user = userPlayer(world);
   const c = world.clubs[neg.clubId];
   const clubRole = clubViewRole(world, neg.clubId, user);
@@ -124,7 +142,7 @@ export function negotiateRound(world: World, content: Content, rng: Rng, demand:
   const ceiling = ceilingFor(neg.hiddenCeiling, demand.role, clubRole, demand.releaseClause, value, years);
   const roleGap = ROLE_RANK[demand.role] - ROLE_RANK[clubRole];
   const wageGap = (demand.wage - ceiling) / ceiling;
-  neg.log.push(`דרשת ${fmtMoney(demand.wage)}, ${ROLE_HE[demand.role]}, ${years} שנים${demand.releaseClause != null ? `, סעיף שחרור ${fmtMoney(demand.releaseClause)}` : ''}.`);
+  neg.log.push(`דרשת ${fmtMoney(demand.wage)}, ${ROLE_HE[demand.role]}, ${count(years, 'שנה', 'שנים', true)}${demand.releaseClause != null ? `, סעיף שחרור ${fmtMoney(demand.releaseClause)}` : ''}.`);
   if (wageGap <= 0 && roleGap <= 0 && (demand.releaseClause == null || demand.releaseClause >= value * 0.6)) {
     neg.currentOffer = { wage: Math.round(demand.wage), role: demand.role, years, releaseClause: demand.releaseClause };
     const line = `${c.name} מסכימים. אפשר לחתום.`;
@@ -134,7 +152,7 @@ export function negotiateRound(world: World, content: Content, rng: Rng, demand:
   let drop = 8 + Math.max(0, wageGap) * 140 + Math.max(0, roleGap) * 12;
   if (demand.releaseClause != null && demand.releaseClause < value * 0.6) drop += 10;
   neg.patience = Math.round(neg.patience - drop);
-  if (neg.patience <= 0 || neg.round >= 3) {
+  if (neg.patience <= 0) {
     neg.status = 'walked_away';
     const chair = world.people[c.chairmanId];
     changeRelation(chair, user.id, -8, { tag: 'walked_away', week: world.absWeek, weight: -15 });
@@ -145,16 +163,21 @@ export function negotiateRound(world: World, content: Content, rng: Rng, demand:
     return line;
   }
   neg.round++;
+  const prevWage = neg.currentOffer.wage;
   const target = Math.min(ceiling, Math.max(neg.currentOffer.wage, demand.wage));
   const last = neg.round >= 3;
   const wage = last ? Math.round(ceiling * rng.float(0.96, 1.0)) : Math.round(neg.currentOffer.wage + (target - neg.currentOffer.wage) * rng.float(0.4, 0.7));
   neg.currentOffer = {
-    wage: Math.round(Math.min(wage, demand.wage) / 100) * 100,
+    wage: Math.max(prevWage, Math.round(Math.min(wage, demand.wage) / 100) * 100),
     role: roleGap > 0 ? clubRole : demand.role,
     years,
     releaseClause: demand.releaseClause != null && demand.releaseClause < value * 0.6 ? Math.round(value * 0.8 / 10000) * 10000 : demand.releaseClause,
   };
-  const line = `${c.name} משפרים ל${fmtMoney(neg.currentOffer.wage)}${roleGap > 0 ? `, אבל תפקיד ${ROLE_HE[clubRole]}` : ''}.${last ? ' זו ההצעה האחרונה.' : ''}`;
+  if (last) neg.final = true;
+  const before = prevWage;
+  const moved = neg.currentOffer.wage > before;
+  const head = moved ? `${c.name} משפרים ${pre('ל', fmtMoney(neg.currentOffer.wage))}` : `${c.name} לא זזים ${pre('מ', fmtMoney(neg.currentOffer.wage))}`;
+  const line = `${head}${roleGap > 0 ? `, אבל תפקיד ${ROLE_HE[clubRole]}` : ''}.${last ? ' זו ההצעה האחרונה.' : ''}`;
   neg.log.push(line);
   return line;
 }
@@ -171,16 +194,16 @@ export function acceptCurrent(world: World, content: Content): string[] {
   const endSeason = world.season.number + o.years - (world.phase === 'offseason' || neg.returnPhase === 'offseason' ? 0 : 1);
   if (offer && user.clubId !== neg.clubId) {
     moveUser(world, content, neg.clubId, offer.fee);
-    lines.push(`חתמת ב${c.name}!`);
+    lines.push(`חתמת ${pre('ב', c.name)}!`);
     world.career.offers = [];
     world.history.flags.last_move_week = world.absWeek;
-  } else lines.push(`חתמת על חוזה חדש ב${c.name}`);
+  } else lines.push(`חתמת על חוזה חדש ${pre('ב', c.name)}`);
   user.contract = {
     clubId: neg.clubId, monthlyWage: o.wage, endSeason: Math.max(endSeason, world.season.number), role: o.role,
     releaseClause: o.releaseClause, bonuses: [{ kind: 'goal', amount: Math.round(o.wage * 0.05 / 100) * 100 }, { kind: 'appearance', amount: Math.round(o.wage * 0.02 / 100) * 100 }],
   };
   neg.status = 'signed';
-  pushHistory(world, 'signed', `חתמת ב${c.name} על ${fmtMoney(o.wage)} לחודש`);
+  pushHistory(world, 'signed', `חתמת ${pre('ב', c.name)} על ${fmtMoney(o.wage)} לחודש`);
   world.career.offers = world.career.offers.filter((x) => x.id !== neg.offerId);
   return lines;
 }
@@ -217,10 +240,10 @@ export function moveUser(world: World, _content: Content, toClubId: number, fee:
   if (to.countryCode !== fromCountry) {
     world.career.life.home = 'rented';
     user.morale = clamp(user.morale - 6, 0, 100); // adaptation
-    pushHistory(world, to.countryCode !== 'IL' ? 'moved_abroad' : 'came_home', to.countryCode !== 'IL' ? `עברת ל${to.name} בחו״ל` : `חזרת הביתה ל${to.name}`);
+    pushHistory(world, to.countryCode !== 'IL' ? 'moved_abroad' : 'came_home', to.countryCode !== 'IL' ? `עברת ${pre('ל', to.name)} בחו״ל` : `חזרת הביתה ${pre('ל', to.name)}`);
     world.history.flags.abroad_moves = (world.history.flags.abroad_moves ?? 0) + (to.countryCode !== 'IL' ? 1 : 0);
   }
-  pushHistory(world, 'transfer', `עברת מ${from?.name ?? 'בלי קבוצה'} ל${to.name}`);
-  addNews(world, { kind: 'transfer', headline: `${user.name} עובר ל${to.name}`, body: fee > 0 ? `סכום ההעברה: ${fmtMoney(fee)}` : undefined });
+  pushHistory(world, 'transfer', `עברת ${pre('מ', from?.name ?? 'בלי קבוצה')} ${pre('ל', to.name)}`);
+  addNews(world, { kind: 'transfer', headline: `${user.name} עובר ${pre('ל', to.name)}`, body: fee > 0 ? `סכום ההעברה: ${fmtMoney(fee)}` : undefined });
   world.career.fame = clamp(world.career.fame + Math.max(1, Math.round(to.reputation / 25)), 0, 100);
 }

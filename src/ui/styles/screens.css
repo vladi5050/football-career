@@ -734,3 +734,82 @@ mark {
   .shell-row.has-side .bottom-nav,
   .shell-row.has-side .action-bar { left: calc(50% + 194px); }
 }
+
+/* ---------------------------------------------------------------- round 2: contract readability */
+.slider { direction: ltr; }
+.slider::-webkit-slider-runnable-track {
+  background: linear-gradient(90deg, var(--orange) var(--fill, 50%), rgba(27, 42, 74, 0.15) var(--fill, 50%));
+}
+.slider-ends { direction: ltr; align-items: baseline; }
+.slider-ends span { display: inline-flex; gap: 4px; align-items: baseline; }
+.slider-ends span:last-child { flex-direction: row-reverse; }
+.slider-ends small { font-size: 11px; font-weight: 800; color: var(--ink-3); }
+.slider-ends b { color: var(--ink-2, var(--ink)); }
+.agent-band { right: auto; }
+.agent-band span { right: auto; left: 50%; transform: translateX(-50%); }
+.rounds.is-final span { color: var(--orange); }
+.final-banner {
+  display: grid;
+  gap: 2px;
+  padding: var(--s3) var(--s4);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink);
+  border-right: 6px solid var(--red);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
+}
+.final-banner b { font-family: var(--f-display); font-size: 30px; line-height: 1; color: var(--red); }
+.final-banner span { font-weight: 600; }
+.bubble { display: grid; gap: 1px; }
+.bubble .b-who { font-size: 11px; font-weight: 800; opacity: 0.7; }
+.bubble:not(.mine) { border: 2px solid rgba(27, 42, 74, 0.12); }
+.bubble.mine { background: #ffd9b0; border: 2px solid var(--orange); }
+
+/* round 2: legible coach signature, tray scroll hint, youth labels, prematch reason */
+.coach-note .sig { font-family: var(--f-body); font-size: 13px; font-weight: 800; letter-spacing: 0; margin-top: 4px; }
+.tray-scroll {
+  -webkit-mask-image: linear-gradient(270deg, #000 0, #000 calc(100% - 48px), transparent 100%);
+  mask-image: linear-gradient(270deg, #000 0, #000 calc(100% - 48px), transparent 100%);
+}
+.youth-suffix { font-family: var(--f-body); font-size: 0.78em; font-weight: 800; opacity: 0.85; }
+.u19 {
+  display: inline-block;
+  margin-inline-end: 6px;
+  padding: 0 6px;
+  border-radius: 6px;
+  background: var(--blue);
+  color: #fff;
+  font-family: var(--f-body);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 18px;
+}
+.scorebug.is-youth { border-color: var(--blue); }
+.u19-chip { justify-self: start; margin-bottom: 6px; }
+.lineup-reason { margin: 4px 0 0; font-weight: 600; font-size: var(--t-sm); color: var(--ink-2, var(--ink)); }
+.stamp-rect.blue { color: var(--blue); border-color: var(--blue); }
+.summer-card { display: grid; gap: var(--s3); }
+.summer-contract { margin: 0; font-weight: 600; }
+.summer-contract.expired b { color: var(--red); }
+.summer-actions { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.summer-actions .btn { flex: 1 1 140px; }
+.pr-tag { display: block; font-size: 11px; font-weight: 800; color: var(--orange-press); line-height: 1.2; }
+.squad-more { border-top: 1px solid rgba(27, 42, 74, 0.12); }
+.squad-more > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 800;
+  cursor: pointer;
+  list-style: none;
+  color: var(--blue);
+}
+.squad-more > summary::-webkit-details-marker { display: none; }
+.squad-more > summary::before { content: '▸'; transform: scaleX(-1); display: inline-block; transition: transform var(--d-fast, 150ms); }
+.squad-more[open] > summary::before { transform: rotate(90deg); }
+.scorebug.is-youth .sb-live { background: var(--blue); }
+.sb-main { padding: 0 6px; }
+.sb-team { min-width: 0; }
+.sb-team > span { overflow: hidden; text-overflow: ellipsis; }
+.scorebug.is-youth .sb-team { font-size: var(--t-sm); }

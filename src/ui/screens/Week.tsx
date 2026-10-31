@@ -178,7 +178,7 @@ export function WeekScreen() {
           {coach && (
             <p class="coach-note hand marker-red">
               {coachNote(v)}
-              <span class="sig">{firstName(coach.name)}</span>
+              <span class="sig">המאמן, {firstName(coach.name)}</span>
             </p>
           )}
         </div>
@@ -220,7 +220,7 @@ export function WeekScreen() {
           <Bar value={projected} color={projected < 50 ? 'red' : 'blue'} />
           <span class="meter-val num">{Math.round(projected)}</span>
         </div>
-        {ng && <ProgressNearGoal text={ng.text} progress={ng.frac * 100} target={100} label={<span class="ng-target num">{Math.floor(ng.value)}→{ng.target}</span>} />}
+        {ng && <ProgressNearGoal text={ng.text} progress={ng.value} target={ng.target} />}
       </section>
 
       <div class="action-bar">

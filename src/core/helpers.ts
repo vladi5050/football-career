@@ -139,11 +139,23 @@ export function removeFrom(arr: number[], id: number): void {
   if (i >= 0) arr.splice(i, 1);
 }
 
-/** Format NIS amount the Israeli way: 12,500 ₪ */
+/** Format NIS amounts one way everywhere: ₪12,500, ₪1.5 מיליון */
 export function fmtMoney(n: number): string {
   const r = Math.round(n);
-  if (Math.abs(r) >= 1_000_000) return `${(r / 1_000_000).toFixed(1).replace(/\.0$/, '')} מיליון ₪`;
-  return `${r.toLocaleString('en-US')} ₪`;
+  if (Math.abs(r) >= 1_000_000) return `₪${(r / 1_000_000).toFixed(1).replace(/\.0$/, '')} מיליון`;
+  return `₪${r.toLocaleString('en-US')}`;
+}
+
+/** Hebrew prefix letter(s) before a word: a hyphen (maqaf) when the word does not start with a Hebrew letter ("ב-3", "ל-₪7,400"). */
+export function pre(prefix: string, word: string | number): string {
+  const w = String(word);
+  return /^[\u05D0-\u05EA]/.test(w) ? prefix + w : `${prefix}-${w}`;
+}
+
+/** Number-aware Hebrew count: "שער אחד", "2 שערים", "הופעה אחת". */
+export function count(n: number, one: string, many: string, fem = false): string {
+  if (n === 1) return `${one} ${fem ? 'אחת' : 'אחד'}`;
+  return `${Number.isInteger(n) ? n.toLocaleString('en-US') : n.toFixed(1)} ${many}`;
 }
 
 /** Log a message only once per process (for content problems). */

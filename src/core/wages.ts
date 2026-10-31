@@ -26,8 +26,13 @@ export function wageBand(content: Content, lg: League, age: number): Band {
 }
 
 /** quality 0..1 = position inside the band (0 = bottom). Values >1 go above the band. */
+/** Youth contracts are small: a 15-16 year old earns a fraction of the U19 band. */
+export function youthWageFactor(age: number): number {
+  return age <= 16 ? 0.42 : age === 17 ? 0.6 : age === 18 ? 0.8 : 1;
+}
+
 export function wageFor(content: Content, lg: League, age: number, quality: number): number {
   const [lo, hi] = wageBand(content, lg, age);
   const q = clamp(quality, -0.3, 1.6);
-  return Math.max(2000, Math.round(lo + (hi - lo) * q));
+  return Math.max(age < 19 ? 2500 : 3000, Math.round((lo + (hi - lo) * q) * youthWageFactor(age)));
 }

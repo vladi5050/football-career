@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { fixtureContent, realContent } from './_content';
 import { apply, newGame } from '../../src/core/game';
 import { deserialize, serialize } from '../../src/core/save';
+import { autoOptionId } from '../../src/core/events';
 import type { Content } from '../../src/core/content';
 import type { World } from '../../src/core/types';
 
@@ -9,7 +10,8 @@ function play(w: World, content: Content, seasons: number): World {
   let g = 0;
   while (w.season.number <= seasons && !w.career.retired && g++ < 20000) {
     const ph = w.phase;
-    if (ph === 'plan' || ph === 'event') w = apply(w, { type: 'quickWeek' }, content).world;
+    if (ph === 'plan') w = apply(w, { type: 'quickWeek' }, content).world;
+    else if (ph === 'event') w = apply(w, { type: 'resolveEvent', uid: w.inbox[0].uid, optionId: autoOptionId(content, w.inbox[0]) }, content).world;
     else if (ph === 'prematch') w = apply(w, { type: 'startMatch' }, content).world;
     else if (ph === 'match') w = apply(w, { type: 'simRestOfMatch' }, content).world;
     else if (ph === 'negotiation') w = apply(w, { type: 'acceptNegotiation' }, content).world;

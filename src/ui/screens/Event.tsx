@@ -77,6 +77,7 @@ export function EventScreen() {
             onClick={() => act({ type: 'resolveEvent', uid: ev.uid, optionId: o.id })}
           >
             <span class="opt-text">{o.text}</span>
+            {o.hint && <span class="sr-only">. </span>}
             {o.hint && <span class="opt-hint">{o.hint}</span>}
           </button>
         ))}

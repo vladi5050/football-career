@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
-import type { LiveMatch, MomentKind, MomentResult, MomentSpec } from '../../core/types';
+import type { ClubView, LiveMatch, MomentKind, MomentResult, MomentSpec } from '../../core/types';
 import { act, busy, matchOutro, reducedMotion, uiSettings, view } from '../../app/store';
 import { Crest } from '../components/Crest';
 import { Confetti } from '../components/Confetti';
@@ -47,6 +47,7 @@ export function MatchScreen() {
   const simAfter = useRef(false);
   const goals = useRef(live?.userGoals ?? 0);
   const shownScore = useRef<[number, number]>([0, 0]);
+  const autoMoments = v.settings?.autoMoments ?? uiSettings.value.autoMoments;
 
   // tick the broadcast clock toward the next stop
   useEffect(() => {
@@ -71,7 +72,7 @@ export function MatchScreen() {
 
   // auto-moments setting: resolve without playing
   useEffect(() => {
-    if (pending && clock >= pending.minute && uiSettings.value.autoMoments && autoSent.current !== pending.id && !busy.value) {
+    if (pending && clock >= pending.minute && autoMoments && autoSent.current !== pending.id && !busy.value) {
       autoSent.current = pending.id;
       void act({ type: 'momentResult', result: { momentId: pending.id, success: false, quality: 0.5, skipped: true } });
     }
@@ -88,18 +89,34 @@ export function MatchScreen() {
   if (!live) return <main class="screen" />;
 
   const club = v.club!;
-  const opp = v.nextFixture?.opp;
+  const oppRow = v.table.find((r) => r.clubId === live.oppClubId);
+  const opp: ClubView | undefined =
+    v.nextFixture?.opp.id === live.oppClubId
+      ? v.nextFixture.opp
+      : oppRow
+        ? { id: oppRow.clubId, name: oppRow.name, short: oppRow.short, colors: oppRow.colors, crest: oppRow.crest, city: '', reputation: 50, leagueName: '', country: '', stadium: '' }
+        : v.nextFixture?.opp;
+  const youth = !!live.youth;
   const homeIsUser = live.isHome;
   const home = homeIsUser ? club : opp;
   const away = homeIsUser ? opp : club;
   const visibleHl = live.highlights.filter((h) => h.minute <= clock);
   const goalsAll = live.highlights.filter((h) => h.kind === 'goal').length;
   const goalsSeen = visibleHl.filter((h) => h.kind === 'goal').length;
-  if (goalsSeen >= goalsAll) shownScore.current = [live.score[0], live.score[1]];
-  const finalScore = !inMatch && v.lastWeekReport?.result ? ([v.lastWeekReport.result.hg, v.lastWeekReport.result.ag] as [number, number]) : null;
+  // Scorebug follows the feed: count goals whose minute is already on screen, per side.
+  const scorers = live.fixture.scorers;
+  if (scorers && scorers.length === live.score[0] + live.score[1]) {
+    const seen = scorers.filter((g) => g.minute <= clock);
+    shownScore.current = [seen.filter((g) => g.clubId === live.fixture.home).length, seen.filter((g) => g.clubId === live.fixture.away).length];
+  } else if (goalsSeen >= goalsAll) shownScore.current = [live.score[0], live.score[1]];
+  const finalScore = !inMatch
+    ? v.lastWeekReport?.result
+      ? ([v.lastWeekReport.result.hg, v.lastWeekReport.result.ag] as [number, number])
+      : ([live.score[0], live.score[1]] as [number, number])
+    : null;
   const score = clock >= 90 && finalScore ? finalScore : shownScore.current;
   const fullTime = !inMatch && clock >= 90;
-  const atMoment = !!pending && clock >= pending.minute && !playing && !uiSettings.value.autoMoments;
+  const atMoment = !!pending && clock >= pending.minute && !playing && !autoMoments;
 
   const sendResult = (result: MomentResult) => act({ type: 'momentResult', result });
 
@@ -145,12 +162,12 @@ export function MatchScreen() {
 
   return (
     <main class="screen match-screen has-actions">
-      <div class="scorebug" role="status" aria-live="polite">
-        <span class="sb-live">{fullTime ? 'סיום' : <><i class="live-dot" /> שידור</>}</span>
+      <div class={`scorebug ${youth ? 'is-youth' : ''}`} role="status" aria-live="polite">
+        <span class="sb-live">{youth ? <>{!fullTime && <i class="live-dot" />} U19</> : fullTime ? 'סיום' : <><i class="live-dot" /> שידור</>}</span>
         <div class="sb-main">
           <div class="sb-team">
             {home && <Crest spec={home.crest} colors={home.colors} name={home.name} short={home.short} size={24} />}
-            <span>{home?.short}</span>
+            <span>{home?.short}{youth && <small class="youth-suffix"> נוער</small>}</span>
           </div>
           <span class="sb-score num">
             {score[0]}
@@ -158,7 +175,7 @@ export function MatchScreen() {
             {score[1]}
           </span>
           <div class="sb-team">
-            <span>{away?.short}</span>
+            <span>{away?.short}{youth && <small class="youth-suffix"> נוער</small>}</span>
             {away && <Crest spec={away.crest} colors={away.colors} name={away.name} short={away.short} size={24} />}
           </div>
         </div>
@@ -210,7 +227,8 @@ export function MatchScreen() {
             <div class="mc-stakes">
               {(() => {
                 const mine = homeIsUser ? score[0] - score[1] : score[1] - score[0];
-                return mine > 0 ? 'ניצחון!' : mine === 0 ? 'תיקו' : 'הפסד';
+                const r = mine > 0 ? 'ניצחון!' : mine === 0 ? 'תיקו' : 'הפסד';
+                return youth ? `${r} · משחק נוער` : r;
               })()}
             </div>
           </div>
