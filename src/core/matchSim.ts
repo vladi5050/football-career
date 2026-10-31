@@ -188,7 +188,7 @@ export function simFixture(world: World, f: Fixture, rng: Rng, withStats: boolea
 // ------------------------------------------------------------------ key moments
 
 const KINDS_BY_POS: Record<Position, [MomentKind, number][]> = {
-  ST: [['shot', 3], ['one_on_one', 2], ['header', 2], ['dribble', 3], ['penalty', 0.4], ['free_kick', 0.3]],
+  ST: [['shot', 2], ['one_on_one', 1.5], ['header', 2], ['dribble', 4], ['penalty', 0.15], ['free_kick', 0.3]],
   W: [['dribble', 4], ['shot', 3], ['one_on_one', 2], ['cross', 2.5], ['header', 0.6], ['free_kick', 0.4]],
   AM: [['through_ball', 4], ['long_shot', 2], ['dribble', 2.5], ['shot', 1.5], ['free_kick', 0.8], ['interception', 0.8]],
   CM: [['through_ball', 4], ['long_shot', 2.5], ['interception', 3], ['tackle', 1], ['free_kick', 0.5]],
@@ -218,9 +218,9 @@ const SKILL_FOR: Record<MomentKind, (p: Footballer) => number> = {
 };
 
 const KIND_BASE: Record<MomentKind, number> = {
-  shot: 0.1, one_on_one: 0.17, header: 0.09, dribble: 0.5, through_ball: 0.48, long_shot: 0.06,
+  shot: 0.07, one_on_one: 0.1, header: 0.06, dribble: 0.5, through_ball: 0.48, long_shot: 0.045,
   interception: 0.55, tackle: 0.6, block: 0.55, clearance: 0.66, save: 0.68, rush_out: 0.6, penalty: 0.75,
-  free_kick: 0.07, cross: 0.48,
+  free_kick: 0.05, cross: 0.48,
 };
 const KIND_DIFF: Partial<Record<MomentKind, number>> = { long_shot: 0.12, free_kick: 0.12, penalty: -0.15, one_on_one: -0.05, header: 0.05 };
 
@@ -228,7 +228,9 @@ const KIND_DIFF: Partial<Record<MomentKind, number>> = { long_shot: 0.12, free_k
 export function autoSuccessChance(spec: MomentSpec, userPos?: Position): number {
   let base = KIND_BASE[spec.kind];
   if (spec.kind === 'penalty' && userPos === 'GK') base = 0.24;
-  return clamp(base + (0.5 - spec.difficulty) * 0.45, 0.03, 0.95);
+  // finishing moments are less sensitive to the skill gap (keeps strong strikers' tallies realistic)
+  const sens = SCORING.has(spec.kind) ? 0.3 : 0.45;
+  return clamp(base + (0.5 - spec.difficulty) * sens, 0.03, 0.95);
 }
 
 export function resolveMomentAuto(spec: MomentSpec, rng: Rng, userPos?: Position): MomentResult {
@@ -241,7 +243,7 @@ function momentOutcome(kind: MomentKind, userPos: Position): { scoreOnSuccess: n
   if (kind === 'penalty') return userPos === 'GK' ? { scoreOnSuccess: 0, assistOnSuccess: 0, concedeOnFail: 1 } : { scoreOnSuccess: 1, assistOnSuccess: 0, concedeOnFail: 0 };
   if (SCORING.has(kind)) return { scoreOnSuccess: 1, assistOnSuccess: 0, concedeOnFail: 0 };
   switch (kind) {
-    case 'dribble': return { scoreOnSuccess: 0.15, assistOnSuccess: 0.15, concedeOnFail: 0 };
+    case 'dribble': return { scoreOnSuccess: 0.1, assistOnSuccess: 0.15, concedeOnFail: 0 };
     case 'through_ball': return { scoreOnSuccess: 0, assistOnSuccess: 0.35, concedeOnFail: 0 };
     case 'cross': return { scoreOnSuccess: 0, assistOnSuccess: 0.3, concedeOnFail: 0 };
     case 'interception': return { scoreOnSuccess: 0, assistOnSuccess: 0.1, concedeOnFail: 0.15 };
@@ -479,7 +481,7 @@ function bgHighlight(world: World, live: LiveMatch, side: 0 | 1, minute: number,
     let scorer = pickScorer(world, xi, rng);
     const isUserTeam = clubId === live.userClubId;
     // the user is part of the background play too, but moments carry most of his chances
-    if (isUserTeam && scorer === user.id && !rng.chance(0.35)) scorer = pickScorer(world, xi, rng, user.id);
+    if (isUserTeam && scorer === user.id && !rng.chance(0.25)) scorer = pickScorer(world, xi, rng, user.id);
     const name = scorer >= 0 ? (world.people[scorer] as Footballer).name : c.name;
     if (isUserTeam && scorer === user.id) live.userGoals++;
     else if (isUserTeam && userOn && user.pos !== 'GK' && rng.chance(ASSIST_SHARE[user.pos] * 0.6)) {

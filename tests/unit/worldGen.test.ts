@@ -90,3 +90,34 @@ describe('worldGen', () => {
     for (const l of linked) expect(w.leagues[l.relegatesTo!].promotesTo).toBe(l.id);
   });
 });
+
+describe('team editor override', () => {
+  it('applies a rename map, keeps derbies, ignores junk', async () => {
+    const { resolveLeagueSeeds } = await import('../../src/core/worldGen');
+    const content = fixtureContent();
+    const override = {
+      format: 'football-career-names', version: 1,
+      clubs: { 'מכבי הכרמל': { name: 'הקבוצה שלי', short: 'שלי', city: 'עיר' }, 'הפועל הכרמל': { name: 'בית״ר הגליל' }, 'לא קיים': { name: 'x' } },
+    };
+    const w = generateWorld(content, 4, { pos: 'ST', firstName: 'א', lastName: 'ב', clubsOverride: override });
+    const mine = w.clubs.find((c) => c.name === 'הקבוצה שלי')!;
+    expect(mine).toBeTruthy();
+    expect(mine.short).toBe('שלי');
+    expect(mine.city).toBe('עיר');
+    // the derby partner still points at the renamed club
+    const rival = w.clubs.find((c) => c.name === 'הפועל הכרמל')!; // rename to an existing name is ignored
+    expect(rival.rivalClubId).toBe(mine.id);
+    expect(mine.rivalClubId).toBe(rival.id);
+    expect(w.clubs.some((c) => c.name === 'מכבי הכרמל')).toBe(false);
+    // content itself is untouched
+    expect(content.leagues[0].clubs[0].name).toBe('מכבי הכרמל');
+    // fallbacks
+    expect(resolveLeagueSeeds(content.leagues, null)).toBe(content.leagues);
+    expect(resolveLeagueSeeds(content.leagues, { format: 'other' })).toBe(content.leagues);
+    const seeds = [content.leagues[1]];
+    expect(resolveLeagueSeeds(content.leagues, seeds)).toBe(seeds);
+    // newCareer passes it through
+    const g = newGame({ type: 'newCareer', seed: 4, pos: 'ST', firstName: 'א', lastName: 'ב', clubsOverride: override }, content);
+    expect(g.clubs.some((c) => c.name === 'הקבוצה שלי')).toBe(true);
+  });
+});

@@ -47,7 +47,7 @@ export interface LeagueAgg { matches: number; goals: number; homeWins: number; d
 const ROLE_RANK: Record<SquadRole, number> = { backup: 0, prospect: 1, rotation: 2, starter: 3, star: 4 };
 
 /** Would a sensible human take this offer? */
-function wantsOffer(world: World, o: TransferOffer, pr: Rng): boolean {
+function wantsOffer(world: World, o: TransferOffer, pr: Rng, homeBound: boolean): boolean {
   const u = world.people[world.career.playerId] as Footballer;
   const cur = u.clubId != null ? world.clubs[u.clubId] : null;
   if (!cur) return true;
@@ -58,15 +58,22 @@ function wantsOffer(world: World, o: TransferOffer, pr: Rng): boolean {
   const expiring = !!u.contract && u.contract.endSeason <= world.season.number;
   const mins = world.career.recentMinutes ?? [];
   const benched = mins.length >= 3 && avg(mins) < 35 && u.age >= 19;
-  const homesick = toLg.countryCode !== curLg.countryCode && toLg.countryCode !== 'IL' && pr.chance(0.3);
+  const abroadMove = toLg.countryCode !== curLg.countryCode;
+  // many Israeli players stay home (family, status, money): only a dream move takes them abroad
+  if (abroadMove && curLg.countryCode === 'IL' && homeBound && !(toLg.strength >= curLg.strength + 25 && o.wage >= curWage * 2)) return false;
+  const homesick = toLg.countryCode !== curLg.countryCode && toLg.countryCode !== 'IL' && pr.chance(0.45);
   if (homesick && !expiring) return false;
+  const why = (r: string): boolean => {
+    if (process.env.SIM_DEBUG) console.log(`[move] ${r}: ${curLg.key}(${curLg.strength}) -> ${toLg.key}(${toLg.strength}) age ${u.age} ovr ${Math.round(ovr(u))} role ${curRole}->${o.role} wage ${curWage}->${o.wage}`);
+    return true;
+  };
   // clearly higher level, and a real role there
-  if (toLg.strength >= curLg.strength + 4 && ROLE_RANK[o.role] >= ROLE_RANK.rotation) return true;
+  if (toLg.strength >= curLg.strength + (abroadMove ? 12 : 4) && ROLE_RANK[o.role] >= ROLE_RANK.rotation) return why('higher level');
   // a starting role and +20% money
-  if (ROLE_RANK[o.role] >= ROLE_RANK.starter && ROLE_RANK[curRole] < ROLE_RANK.starter && o.wage >= curWage * 1.2) return true;
+  if (ROLE_RANK[o.role] >= ROLE_RANK.starter && ROLE_RANK[curRole] < ROLE_RANK.starter && o.wage >= curWage * (abroadMove ? 1.5 : 1.2)) return why('starter+wage');
   // not playing: take minutes elsewhere
-  if (benched && ROLE_RANK[o.role] >= ROLE_RANK.rotation) return true;
-  if (expiring && o.wage >= curWage) return true;
+  if (benched && ROLE_RANK[o.role] >= ROLE_RANK.rotation && (!abroadMove || toLg.strength >= curLg.strength + 4)) return why('benched');
+  if (expiring && world.phase === 'offseason' && (abroadMove ? o.wage >= curWage * 1.6 && ROLE_RANK[o.role] >= ROLE_RANK[curRole] : o.wage >= curWage * 1.1)) return why('expiring');
   return false;
 }
 
@@ -77,11 +84,13 @@ export function runCareer(content: Content, seed: number, maxSeasons: number, ag
   const p0 = pos ?? pr.pick(positions);
   let world = newGame({ type: 'newCareer', seed, pos: p0, firstName: 'דני', lastName: 'בדיקה' }, content);
   const clubs = new Set<number>();
-  let peak = 0, abroad = false, maxStrength = 0, maxILTier = 99;
+  let peak = 0, abroad = false, maxStrength = 0;
   let guard = 0, counted = 0;
   let movedWindow = '';
   let loyalSeason = -1;
   let retireChecked = -1;
+  const homeBound = pr.chance(0.7);
+  let stallSeasons = 0;
   const run = (cmd: Command): void => { world = apply(world, cmd, content).world; };
   const track = (): void => {
     const u = world.people[world.career.playerId] as Footballer;
@@ -90,7 +99,6 @@ export function runCareer(content: Content, seed: number, maxSeasons: number, ag
     clubs.add(u.clubId);
     const lg = world.leagues[world.clubs[u.clubId].leagueId];
     if (lg.countryCode !== 'IL') abroad = true;
-    else maxILTier = Math.min(maxILTier, lg.tier);
     if ((u.stats.apps > 0 || world.season.week > 5) && lg.strength > maxStrength) maxStrength = lg.strength;
   };
   const windowKey = (): string => `${world.season.number}-${windowName(world) ?? 'none'}`;
@@ -105,7 +113,7 @@ export function runCareer(content: Content, seed: number, maxSeasons: number, ag
       case 'weekend': {
         const offer = world.career.offers[0];
         if (offer) {
-          const take = movedWindow !== windowKey() && wantsOffer(world, offer, pr);
+          const take = movedWindow !== windowKey() && wantsOffer(world, offer, pr, homeBound);
           run({ type: 'respondOffer', offerId: offer.id, action: take ? 'negotiate' : 'reject' });
           break;
         }
@@ -135,6 +143,8 @@ export function runCareer(content: Content, seed: number, maxSeasons: number, ag
           }
           // a good season sometimes buys loyalty
           const last = world.career.history[world.career.history.length - 1];
+          const lgNow = u.clubId != null ? world.leagues[world.clubs[u.clubId].leagueId] : null;
+          if (lgNow && lgNow.countryCode === 'IL' && lgNow.tier >= 2 && u.age >= 20) stallSeasons++;
           if (last && last.avgRating >= 6.9 && last.apps >= 20 && pr.chance(0.45)) loyalSeason = world.season.number;
         }
         if (retireChecked !== world.season.number && u.age >= 33) {
@@ -146,7 +156,7 @@ export function runCareer(content: Content, seed: number, maxSeasons: number, ag
         }
         const offer = world.career.offers[0];
         if (offer) {
-          const take = loyalSeason !== world.season.number && movedWindow !== windowKey() && wantsOffer(world, offer, pr);
+          const take = loyalSeason !== world.season.number && movedWindow !== windowKey() && wantsOffer(world, offer, pr, homeBound);
           run({ type: 'respondOffer', offerId: offer.id, action: take ? 'negotiate' : 'reject' });
           break;
         }
@@ -161,7 +171,7 @@ export function runCareer(content: Content, seed: number, maxSeasons: number, ag
   return {
     pos: p0, peakOverall: Math.round(peak), clubs: clubs.size, abroad, goals: u.careerStats.goals, apps: u.careerStats.apps, seasons: world.career.seasonsPlayed,
     caps: world.career.nationalCaps, trophies: world.career.trophies.length, retiredAge: u.age, startKind: world.career.startKind,
-    bigLeague: maxStrength >= 75, maxStrength, stalledIL2: !abroad && maxILTier >= 2,
+    bigLeague: maxStrength >= 75, maxStrength, stalledIL2: stallSeasons >= 4,
   };
 }
 
@@ -231,7 +241,7 @@ async function main(): Promise<void> {
     const g = outs.filter((o) => o.pos === p).map((o) => o.goals);
     if (g.length) console.log(`  goals ${p.padEnd(3)}     ${dist(g)}`);
   }
-  console.log(`  abroad ${pct(s.abroad)} | league strength>=75 ${pct(s.bigLeague)} | capped ${pct(s.capped)} | stalled in IL tier 2+ ${pct(s.stalledIL2)} | any trophy ${pct(s.trophy)}`);
+  console.log(`  abroad ${pct(s.abroad)} | league strength>=75 ${pct(s.bigLeague)} | capped ${pct(s.capped)} | 4+ adult seasons in IL tier 2-3 ${pct(s.stalledIL2)} | any trophy ${pct(s.trophy)}`);
   const byStart: Record<string, number> = {};
   for (const o of outs) byStart[o.startKind] = (byStart[o.startKind] ?? 0) + 1;
   console.log(`  start kinds: ${Object.entries(byStart).map(([k, v]) => `${k} ${v}`).join(', ')}`);

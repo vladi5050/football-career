@@ -528,6 +528,12 @@ export function buildView(world: World): View {
   for (const o of world.career.offers) offerClubs[o.fromClubId] = clubView(world, o.fromClubId);
   if (world.career.negotiation) offerClubs[world.career.negotiation.clubId] = clubView(world, world.career.negotiation.clubId);
   const k = world.career;
+  const teammates = c ? c.squad.filter((id) => id !== u.id).map((id) => personView(world, id)).filter((p): p is PersonView => !!p) : [];
+  const people: Record<number, PersonView> = {};
+  const ids = new Set<number>([k.agentId, k.rivalId]);
+  if (c) ids.add(c.managerId);
+  for (const e of world.inbox) for (const id of Object.values(e.cast)) ids.add(id);
+  for (const id of ids) { const pv = personView(world, id); if (pv) people[id] = pv; }
   return {
     phase: world.phase, seed: world.seed, absWeek: world.absWeek,
     season: { number: world.season.number, year: world.season.year, week: world.season.week, totalWeeks: world.season.totalWeeks, themes: world.season.themes.slice() },
@@ -552,6 +558,10 @@ export function buildView(world: World): View {
     live: world.live ? JSON.parse(JSON.stringify(world.live)) : null,
     lastWeekReport: world.lastWeekReport,
     offerClubs,
+    teammates,
+    people,
+    leagueZones: lg ? { promote: lg.promotesTo != null ? lg.promoteSpots : 0, relegate: lg.relegatesTo != null ? lg.relegateSpots : 0, champion: 1 } : undefined,
+    settings: { autoMoments: world.settings.autoMoments },
   };
 }
 

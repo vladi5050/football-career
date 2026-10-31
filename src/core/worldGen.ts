@@ -11,7 +11,7 @@ import { wageFor } from './wages';
 export const SAVE_VERSION = 2;
 
 /** Balance knobs for the user's hidden potential. */
-export const WORLD_TUNING = { potentialMean: 75, potentialSd: 11, potentialMin: 50, potentialMax: 95 };
+export const WORLD_TUNING = { potentialMean: 77, potentialSd: 19, potentialMin: 45, potentialMax: 97 };
 
 export const STAFF_TRAITS: TraitId[] = [
   'hot_tempered', 'loyal', 'greedy', 'grateful', 'prefers_youth', 'hates_press', 'calm', 'ambitious',
@@ -137,12 +137,48 @@ export function leagueBudget(content: Content, lg: League, rep: number): number 
   return Math.round(12 * 22 * prime * (0.45 + rep / 100));
 }
 
+/** Team-editor rename map: { format: 'football-career-names', version: 1, clubs: { [originalName]: { name?, short?, city? } } } */
+export interface NamesOverride { format: 'football-career-names'; version: number; clubs: Record<string, { name?: string; short?: string; city?: string }> }
+
+/**
+ * clubsOverride: a rename map (team editor) applied to the content leagues, or a full LeagueSeed[] (fallback).
+ * Renames update derby (`rival`) references. A rename that would duplicate another club's name is ignored.
+ */
+export function resolveLeagueSeeds(base: LeagueSeed[], override: unknown): LeagueSeed[] {
+  if (Array.isArray(override)) return override.length ? (override as LeagueSeed[]) : base;
+  const o = override as Partial<NamesOverride> | null | undefined;
+  if (!o || typeof o !== 'object' || o.format !== 'football-career-names' || !o.clubs || typeof o.clubs !== 'object') return base;
+  const leagues: LeagueSeed[] = JSON.parse(JSON.stringify(base));
+  const taken = new Set(leagues.flatMap((l) => l.clubs.map((c) => c.name)));
+  const renamed = new Map<string, string>();
+  const clean = (v: unknown): string | null => (typeof v === 'string' && v.trim() ? v.trim().slice(0, 40) : null);
+  for (const l of leagues) {
+    for (const c of l.clubs) {
+      const r = o.clubs[c.name];
+      if (!r) continue;
+      const name = clean(r.name);
+      if (name && name !== c.name && !taken.has(name)) {
+        taken.delete(c.name);
+        taken.add(name);
+        renamed.set(c.name, name);
+        c.name = name;
+      }
+      const short = clean(r.short);
+      if (short) c.short = short.slice(0, 8);
+      const city = clean(r.city);
+      if (city) c.city = city;
+    }
+  }
+  for (const l of leagues) for (const c of l.clubs) if (c.rival && renamed.has(c.rival)) c.rival = renamed.get(c.rival)!;
+  return leagues;
+}
+
 export interface GenOptions { pos: Position; firstName: string; lastName: string; shirt?: number; clubsOverride?: unknown }
 
 const SHIRT_DEFAULT: Record<Position, number> = { GK: 1, CB: 4, FB: 2, DM: 6, CM: 8, AM: 10, W: 7, ST: 9 };
 
 export function generateWorld(content: Content, seed: number, opts: GenOptions): World {
-  const leagueSeeds: LeagueSeed[] = Array.isArray(opts.clubsOverride) && opts.clubsOverride.length ? (opts.clubsOverride as LeagueSeed[]) : content.leagues;
+  const leagueSeeds: LeagueSeed[] = resolveLeagueSeeds(content.leagues, opts.clubsOverride);
   const world: World = {
     version: SAVE_VERSION, seed, rngState: seedState(seed), absWeek: 0,
     season: { number: 1, year: 2026, week: 0, totalWeeks: 0, fixtures: {}, tables: {}, themes: [], startAbsWeek: 0 },

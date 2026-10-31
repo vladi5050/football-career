@@ -8,7 +8,7 @@ import { clubLevel, makePerson } from './worldGen';
 import { clubViewRole, marketWage, playerValue } from './negotiation';
 import { selectXI } from './matchSim';
 
-export const TRANSFER_TUNING = { weeklyBase: 0.015 };
+export const TRANSFER_TUNING = { weeklyBase: 0.01 };
 
 export type OfferKind = 'any' | 'abroad' | 'bigger' | 'lower';
 
@@ -63,7 +63,9 @@ export function spawnOffer(world: World, content: Content, rng: Rng, kind: Offer
   if (lastMove != null && world.absWeek - lastMove < 26 && kind !== 'lower') return null;
   const o = ovr(user);
   const home = world.leagues[mine.leagueId];
-  const pool = kind === 'abroad' ? world.leagues.filter((l) => l.countryCode !== home.countryCode) : world.leagues;
+  // 'lower' = a step down to play: stays in the same country
+  const pool = kind === 'abroad' ? world.leagues.filter((l) => l.countryCode !== home.countryCode)
+    : kind === 'lower' ? world.leagues.filter((l) => l.countryCode === home.countryCode) : world.leagues;
   const cands: { c: Club; w: number }[] = [];
   for (const lg of pool) {
     for (const id of lg.clubIds) {
@@ -78,7 +80,7 @@ export function spawnOffer(world: World, content: Content, rng: Rng, kind: Offer
       // scouts mostly watch similar levels: big jumps are rare
       const jump = lg.strength - home.strength;
       if (jump > 6) w *= Math.exp(-(jump - 6) / 4);
-      if (lg.countryCode !== home.countryCode) w *= o >= 62 ? 0.6 : 0.2;
+      if (lg.countryCode !== home.countryCode) w *= o >= 64 ? 0.35 : 0.1;
       if (lg.strength >= 75) w *= clamp(world.career.fame / 70, 0.05, 1); // the big leagues scout names
       cands.push({ c, w });
     }

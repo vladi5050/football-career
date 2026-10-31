@@ -386,6 +386,14 @@ export interface View {
   live: LiveMatch | null;
   lastWeekReport: WeekReport | null;
   offerClubs: Record<number, ClubView>;
+  /** R&D addition: the user's squad mates with their relation to him. */
+  teammates?: PersonView[];
+  /** R&D addition: everyone referenced by inbox[].cast plus coach, agent, rival; keyed by id. */
+  people?: Record<number, PersonView>;
+  /** R&D addition: table zones of the user's league (top `champion` rows, top `promote`, bottom `relegate`). */
+  leagueZones?: { promote: number; relegate: number; champion?: number };
+  /** R&D addition: user settings. */
+  settings?: { autoMoments: boolean };
 }
 
 // ---------------------------------------------------------------- commands (UI -> core)

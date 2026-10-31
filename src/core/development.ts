@@ -8,10 +8,10 @@ import {
 import { SQUAD_MIX, clubLevel, makeFootballer, npcPotential } from './worldGen';
 
 export const DEV_TUNING = {
-  trainGain: 0.1, // per slot per week, before factors
+  trainGain: 0.12, // per slot per week, before factors
   gymGain: 0.06,
   passiveGain: 0.025,
-  gapScale: 15, // growth slows as overall approaches potential: factor = gap / gapScale
+  gapScale: 12, // growth slows as overall approaches potential: factor = gap / gapScale
 };
 
 export const PLAN_HE: Record<PlanSlot, string> = {
@@ -113,7 +113,7 @@ function minutesFactor(world: World): number {
 }
 
 function gapFactor(p: Footballer): number {
-  return clamp((p.potential - ovr(p)) / DEV_TUNING.gapScale, 0.02, 1);
+  return clamp((p.potential - ovr(p)) / DEV_TUNING.gapScale, 0, 1);
 }
 
 /** Weekly attribute growth for the user's player. Returns gains for the week report. */

@@ -10,7 +10,7 @@ import { seasonEndClubs } from './transfers';
 import { updateGoals } from './goals';
 
 export const RETIRE_PROMPT_AGE = 33;
-export const NATIONAL_TUNING = { callUp: 72, keep: 70 };
+export const NATIONAL_TUNING = { callUp: 72.5, keep: 70.5 };
 export const RETIRE_FORCED_AGE = 39;
 
 export function pickThemes(content: Content, rng: Rng): string[] {

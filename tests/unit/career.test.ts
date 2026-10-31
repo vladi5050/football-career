@@ -37,7 +37,7 @@ function sane(w: World, seasons: number): void {
   const u = userPlayer(w);
   expect(w.career.seasonsPlayed).toBeGreaterThanOrEqual(Math.min(seasons, 22));
   expect(u.careerStats.apps).toBeGreaterThan(100);
-  expect(ovr(u)).toBeGreaterThan(45);
+  expect(ovr(u)).toBeGreaterThan(35);
   expect(u.age).toBeGreaterThanOrEqual(16 + Math.min(seasons, 22));
   expect(w.career.history.length).toBe(w.career.seasonsPlayed);
   for (const h of w.career.history) { expect(h.apps).toBeGreaterThanOrEqual(0); expect(h.position).toBeGreaterThan(0); }
