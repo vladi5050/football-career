@@ -1,4 +1,4 @@
-import { ratingClass } from '../i18n';
+import { ratingClass, ratingWord } from '../i18n';
 
 export function Stars({ value, max = 5 }: { value: number; max?: number }) {
   return (
@@ -18,8 +18,8 @@ export function RatingPill({ value }: { value: number }) {
 
 /** Rubber stamp with the match rating. */
 export function RatingStamp({ value, animate = true }: { value: number; animate?: boolean }) {
-  const color = value >= 7.5 ? 'green' : value >= 6.3 ? 'blue' : '';
-  const word = value >= 8 ? 'מצוין' : value >= 7 ? 'טוב מאוד' : value >= 6.3 ? 'סביר' : 'חלש';
+  const color = value >= 7.2 ? 'green' : value >= 5.8 ? 'blue' : '';
+  const word = ratingWord(value);
   return (
     <span class={`stamp ${color} ${animate ? 'animate' : ''}`} role="img" aria-label={`ציון ${value.toFixed(1)}`}>
       <span>

@@ -60,7 +60,8 @@ export function WeekEndScreen() {
               <span>{home.short}{youth && <small class="youth-suffix"> נוער</small>}</span>
             </div>
             <div class="rc-score display num">
-              {res.hg}-{res.ag}
+              {/* LTR digits under an RTL row: home sits on the right, so its goals go on the right too */}
+              {res.ag}-{res.hg}
             </div>
             <div class="rc-team">
               <Crest spec={away.crest} colors={away.colors} name={away.name} short={away.short} size={46} />
@@ -98,6 +99,8 @@ export function WeekEndScreen() {
           })}
         </section>
       )}
+
+      {rep && rep.gains.length === 0 && rep.gainsNote && <p class="gains-note">{rep.gainsNote}</p>}
 
       {rep && rep.nearGoals.length > 0 && (
         <section class="near-list">

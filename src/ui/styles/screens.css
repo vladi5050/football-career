@@ -813,3 +813,4 @@ mark {
 .sb-team { min-width: 0; }
 .sb-team > span { overflow: hidden; text-overflow: ellipsis; }
 .scorebug.is-youth .sb-team { font-size: var(--t-sm); }
+.gains-note { margin: 0; padding: var(--s3) var(--s4); border-radius: 10px; background: rgba(0, 0, 0, 0.2); color: var(--paper); font-weight: 600; }

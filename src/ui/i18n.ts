@@ -79,7 +79,11 @@ export function avgRating(s: { apps: number; ratingSum: number }): number {
   return s.apps ? Math.round((s.ratingSum / s.apps) * 10) / 10 : 0;
 }
 export function ratingClass(r: number): string {
-  return r >= 7.5 ? 'r-hi' : r >= 6.3 ? 'r-mid' : 'r-lo';
+  return r >= 7.2 ? 'r-hi' : r >= 6.5 ? 'r-mid' : 'r-lo';
+}
+/** Engine rating bands: 8+ מצוין, 7.2+ טוב מאוד, 6.5+ טוב, 5.8+ סביר, below חלש. */
+export function ratingWord(r: number): string {
+  return r >= 8 ? 'מצוין' : r >= 7.2 ? 'טוב מאוד' : r >= 6.5 ? 'טוב' : r >= 5.8 ? 'סביר' : 'חלש';
 }
 export function relationWord(r: number): string {
   if (r >= 60) return 'סומך עליך';

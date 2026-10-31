@@ -167,15 +167,16 @@ export function MatchScreen() {
         <div class="sb-main">
           <div class="sb-team">
             {home && <Crest spec={home.crest} colors={home.colors} name={home.name} short={home.short} size={24} />}
-            <span>{home?.short}{youth && <small class="youth-suffix"> נוער</small>}</span>
+            <span>{home?.short}</span>
           </div>
           <span class="sb-score num">
-            {score[0]}
-            <i>-</i>
+            {/* digits are LTR while home sits on the right: away goals first so each number is next to its team */}
             {score[1]}
+            <i>-</i>
+            {score[0]}
           </span>
           <div class="sb-team">
-            <span>{away?.short}{youth && <small class="youth-suffix"> נוער</small>}</span>
+            <span>{away?.short}</span>
             {away && <Crest spec={away.crest} colors={away.colors} name={away.name} short={away.short} size={24} />}
           </div>
         </div>
@@ -222,7 +223,7 @@ export function MatchScreen() {
           <div class="moment-card ft-card rise">
             <span class="mc-kicker">שריקת סיום</span>
             <div class="mc-title display num">
-              {score[0]}-{score[1]}
+              {score[1]}-{score[0]}
             </div>
             <div class="mc-stakes">
               {(() => {

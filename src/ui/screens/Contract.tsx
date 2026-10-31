@@ -48,7 +48,7 @@ export function ContractScreen() {
           {[1, 2, 3].map((r) => (
             <i key={r} class={r < n.round || (final && r <= n.round) ? 'done' : r === n.round ? 'cur' : ''} />
           ))}
-          <span>{final ? 'הצעה אחרונה' : `סבב ${Math.min(n.round, 3)}/3`}</span>
+          <span>{agreed ? 'יש הסכמה' : final ? 'הצעה אחרונה' : `סבב ${Math.min(n.round, 3)}/3`}</span>
         </div>
       </div>
 

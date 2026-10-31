@@ -106,7 +106,7 @@ Title ──► NewCareer ──► StartReveal ──► Week (plan) ◄──�
   ├─► TeamEditor / Settings (also from עוד)                                      │
                                                                                  │
 Week ──[סגור את השבוע: setPlan]──► Event* ──► PreMatch ──[startMatch]──► Match   │
-     └─[שבוע מהיר: quickWeek]──────────────► PreMatch                     │      │
+     └─[שבוע מהיר: quickWeek]──► Match (or Event if a major decision waits) │      │
                                                                           ▼      │
                        Match: clock runs to each moment ─► moment card ─► playMoment()
                               (or סמלץ: momentResult skipped / simRestOfMatch) ─► full time
@@ -114,10 +114,13 @@ Week ──[סגור את השבוע: setPlan]──► Event* ──► PreMatc
                                                     WeekEnd ──[finishWeek]───────┘
 Tabs during plan: Week · Table · Club · Agent ─[negotiate]─► Contract · More (News, Goals, Settings, Editor, retire)
 Contract ──[acceptNegotiation / walkAway]──► Week          retire ──► CareerEnd (share card)
+Offseason: WeekEnd ("החלטות הקיץ" card: offers → Agent, renewal → Contract) + tabs (Week tab reads "קיץ")
+           "לעונה הבאה" with an expired, undecided contract → confirm modal (check offers / let the club decide)
 ```
 
 First kick in under 60 seconds: Title (1 tap) → NewCareer (name is pre-filled, 1 tap) → StartReveal
-(tap to skip) → Week (שבוע מהיר) → PreMatch (צא למגרש) → first moment at ~2s of match clock.
+(tap to skip) → Week (שבוע מהיר) → Match directly → first moment at ~2s of match clock.
+The first career match is usually a U19 youth game (3 moments, the first one easier).
 
 ## 8. Phase → screen mapping (`resolveScreen` in `src/ui/App.tsx`)
 
@@ -126,10 +129,24 @@ First kick in under 60 seconds: Title (1 tap) → NewCareer (name is pre-filled,
 | no view | Title / NewCareer / TeamEditor / Settings by hash |
 | `plan` | hash tab: week, table, club, agent, more, news, goals, settings, editor (+ `reveal` once after a new career) |
 | `event` | Event (first of `view.inbox`) |
-| `prematch` | PreMatch |
+| `prematch` | PreMatch (line-up from `view.prematch`: starter / bench (+subMinute) / youth (U19 stamp, "<club> נוער") / out) |
 | `match` | Match (stays on screen after the engine leaves `match` until the user taps "לסיכום השבוע") |
-| `postmatch`, `weekend`, `offseason` | WeekEnd (`offseason` changes the button to "לעונה הבאה") |
-| `negotiation` | Contract |
+| `postmatch`, `weekend` | WeekEnd (takeover, no tabs; youth games get a U19 result card built from `view.live`) |
+| `offseason` | WeekEnd with bottom nav; hash routes table, club, agent, more, news, goals, settings stay reachable. Button "לעונה הבאה" |
+| `negotiation` | Contract (`negotiation.final` or an agreement → banner, only לחתום / לקום remain) |
 | `retired` | CareerEnd |
 
 Hash routing (`#/week` etc.) keeps browser / Android back working.
+
+## 9. Round-2 notes
+
+- Toasts sit in the thumb zone above the action bar / nav (max 2), never over the scorebug or headlines. Duplicates and
+  lines already visible on the next screen (negotiation log, week report, top news) are dropped in `store.applyResult`.
+- Scorebug counts goals from `live.fixture.scorers` whose minute is already on the feed (falls back to highlight count).
+- Near-goal bars: fill = progress / target (engine keeps both in the same unit); label `progress/target`.
+- Rating bands: 8+ מצוין, 7.2+ טוב מאוד, 6.5+ טוב, 5.8+ סביר, below חלש (`ratingWord` in i18n).
+- Contract slider is a left-to-right number line (פחות ← → יותר); the agent band is laid on the thumb travel so the knob fits
+  inside it; bubbles are labelled "אתה" / club short name.
+- Club screen: coach, closest teammate, the one with tension; the rest of the squad folds into "כל הסגל (N)".
+- PWA icons: `public/icon-192.png`, `icon-512.png`, `icon-maskable-512.png`, `apple-touch-icon.png` (rendered from
+  `icon.svg` by `fc-shots/icons.cjs`); manifest has `start_url` and `scope` `/`.
