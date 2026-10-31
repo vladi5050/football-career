@@ -1,0 +1,31 @@
+{
+  "name": "football-career",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "node tests/e2e/run.mjs",
+    "sim": "vite-node tools/simRunner.ts",
+    "validate": "vite-node tools/validateContent.ts"
+  },
+  "dependencies": {
+    "@preact/signals": "^2.11.4",
+    "comlink": "^4.4.2",
+    "idb-keyval": "^6.3.0",
+    "pixi.js": "^8.22.0",
+    "preact": "^11.1.1"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.10.6",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5",
+    "vite-node": "^6.0.0",
+    "vite-plugin-pwa": "^2.0.0",
+    "vitest": "^5.0.5"
+  }
+}
