@@ -137,3 +137,174 @@ Test bugs found and fixed while building the suite: a `RegExp` button name was p
 9. **UX-09 Lists far beyond "3 at a glance".** The club screen lists every teammate (about 25 rows, all "ניטרלי") with a relation meter (`058-club-w33.png`). That is a long scroll of identical rows. Show the 3 people who matter (coach, captain, best friend or enemy) and collapse the rest.
 10. **UX-10 Youth-team matches look like senior matches.** When he is not in the senior squad the match screen still shows the senior clubs' scorebug ("מכ״מ - כנרת"), and the week-end headline reads "בנוער: 4-0 נגד אתלטיקו ויאנה". In RTL that is read 0-4, and it is not clear whose 4. Add a "נוער" chip on the scorebug and the result card, and write "ניצחון 4-0 בנוער".
 11. Smaller: the tray of week magnets is cut at the left edge with no scroll hint ("שיחה" half visible, `008-week-1.png`). The coach note signature "נדב" sits under the board text and is hard to read. The event option hint has no space before it in accessible text ("ללכת למבחןאמא מרוצה"), so a screen reader runs the words together (`src/ui/screens/Event.tsx`, `.opt-text` + `.opt-hint`). "המנטור" is shown where the PRD says "המנטורית".
+
+---
+
+# Round 2: regression after core round 3, UI round 2 and content (163 events)
+
+## How it was run
+
+`npm run test:e2e`. It builds the app, serves it with vite preview and drives Chromium at 390x844 (touch, he-IL).
+
+Options (environment variables):
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `QA_SEED` | 20261031 | Seed for the deterministic career. A test-only init script injects it into the worker `newCareer` message. Name: נועם בן שושן. |
+| `RANDOM_RUNS` | 2 | Extra first-kick runs with a random seed. Each one also plays 2 seasons in fast mode, with auto key moments and reduced motion turned on. |
+| `RETIRE_AT` | 34 | The deterministic career retires through the UI at this age. |
+| `LONG_MAX_MIN` | 50 | Time budget, in minutes, for the long career. |
+| `E2E_ONLY` | all | Run only some groups, for example `a,b`. |
+| `SKIP_BUILD` | unset | Set it to skip the build step. |
+
+Scenarios:
+
+| Group | What it covers |
+|---|---|
+| a | First kick, three times: the fixed seed plus 2 random seeds. |
+| h | Each random run plays 2 fast seasons with a walk-away, a renewal and a mid-season transfer. |
+| b | Season 1 of the deterministic career, played in detail. |
+| c | Every offseason: tabs and summer card, a walk-away from a fresh negotiation, transfers, renewal up to the final offer, and the expired-contract modal ("לבדוק הצעות" / "המועדון יחליט"). |
+| d | Save and continue, including a reload in the middle of a week. |
+| g | The long career: fast seasons until retirement, then the career-end card. |
+| e | Desktop 1366x860 and small 360x640. |
+| f | PWA and offline. |
+| ui-audit | Runs on every screen. |
+
+Raw output is in `tests/e2e/shots/report.json`. Screenshots are in `tests/e2e/shots/`.
+
+## Result: 136 pass / 2 fail (exit 1)
+
+| Group | Pass | Fail |
+|---|---|---|
+| setup | 2 | 0 |
+| a-first-kick (fixed + 2 random) | 16 | 0 |
+| h-random (2 careers x 2 seasons) | 8 | 0 |
+| b-season1 | 5 | 0 |
+| c-offseason (deterministic + 2 random) | 57 | 0 |
+| d-save-continue | 4 | 0 |
+| g-long-career / g-career-end | 23 | 0 |
+| e-desktop / e-small | 9 | 0 |
+| f-pwa | 5 | 0 |
+| ui-audit | 7 | 2 (UX-03 "+0.0", BUG-14 injury not shown) |
+
+First kick takes 4 taps every time. It took 1.9 s with the fixed seed, and 2.0 s and 8.1 s with the random seeds (the slow one had its first moment in minute 64). Quick week went straight to the match in every run. No page or console errors in any scenario.
+
+The deterministic career started at age 16 at אוניונה סרנו (Italian league), with mostly U19 matches in season 1. In season 2 it moved mid-season to מכבי העמק (הליגה הלאומית). In season 6 the contract expired and the club-decides path led to הפועל הכרמל (ליגת העל). The contract was renewed in s9, s12, s15 and s17. The player retired through the UI at 34, in season 19.
+
+Career totals: 440 apps, 154 goals, 141 assists, average rating 6.8, 1 trophy (אליפות ליגת העל 2042).
+
+## Round-1 items: verification
+
+| Item | Status | Evidence |
+|---|---|---|
+| BUG-01 line-up promise | Fixed | 0 mismatches between the promise and the actual role, over 3 careers. PreMatch now has youth and out states. |
+| BUG-02 first match < 3 moments | Fixed | 3/3 runs had at least 3 moments (001-first-kick-1-moment.png). |
+| BUG-03 final offer not shown | Fixed | The final round shows "הצעה אחרונה" / "יש הסכמה", and "לבקש" is disabled (173-175 renew-s9-*). |
+| BUG-04 offseason offers hidden | Fixed | Offseason has tabs and a summer card with "הצעות על השולחן (n)" (100-det-s1-offseason.png). |
+| BUG-05 no autosave inside a week | Fixed | Reloading in the middle of a week returns to the same phase and the same event ("פקק באיילון"). |
+| BUG-06 scorebug lags the feed | Fixed | 0 differences between the scorebug and the feed. |
+| BUG-07 3 near-goal bars | Fixed | At most 2 bars in every week end. |
+| BUG-08 quick week stops on pre-match | Fixed | Quick week goes straight to the match, as decided. |
+| BUG-09 near-goal bar units | Fixed | The bar fill matches a/b and the units are consistent (060-weekend-s1w1.png). |
+| BUG-10 renewal pay cut | Not reproduced | Renewals went 42,000 -> 188,600 -> 224,500 -> 218,900 (-2.5% at 30, acceptable). |
+| BUG-11 Hebrew grammar | Mostly fixed | Still open: "1 שערים" in the CareerEnd timeline rows. Money format is mixed: "₪X מיליון" from core vs "₪XM" in the UI. |
+| BUG-12 PWA icons | Fixed | The manifest has PNG icons and a start_url. |
+| BUG-13 toasts cover content | Still open | Toasts cover the expired-contract modal text (145-s6-expired-modal.png), the contract action bar and the career-end stats (235-det-career-end.png). The same toast often shows twice. |
+| UX-01 weeks without a match | Mostly fixed | 3 such weeks per season (7 in a season with a mid-season move), down from 8-16. |
+| UX-02 empty weeks | Still open | In detailed season 1, 14 of 37 weeks had an event, so 62% had none. Later seasons had 1-4 events in 29 weeks. |
+| UX-03 "+0.0" rows | Still open | 22 distinct week ends show "+0.0" in "מה השתפר" (ui-audit fail). |
+| UX-04 rival loop | Still open | "אבבה: 0 שערים העונה. אתה: X" appears about 44 times in one career. The rival scores 0 goals for years. |
+| UX-05 youth realism | Fixed | Youth matches at 16, ratings 4.8-9.8 (mean 6.76). |
+| UX-06 wage scale | Partly open | Jump from 42k to 188.6k at age 24 for an overall-63 player. |
+| UX-07 event repetition | Partly open | No title repeats in the career, but answer sets repeat 2-4 times ('"איפה שצריך אותי"' x4, '"זה הישג של כל הקבוצה"' x4). |
+| UX-08 negotiation readability | Fixed | The slider has פחות/יותר labels, and the log bubbles are labelled "אתה" / club. |
+| UX-09 long squad list | Fixed | The list is collapsed to "כל הסגל (22)". |
+| UX-10 youth vs senior unclear | Fixed | U19 chips and the "נוער" suffix. |
+| UX-11 a11y hint | Fixed | The hint is now separate from the moment text. |
+
+## New bugs (round 2)
+
+### BUG-14 major: injuries are never shown in the UI
+- Screen: week (plan), club, top bar.
+- Repro: seed 20261031, long career. At s9w9 the save has `injury` = "פציעה קשה", 19 weeks.
+- Expected: the week screen shows that you are injured, the weeks left and the recovery. Training choices that make no sense are disabled.
+- Actual: the normal plan, fitness 93 and a coach note. The only sign is the toast "אתה פצוע. צופה מהיציע." The audit found 9 injuries in 3 careers that were not shown on the week screen.
+- Screenshot: shots/166-injury-hidden-s9w9.png
+- Likely files: src/ui/Week.tsx, src/ui/Club.tsx, TopBar. No UI component reads the injury from the View. Also check that buildView exposes it.
+
+### BUG-15 major: the career-end card loses every former club
+- Screen: career end, share card.
+- Repro: play past one transfer, then retire through More -> "לתלות את הנעליים" -> "לפרוש".
+- Expected (PRD §12): the clubs in order, as crests. Also "the decision that changed everything" and "the person who mattered most".
+- Actual:
+  - Every season at a former club shows "מועדון" with no crest (6 seasons here).
+  - The share card shows only the current club's crest.
+  - The two PRD lines are missing.
+- Screenshots: shots/236-det-career-end-full.png, shots/237-det-share-card.png
+- Likely files: src/ui/CareerEnd.tsx. `clubById` returns null for clubs that are not in the current View, and the View does not carry history clubs (core buildView).
+
+### BUG-16 major (balance): the scout's potential range never matches reality
+- Screen: club, scout report.
+- Repro: seed 20261031, read the potential range every season.
+- Expected: the range narrows toward the real peak as the player ages.
+- Actual: the range rises to 95-99, while overall peaks at 68 (ages 25-33) and falls to 66 at 34.
+- Screenshots: shots/164-club-s9w2.png, shots/230-club-s18w2.png
+- Likely file: src/core (potential/scout estimate).
+
+### BUG-17 major (balance): renewal talks collapse after 2 asks inside the agent's range
+- Screen: contract.
+- Repro:
+  - s1 renewal: ask once at the middle of the agent's range, ask again, and the club gets up from the table.
+  - s6: the uncle's range is ₪24,700-45,900. Ask 35,300, then +3%, and the talks collapse.
+- Expected: asks inside the range the agent gave should not end talks in one step. The patience bar should warn before a collapse.
+- Actual: the bar read "מתחיל להתעייף" (no warning) and the talks ended on the next ask.
+- Screenshot: shots/103-renew-s1-contract-ask1.png
+- Likely file: src/core/negotiation.ts. The patience drop `8 + wageGap*140` is too steep.
+
+### BUG-18 minor: "המועדון יחליט" takes 3 presses and picks a new club
+- Screen: offseason, expired-contract modal.
+- Repro: seed 20261031, s6. The renewal talks collapse, then press "לעונה הבאה" -> "המועדון יחליט".
+- Expected: one press. The club (or the agent) decides, probably on the pending offer.
+- Actual:
+  - Press 1 shows the toast "לא מחדשים. יש הצעה אחת על השולחן".
+  - Press 2 shows the toast "בלי חוזה אין עונה...".
+  - Press 3: the agent spawns a different club (הפועל הכרמל) instead of the pending offer, and a negotiation opens.
+- Screenshots: shots/145-s6-expired-modal.png, shots/147-s6-club-decides-contract.png
+- Likely files: src/core/game.ts `beginNextSeason` (stepwise `offseason_prompt`), and the modal copy in src/ui/WeekEnd.tsx.
+
+### BUG-19 minor: "לבקש חידוש" stays enabled after talks collapsed
+- Screen: offseason summer card.
+- Repro: let the renewal talks collapse, then press "לבקש חידוש".
+- Expected: the button is disabled, or explains why.
+- Actual: the button is enabled and highlighted. The club answers "עוד זוכרים שהשיחות האחרונות התפוצצו".
+- Likely files: src/ui/WeekEnd.tsx and src/ui/viewExtras.ts (the renewal-available flag).
+
+### BUG-20 minor (balance): national team caps are almost never earned
+- Repro: seed 20261031 career.
+- Evidence: 154 goals in ליגת העל, 6 national-team events and a "זימון לנבחרת", but only 1 cap in 18 seasons.
+- Likely file: src/core (national team selection/caps).
+
+### BUG-21 polish: text details
+- "לבקש חידוש במכ״ע" uses the club's short abbreviation. Use the full name, or "במועדון".
+- A near-goal row shows "39.9 מתוך 40". Round it, or treat it as achieved.
+- The negotiation log bubble glues the club short name to the text: "מכ״עמכבי העמק...". It is a label element with no separator, so screen readers and copied text read it glued.
+- "יש החלטה גדולה שמחכה לך" is toasted repeatedly, sometimes twice in a row.
+- Money format differs between core and UI (see BUG-11).
+
+## Other observations
+- A 16-year-old abroad has ₪114K in savings by week 31. Money feels too easy early on.
+- Transfers update the UI correctly:
+  - week title, club screen, table row, league name and crest after a mid-season move (113-transfer-s2-club-after.png)
+  - the same checks after the offseason club change
+- The youth -> senior transition works. Season 1 had 2 senior and 32 youth results. From season 2 on, all results were senior.
+- Desktop and small viewports, PWA and offline: all pass (239-desktop-week.png, 247-small-week.png, 254/255-offline-*.png).
+
+## Test fixes made in round 2 (not product bugs)
+- Fixed seed and name for deterministic runs. The seed is injected at the worker message, without touching product code.
+- New PreMatch states: the button is found by role in the action bar, not by label. Line-up checks map the promise to the actual role (start / bench / youth / out).
+- A walk-away is recognised from the negotiation status. The negotiation object stays in the save with status walked_away.
+- The expired-contract loop allows up to 8 presses of "לעונה הבאה", because "המועדון יחליט" is stepwise (BUG-18).
+- The near-goal units check matches the new text format.
+- Senior and youth results are counted from week-end results, because fast mode skips the match screen.
+- Demand escalation in the negotiation driver is +3% per round, to stay inside the agent's range.
