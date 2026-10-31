@@ -1,0 +1,198 @@
+// App state (signals) + the bridge to the simulation.
+// UI renders `view` and sends Commands through `act()`. Nothing here knows game rules.
+import { signal, computed, batch } from '@preact/signals';
+import type { ApplyResult, Command, View } from '../core/types';
+import { autosave } from './save';
+
+export type NewCareerCmd = Extract<Command, { type: 'newCareer' }>;
+
+/** The only thing the UI needs from the simulation (real worker or mock). */
+export interface SimApi {
+  newCareer(cmd: NewCareerCmd): Promise<ApplyResult>;
+  apply(cmd: Command): Promise<ApplyResult>;
+  load(json: string): Promise<ApplyResult>;
+  exportSave(): Promise<string>;
+}
+
+let api: SimApi | null = null;
+export function setSimApi(next: SimApi): void {
+  api = next;
+}
+export function getSimApi(): SimApi {
+  if (!api) throw new Error('SimApi not set: call setSimApi() before act()');
+  return api;
+}
+
+// ---------------------------------------------------------------- signals
+export const view = signal<View | null>(null);
+export const busy = signal(false);
+export const lastError = signal<string | null>(null);
+export const hasSave = signal(false);
+
+/** Small summary of the autosave for the title screen (kept in localStorage). */
+export interface SaveMeta { name: string; shirt: number; colors: [string, string]; club: string; week: number; season: number }
+const META_KEY = 'fc.saveMeta';
+function readMeta(): SaveMeta | null {
+  try {
+    const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(META_KEY) : null;
+    return raw ? (JSON.parse(raw) as SaveMeta) : null;
+  } catch {
+    return null;
+  }
+}
+export const saveMeta = signal<SaveMeta | null>(readMeta());
+
+/** Hash route (#/week, #/table ...). Phase-driven screens override it, see ui/App.tsx. */
+export type Route =
+  | 'title' | 'new' | 'reveal' | 'week' | 'table' | 'club' | 'agent' | 'more'
+  | 'news' | 'goals' | 'settings' | 'editor' | 'end';
+const ROUTES: Route[] = ['title', 'new', 'reveal', 'week', 'table', 'club', 'agent', 'more', 'news', 'goals', 'settings', 'editor', 'end'];
+
+function readHash(): Route {
+  const h = (typeof location !== 'undefined' ? location.hash : '').replace(/^#\/?/, '').split('/')[0] as Route;
+  return ROUTES.includes(h) ? h : 'title';
+}
+export const screen = signal<Route>(readHash());
+export const navDirection = signal<'fwd' | 'back'>('fwd');
+
+const TAB_ORDER: Route[] = ['week', 'table', 'club', 'agent', 'more'];
+export function navigate(to: Route, opts: { replace?: boolean } = {}): void {
+  const from = screen.value;
+  const a = TAB_ORDER.indexOf(from);
+  const b = TAB_ORDER.indexOf(to);
+  navDirection.value = a >= 0 && b >= 0 && b < a ? 'back' : 'fwd';
+  screen.value = to;
+  const url = `#/${to}`;
+  if (opts.replace) history.replaceState(null, '', url);
+  else if (location.hash !== url) history.pushState(null, '', url);
+}
+if (typeof window !== 'undefined') {
+  window.addEventListener('popstate', () => {
+    navDirection.value = 'back';
+    screen.value = readHash();
+  });
+}
+
+// ---------------------------------------------------------------- toasts
+export interface ToastMsg { id: number; text: string }
+export const toasts = signal<ToastMsg[]>([]);
+let toastId = 1;
+export function toast(text: string, ms = 2600): void {
+  const id = toastId++;
+  toasts.value = [...toasts.value, { id, text }].slice(-3);
+  setTimeout(() => {
+    toasts.value = toasts.value.filter((t) => t.id !== id);
+  }, ms);
+}
+
+// ---------------------------------------------------------------- local UI settings
+const LS_KEY = 'fc.ui.settings';
+interface UiSettings { reducedMotion: boolean; seenReveal: boolean; autoMoments: boolean }
+function loadUi(): UiSettings {
+  const osReduced = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) return { reducedMotion: osReduced, seenReveal: false, autoMoments: false, ...JSON.parse(raw) };
+  } catch {
+    /* ignore */
+  }
+  return { reducedMotion: osReduced, seenReveal: false, autoMoments: false };
+}
+export const uiSettings = signal<UiSettings>(loadUi());
+export function setUiSetting<K extends keyof UiSettings>(k: K, v: UiSettings[K]): void {
+  uiSettings.value = { ...uiSettings.value, [k]: v };
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify(uiSettings.value));
+  } catch {
+    /* ignore */
+  }
+}
+export const reducedMotion = computed(() => uiSettings.value.reducedMotion);
+
+/** True while the Match screen should keep showing full time after the engine moved on. */
+export const matchOutro = signal(false);
+
+// ---------------------------------------------------------------- commands
+function applyResult(res: ApplyResult): void {
+  const prev = view.value;
+  batch(() => {
+    if (prev?.phase === 'match' && res.view.phase !== 'match') matchOutro.value = true;
+    view.value = res.view;
+  });
+  res.toast?.forEach((t) => toast(t));
+  if (res.saveDue) void persist();
+}
+
+async function persist(): Promise<void> {
+  try {
+    const json = await getSimApi().exportSave();
+    await autosave.write(json);
+    hasSave.value = true;
+    const v = view.value;
+    if (v) {
+      const meta: SaveMeta = { name: v.player.name, shirt: v.player.shirt, colors: v.club?.colors ?? ['#F28C28', '#1B2A4A'], club: v.club?.name ?? '', week: v.season.week + 1, season: v.season.number };
+      saveMeta.value = meta;
+      try { localStorage.setItem(META_KEY, JSON.stringify(meta)); } catch { /* ignore */ }
+    }
+  } catch (e) {
+    console.warn('autosave failed', e);
+  }
+}
+
+async function run(fn: () => Promise<ApplyResult>): Promise<ApplyResult | null> {
+  if (busy.value) return null;
+  busy.value = true;
+  lastError.value = null;
+  try {
+    const res = await fn();
+    applyResult(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+    lastError.value = e instanceof Error ? e.message : String(e);
+    toast('משהו השתבש. נסה שוב.');
+    return null;
+  } finally {
+    busy.value = false;
+  }
+}
+
+/** Send any command to the sim. Resolves with the result (or null if busy/failed). */
+export function act(cmd: Command): Promise<ApplyResult | null> {
+  return run(() => getSimApi().apply(cmd));
+}
+
+export async function startCareer(cmd: NewCareerCmd): Promise<ApplyResult | null> {
+  const res = await run(() => getSimApi().newCareer(cmd));
+  if (res) {
+    await persist();
+    setUiSetting('seenReveal', false);
+  }
+  return res;
+}
+
+export async function continueCareer(): Promise<boolean> {
+  const json = await autosave.read();
+  if (!json) return false;
+  const res = await run(() => getSimApi().load(json));
+  return !!res;
+}
+
+export async function importSave(json: string): Promise<boolean> {
+  const res = await run(() => getSimApi().load(json));
+  if (res) await persist();
+  return !!res;
+}
+
+export async function exportSaveJson(): Promise<string> {
+  return getSimApi().exportSave();
+}
+
+export async function deleteSave(): Promise<void> {
+  await autosave.clear();
+  hasSave.value = false;
+  saveMeta.value = null;
+  try { localStorage.removeItem(META_KEY); } catch { /* ignore */ }
+  view.value = null;
+  navigate('title', { replace: true });
+}

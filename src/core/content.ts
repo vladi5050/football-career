@@ -9,7 +9,7 @@ export interface NamePool { first: string[]; last: string[] }
 export type WageBands = Record<string, Record<string, { u19: [number, number]; u23: [number, number]; prime: [number, number]; vet: [number, number] }>>;
 export interface Theme { id: string; name: string; desc: string; categoryBoost: Record<string, number> }
 export interface EventVariant { title: string; body: string }
-export interface EventOption { id: string; text: string; hint?: string; effects: string[]; chain?: { after: number; event: string }[] }
+export interface EventOption { id: string; text: string; hint?: string; effects: string[]; chain?: { after: number; event: string }[]; /** R&D addition: preferred option for automatic (quick week) resolution. */ default?: boolean }
 export interface EventTemplate {
   id: string; category: string; weight: number; cooldown?: number; once?: boolean;
   when?: string[]; cast?: Record<string, string>; because?: string;

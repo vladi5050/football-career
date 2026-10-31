@@ -40,7 +40,12 @@ export interface Person {
   traits: TraitId[];
   relations: Record<number, Relation>; // keyed by other person id (mostly the user's player)
   clubId: number | null;
+  /** R&D addition: agent archetype (agents only). */
+  archetype?: AgentArchetype;
 }
+
+/** R&D addition. shark = כריש, mentor = מנטורית, uncle = דוד */
+export type AgentArchetype = 'shark' | 'mentor' | 'uncle';
 
 export type SquadRole = 'star' | 'starter' | 'rotation' | 'prospect' | 'backup';
 
@@ -72,6 +77,8 @@ export interface Footballer extends Person {
   stats: SeasonStats;
   careerStats: SeasonStats;
   retired?: boolean;
+  /** R&D addition: shirt number (user's player). */
+  shirt?: number;
 }
 
 export type CrestSpec = [shape: number, division: number, palette: number, charge: number];
@@ -108,6 +115,8 @@ export interface League {
   strength: number; // 1..100 average level
   wageFactor: number; // multiplier vs Israeli Premier League
   simLevel: 'full' | 'medium' | 'result';
+  /** R&D addition: content key (e.g. "il1"). */
+  key?: string;
 }
 
 export interface Fixture {
@@ -130,6 +139,8 @@ export interface Season {
   fixtures: Record<number, Fixture[]>; // leagueId -> fixtures
   tables: Record<number, TableRow[]>;
   themes: string[]; // season theme ids
+  /** R&D addition: absWeek of season week 0. */
+  startAbsWeek?: number;
 }
 
 // ---------------------------------------------------------------- the user's career
@@ -182,6 +193,16 @@ export interface Career {
   negotiation: Negotiation | null;
   retired: boolean;
   retirementReason?: string;
+  /** R&D addition: fixed people around the user: father, mother, friend, firstCoach -> person id. */
+  circle?: Record<string, number>;
+  /** R&D addition: minutes in the last (up to 5) user matches, newest last. */
+  recentMinutes?: number[];
+  /** R&D addition: ratings in the last (up to 5) matches played, newest last. */
+  recentRatings?: number[];
+  /** R&D addition: the user's last match summary (for event conditions). */
+  lastMatch?: { absWeek: number; result: number; rating: number; started: boolean; minutes: number };
+  /** R&D addition: Hebrew start story line ("סקאוט של אקדמיה..."). */
+  startStory?: string;
 }
 
 export interface CareerSeasonRecord { season: number; year: number; clubId: number; leagueId: number; apps: number; goals: number; assists: number; avgRating: number; position: number }
@@ -209,6 +230,8 @@ export interface Negotiation {
   currentOffer: { wage: number; role: SquadRole; years: number; releaseClause: number | null };
   log: string[];
   status: 'open' | 'signed' | 'walked_away';
+  /** R&D addition: the phase to return to when the negotiation closes. */
+  returnPhase?: GamePhase;
 }
 
 // ---------------------------------------------------------------- events
@@ -280,6 +303,12 @@ export interface LiveMatch {
   weather: 'clear' | 'rain' | 'wind';
   started: boolean; // user is in starting XI
   derby: boolean;
+  /** R&D addition: minute the user came on as a substitute (null/undefined = started or did not play). */
+  subMinute?: number | null;
+  /** R&D addition: final whistle reached. */
+  finished?: boolean;
+  /** R&D addition: youth-team (U19) match. The user was not in the senior matchday squad; result does not touch the league table or senior stats. */
+  youth?: boolean;
 }
 
 // ---------------------------------------------------------------- the world
@@ -336,7 +365,7 @@ export interface PlayerView {
 
 export interface ClubView { id: number; name: string; short: string; city: string; colors: [string, string]; crest: CrestSpec; reputation: number; leagueName: string; country: string; stadium: string }
 
-export interface PersonView { id: number; name: string; role: Role; traits: TraitId[]; relation: number; age: number; clubId: number | null }
+export interface PersonView { id: number; name: string; role: Role; traits: TraitId[]; relation: number; age: number; clubId: number | null; archetype?: AgentArchetype }
 
 export interface View {
   phase: GamePhase;

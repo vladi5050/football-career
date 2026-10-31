@@ -1,0 +1,22 @@
+[
+ { "id": "relegation_fight", "name": "מאבק בתחתית", "desc": "הקבוצה בתחתית. כל נקודה שווה זהב, וכל טעות נכנסת לכותרות.", "categoryBoost": { "pressure": 2, "fans": 1.6, "team": 1.4, "money": 1.2 } },
+ { "id": "title_race", "name": "מרוץ אליפות", "desc": "שלוש קבוצות על אותה נקודה. כל המדינה מסתכלת.", "categoryBoost": { "pressure": 1.8, "media": 1.6, "fans": 1.4, "rival": 1.3 } },
+ { "id": "world_cup_year", "name": "שנת מונדיאל", "desc": "בקיץ יש טורניר גדול, והמאמן הלאומי מסתובב ביציעים.", "categoryBoost": { "national": 2.5, "media": 1.4, "injury": 1.3, "pressure": 1.2 } },
+ { "id": "new_owner", "name": "בעלים חדש", "desc": "איש עסקים קנה את המועדון. הבטחות גדולות, סבלנות קטנה.", "categoryBoost": { "money": 1.6, "team": 1.5, "transfer": 1.5, "media": 1.3 } },
+ { "id": "star_signing", "name": "כוכב חדש בחדר", "desc": "המועדון הביא שם גדול לעמדה שלך. התחרות על הדקות מתחילה עכשיו.", "categoryBoost": { "minutes": 2, "team": 1.4, "rival": 1.3, "media": 1.2 } },
+ { "id": "financial_crisis", "name": "משבר כלכלי", "desc": "המשכורות מתעכבות, השחקנים לוחשים במסדרון, והסוכן שלך מתחיל לטלפן.", "categoryBoost": { "money": 2.2, "agent": 1.6, "transfer": 1.5, "team": 1.3 } },
+ { "id": "wedding", "name": "עונת החתונה", "desc": "יש תאריך, יש אולם, ויש גם ליגה. מישהו יצטרך לוותר על משהו.", "categoryBoost": { "family": 2.2, "life": 1.8, "money": 1.2 } },
+ { "id": "baby", "name": "תינוק בדרך", "desc": "לילות בלי שינה ובוקר אימונים. הפרספקטיבה משתנה.", "categoryBoost": { "family": 2.4, "life": 1.6, "pressure": 0.7 } },
+ { "id": "new_coach", "name": "מאמן חדש", "desc": "הלוח נמחק. כל אחד בסגל צריך להוכיח את עצמו מחדש.", "categoryBoost": { "minutes": 1.8, "team": 1.6, "discipline": 1.3 } },
+ { "id": "injury_crisis", "name": "משבר פציעות", "desc": "חצי סגל אצל הפיזיותרפיסט. מי שבריא משחק, גם אם הוא עייף.", "categoryBoost": { "injury": 2.2, "minutes": 1.5, "pressure": 1.2 } },
+ { "id": "derby_season", "name": "עונה של דרבי", "desc": "השנאה בעיר בשיא. הגרפיטי כבר על הקירות.", "categoryBoost": { "fans": 2, "rival": 1.8, "discipline": 1.3, "media": 1.2 } },
+ { "id": "european_nights", "name": "לילות אירופה", "desc": "משחקים באמצע השבוע, טיסות, ועייפות שמצטברת.", "categoryBoost": { "injury": 1.4, "media": 1.4, "transfer": 1.5, "pressure": 1.3 } },
+ { "id": "media_storm", "name": "סערה תקשורתית", "desc": "עיתונאי חדש בעיר מחפש כותרות. כל מילה שלך עלולה להתפוצץ.", "categoryBoost": { "media": 2.4, "discipline": 1.3, "fans": 1.2 } },
+ { "id": "contract_year", "name": "שנת חוזה", "desc": "החוזה נגמר בקיץ. כל משחק הוא גם ראיון עבודה.", "categoryBoost": { "agent": 2, "transfer": 1.8, "money": 1.4, "pressure": 1.2 } },
+ { "id": "promoted_side", "name": "עולה חדשה", "desc": "הקבוצה עלתה ליגה. הכל גדול יותר, והחלום להישאר.", "categoryBoost": { "team": 1.6, "fans": 1.5, "pressure": 1.4, "minutes": 1.2 } },
+ { "id": "army_call", "name": "צו ראשון", "desc": "המכתב מהלשכה הגיע. הכדורגל צריך להסתדר עם הצבא.", "categoryBoost": { "army": 3, "family": 1.3, "life": 1.2 } },
+ { "id": "homesick", "name": "געגועים", "desc": "רחוק מהבית, מהאוכל של אמא ומהחברים. גם הכדור מרגיש אחרת.", "categoryBoost": { "family": 2, "life": 1.6, "transfer": 1.3 } },
+ { "id": "youth_revolution", "name": "מהפכת צעירים", "desc": "המועדון החליט להמר על הנוער. הוותיקים לא מרוצים.", "categoryBoost": { "minutes": 1.7, "team": 1.6, "discipline": 1.2 } },
+ { "id": "farewell_tour", "name": "סיבוב פרידה", "desc": "כולם יודעים שהסוף קרוב. כל מגרש מוחא כפיים, וכל בוקר כואב קצת יותר.", "categoryBoost": { "fans": 1.8, "life": 1.7, "media": 1.4, "family": 1.3 } },
+ { "id": "scandal_season", "name": "עונת שערוריות", "desc": "חקירה בהתאחדות, שמועות על הימורים ומנהלים שמסתתרים מהמצלמות.", "categoryBoost": { "discipline": 2, "media": 1.8, "money": 1.3, "team": 1.2 } }
+]

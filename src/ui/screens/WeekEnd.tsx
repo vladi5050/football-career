@@ -1,0 +1,130 @@
+import { act, busy, view } from '../../app/store';
+import type { ClubView, View } from '../../core/types';
+import { ATTR_HE, weekLabel } from '../i18n';
+import { Crest } from '../components/Crest';
+import { TapedCard } from '../components/TapedCard';
+import { CountUp } from '../components/CountUp';
+import { ProgressNearGoal, Bar } from '../components/Bars';
+import { RatingStamp } from '../components/Rating';
+import { Confetti } from '../components/Confetti';
+
+function clubFor(v: View, id: number): ClubView | null {
+  if (v.club?.id === id) return v.club;
+  if (v.nextFixture?.opp.id === id) return v.nextFixture.opp;
+  const row = v.table.find((r) => r.clubId === id);
+  return row ? { id, name: row.name, short: row.short, colors: row.colors, crest: row.crest, city: '', reputation: 50, leagueName: '', country: '', stadium: '' } : null;
+}
+
+export function WeekEndScreen() {
+  const v = view.value!;
+  const rep = v.lastWeekReport;
+  const offseason = v.phase === 'offseason';
+  const res = rep?.result;
+  const home = res ? clubFor(v, res.home) : null;
+  const away = res ? clubFor(v, res.away) : null;
+  const userHome = res ? res.home === v.club?.id : true;
+  const diff = res ? (userHome ? res.hg - res.ag : res.ag - res.hg) : 0;
+
+  return (
+    <main class="screen has-actions weekend-screen">
+      {rep?.headline && (
+        <div class="newspaper rise">
+          <div class="np-mast">
+            <span>הבועט</span>
+            <span class="np-ed">{weekLabel(v)} · מהדורת מוצ״ש</span>
+          </div>
+          <h1 class="np-headline">{rep.headline}</h1>
+        </div>
+      )}
+
+      {res && home && away && (
+        <TapedCard tape="left" class="result-card">
+          <div class="rc-row">
+            <div class="rc-team">
+              <Crest spec={home.crest} colors={home.colors} name={home.name} short={home.short} size={46} />
+              <span>{home.short}</span>
+            </div>
+            <div class="rc-score display num">
+              {res.hg}-{res.ag}
+            </div>
+            <div class="rc-team">
+              <Crest spec={away.crest} colors={away.colors} name={away.name} short={away.short} size={46} />
+              <span>{away.short}</span>
+            </div>
+            {rep.userRating != null && (
+              <div class="rc-stamp">
+                <RatingStamp value={rep.userRating} />
+              </div>
+            )}
+          </div>
+          <div class="rc-line">
+            <span class={`chip ${diff > 0 ? 'chip-green' : diff < 0 ? 'chip-red' : 'chip-ink'}`}>{diff > 0 ? 'ניצחון' : diff < 0 ? 'הפסד' : 'תיקו'}</span>
+            {rep.userGoals > 0 && <span class="chip chip-orange">{rep.userGoals === 1 ? 'שער' : `${rep.userGoals} שערים`}</span>}
+            {rep.userAssists > 0 && <span class="chip chip-blue">{rep.userAssists === 1 ? 'בישול' : `${rep.userAssists} בישולים`}</span>}
+          </div>
+        </TapedCard>
+      )}
+
+      {rep && rep.gains.length > 0 && (
+        <section class="paper gains">
+          <h2 class="paper-title">מה השתפר</h2>
+          {rep.gains.map((g, i) => {
+            const crossed = Math.floor(g.after) > Math.floor(g.before);
+            return (
+              <div key={g.key} class={`gain-row ${crossed ? 'crossed' : ''}`}>
+                <span class="gain-name">{ATTR_HE[g.key]}</span>
+                <Bar value={(g.after % 1) * 100} max={100} color={crossed ? undefined : 'blue'} />
+                <span class="gain-val display">
+                  <CountUp from={Math.floor(g.before)} to={Math.floor(g.after)} delay={400 + i * 250} />
+                </span>
+                <span class="gain-delta num">+{(g.after - g.before).toFixed(1)}</span>
+              </div>
+            );
+          })}
+        </section>
+      )}
+
+      {rep && rep.nearGoals.length > 0 && (
+        <section class="near-list">
+          {rep.nearGoals.map((n) => (
+            <div key={n.text} class="paper slim">
+              <ProgressNearGoal text={n.text} progress={n.progress} target={n.target} from={n.target > 10 ? n.target - 5 : 0} />
+            </div>
+          ))}
+        </section>
+      )}
+
+      {rep && rep.meanwhile.length > 0 && (
+        <section>
+          <h2 class="section-title">בינתיים בליגה</h2>
+          <ul class="meanwhile">
+            {rep.meanwhile.map((m) => (
+              <li key={m}>{m}</li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {rep && rep.openLoops.length > 0 && (
+        <TapedCard tape="center" tilt="r" class="loops">
+          <h2 class="paper-title">מה מחכה לך</h2>
+          <ol>
+            {rep.openLoops.map((l) => (
+              <li key={l}>{l}</li>
+            ))}
+          </ol>
+        </TapedCard>
+      )}
+
+      {!rep && <div class="paper empty">השבוע נגמר.</div>}
+
+      {rep && rep.userGoals > 0 && <Confetti seed={v.absWeek + 3} />}
+
+      <div class="action-bar">
+        <button class="btn btn-primary" type="button" disabled={busy.value} onClick={() => act({ type: 'finishWeek' })}>
+          {offseason ? 'לעונה הבאה' : 'לשבוע הבא'}
+        </button>
+      </div>
+    </main>
+  );
+}

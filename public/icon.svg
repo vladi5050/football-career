@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <pattern id="p" width="64" height="512" patternUnits="userSpaceOnUse">
+      <rect width="64" height="512" fill="#22344F"/>
+      <rect x="62" width="2" height="512" fill="#1A2940"/>
+      <rect x="0" width="1" height="512" fill="#2C4263"/>
+    </pattern>
+    <linearGradient id="s" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F7A04A"/>
+      <stop offset="1" stop-color="#E87E18"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#p)"/>
+  <circle cx="256" cy="92" r="16" fill="#B8BDC2"/>
+  <path d="M256 92 v34" stroke="#B8BDC2" stroke-width="10" stroke-linecap="round"/>
+  <path d="M176 140 L210 126 Q256 150 302 126 L336 140 L412 196 L376 258 L340 238 L340 430 Q256 446 172 430 L172 238 L136 258 L100 196 Z"
+        fill="url(#s)" stroke="#A85A10" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M210 126 Q256 150 302 126" fill="none" stroke="#F7F7F2" stroke-width="10"/>
+  <path d="M172 238 L136 258 M340 238 L376 258" stroke="#F7F7F2" stroke-width="10"/>
+  <text x="256" y="372" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="150" fill="#F7F7F2">10</text>
+</svg>

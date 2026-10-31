@@ -1,0 +1,2614 @@
+{
+ "leagues": [
+  {
+   "key": "il1",
+   "name": "ליגת העל",
+   "countryCode": "IL",
+   "country": "ישראל",
+   "tier": 1,
+   "promotesTo": null,
+   "relegatesTo": "il2",
+   "promoteSpots": 0,
+   "relegateSpots": 2,
+   "strength": 52,
+   "wageFactor": 1,
+   "simLevel": "full",
+   "clubs": [
+    {
+     "name": "מכבי הכרמל",
+     "short": "מכ״כ",
+     "city": "חיפה",
+     "colors": [
+      "#0B7A3B",
+      "#FFFFFF"
+     ],
+     "reputation": 80,
+     "stadium": "אצטדיון הכרמל",
+     "rival": "הפועל הכרמל"
+    },
+    {
+     "name": "הפועל הכרמל",
+     "short": "הפ״כ",
+     "city": "חיפה",
+     "colors": [
+      "#C8102E",
+      "#FFFFFF"
+     ],
+     "reputation": 66,
+     "stadium": "אצטדיון הכרמל",
+     "rival": "מכבי הכרמל"
+    },
+    {
+     "name": "מכבי החוף",
+     "short": "מכ״ח",
+     "city": "תל אביב",
+     "colors": [
+      "#F7D417",
+      "#0A2A6B"
+     ],
+     "reputation": 82,
+     "stadium": "היכל החוף",
+     "rival": "הפועל החוף"
+    },
+    {
+     "name": "הפועל החוף",
+     "short": "הפ״ח",
+     "city": "תל אביב",
+     "colors": [
+      "#D0021B",
+      "#111111"
+     ],
+     "reputation": 72,
+     "stadium": "היכל החוף",
+     "rival": "מכבי החוף"
+    },
+    {
+     "name": "בית״ר הבירה",
+     "short": "בית״ר",
+     "city": "ירושלים",
+     "colors": [
+      "#FFD200",
+      "#000000"
+     ],
+     "reputation": 76,
+     "stadium": "אצטדיון הגבעה",
+     "rival": "הפועל הבירה"
+    },
+    {
+     "name": "הפועל נמל",
+     "short": "נמל",
+     "city": "אשדוד",
+     "colors": [
+      "#E85D04",
+      "#1B1B1B"
+     ],
+     "reputation": 58,
+     "stadium": "אצטדיון המזח",
+     "rival": "מכבי הנמל"
+    },
+    {
+     "name": "בית״ר הגליל",
+     "short": "גליל",
+     "city": "כרמיאל",
+     "colors": [
+      "#1C1C1C",
+      "#FFFFFF"
+     ],
+     "reputation": 60,
+     "stadium": "אצטדיון הגליל"
+    },
+    {
+     "name": "בני הנגב",
+     "short": "נגב",
+     "city": "באר שבע",
+     "colors": [
+      "#8B0000",
+      "#F5DEB3"
+     ],
+     "reputation": 74,
+     "stadium": "אצטדיון המדבר"
+    },
+    {
+     "name": "עירוני המפרץ",
+     "short": "מפרץ",
+     "city": "קריית ביאליק",
+     "colors": [
+      "#00A3E0",
+      "#FFFFFF"
+     ],
+     "reputation": 54,
+     "stadium": "אצטדיון המפרץ"
+    },
+    {
+     "name": "מכבי השרון",
+     "short": "שרון",
+     "city": "נתניה",
+     "colors": [
+      "#FFE600",
+      "#00843D"
+     ],
+     "reputation": 62,
+     "stadium": "אצטדיון השרון"
+    },
+    {
+     "name": "הפועל העמק",
+     "short": "עמק",
+     "city": "עפולה",
+     "colors": [
+      "#D2232A",
+      "#00543C"
+     ],
+     "reputation": 50,
+     "stadium": "אצטדיון העמק",
+     "rival": "מכבי העמק"
+    },
+    {
+     "name": "מכבי בני הצפון",
+     "short": "צפון",
+     "city": "נהריה",
+     "colors": [
+      "#0057B8",
+      "#FFFFFF"
+     ],
+     "reputation": 48,
+     "stadium": "אצטדיון החוף הצפוני"
+    },
+    {
+     "name": "הכח השפלה",
+     "short": "שפלה",
+     "city": "רחובות",
+     "colors": [
+      "#F47920",
+      "#FFFFFF"
+     ],
+     "reputation": 52,
+     "stadium": "אצטדיון השפלה"
+    },
+    {
+     "name": "אחי הגלבוע",
+     "short": "גלבוע",
+     "city": "בית שאן",
+     "colors": [
+      "#2E8B57",
+      "#FFD700"
+     ],
+     "reputation": 47,
+     "stadium": "אצטדיון הגלבוע"
+    }
+   ]
+  },
+  {
+   "key": "il2",
+   "name": "הליגה הלאומית",
+   "countryCode": "IL",
+   "country": "ישראל",
+   "tier": 2,
+   "promotesTo": "il1",
+   "relegatesTo": "il3",
+   "promoteSpots": 2,
+   "relegateSpots": 2,
+   "strength": 42,
+   "wageFactor": 0.35,
+   "simLevel": "full",
+   "clubs": [
+    {
+     "name": "הפועל הבירה",
+     "short": "הפ״ב",
+     "city": "ירושלים",
+     "colors": [
+      "#E4002B",
+      "#000000"
+     ],
+     "reputation": 64,
+     "stadium": "אצטדיון העמק הירושלמי",
+     "rival": "בית״ר הבירה"
+    },
+    {
+     "name": "מכבי הנמל",
+     "short": "מכ״נ",
+     "city": "אשדוד",
+     "colors": [
+      "#0033A0",
+      "#FFFFFF"
+     ],
+     "reputation": 50,
+     "stadium": "מגרש המספנה",
+     "rival": "הפועל נמל"
+    },
+    {
+     "name": "עירוני הגבעות",
+     "short": "גבעות",
+     "city": "מודיעין",
+     "colors": [
+      "#7B2CBF",
+      "#FFFFFF"
+     ],
+     "reputation": 46,
+     "stadium": "אצטדיון הגבעות"
+    },
+    {
+     "name": "הפועל הערבה",
+     "short": "ערבה",
+     "city": "אילת",
+     "colors": [
+      "#FF6F00",
+      "#0D47A1"
+     ],
+     "reputation": 40,
+     "stadium": "אצטדיון האלמוגים"
+    },
+    {
+     "name": "מכבי העמק",
+     "short": "מכ״ע",
+     "city": "עפולה",
+     "colors": [
+      "#FFEB3B",
+      "#1B5E20"
+     ],
+     "reputation": 45,
+     "stadium": "מגרש המסילה",
+     "rival": "הפועל העמק"
+    },
+    {
+     "name": "בית״ר השרון",
+     "short": "בש״ר",
+     "city": "כפר סבא",
+     "colors": [
+      "#212121",
+      "#FFC107"
+     ],
+     "reputation": 47,
+     "stadium": "אצטדיון הפרדסים"
+    },
+    {
+     "name": "הפועל המושבה",
+     "short": "הפ״מ",
+     "city": "פתח תקווה",
+     "colors": [
+      "#1565C0",
+      "#E53935"
+     ],
+     "reputation": 55,
+     "stadium": "אצטדיון המושבה",
+     "rival": "מכבי המושבה"
+    },
+    {
+     "name": "מכבי המושבה",
+     "short": "מכ״מ",
+     "city": "פתח תקווה",
+     "colors": [
+      "#2E7D32",
+      "#FFEB3B"
+     ],
+     "reputation": 57,
+     "stadium": "אצטדיון המושבה",
+     "rival": "הפועל המושבה"
+    },
+    {
+     "name": "בני הכנרת",
+     "short": "כנרת",
+     "city": "טבריה",
+     "colors": [
+      "#00ACC1",
+      "#FFFFFF"
+     ],
+     "reputation": 44,
+     "stadium": "אצטדיון הכנרת"
+    },
+    {
+     "name": "הפועל הירקון",
+     "short": "ירקון",
+     "city": "רמת גן",
+     "colors": [
+      "#C62828",
+      "#FFFFFF"
+     ],
+     "reputation": 52,
+     "stadium": "אצטדיון הירקון"
+    },
+    {
+     "name": "מ.ס. הדרום",
+     "short": "דרום",
+     "city": "אשקלון",
+     "colors": [
+      "#00897B",
+      "#000000"
+     ],
+     "reputation": 49,
+     "stadium": "אצטדיון החוף הדרומי"
+    },
+    {
+     "name": "עירוני הוואדי",
+     "short": "וואדי",
+     "city": "אום אל פחם",
+     "colors": [
+      "#004D40",
+      "#FFFFFF"
+     ],
+     "reputation": 43,
+     "stadium": "אצטדיון הוואדי"
+    },
+    {
+     "name": "אחווה הגליל",
+     "short": "אחווה",
+     "city": "טמרה",
+     "colors": [
+      "#8E24AA",
+      "#FFEB3B"
+     ],
+     "reputation": 45,
+     "stadium": "אצטדיון הזיתים"
+    },
+    {
+     "name": "הפועל הים",
+     "short": "ים",
+     "city": "בת ים",
+     "colors": [
+      "#E53935",
+      "#0277BD"
+     ],
+     "reputation": 42,
+     "stadium": "מגרש הטיילת"
+    },
+    {
+     "name": "מכבי הגולן",
+     "short": "גולן",
+     "city": "קצרין",
+     "colors": [
+      "#5D4037",
+      "#FFFFFF"
+     ],
+     "reputation": 38,
+     "stadium": "אצטדיון הבזלת",
+     "rival": "הפועל הנחל"
+    },
+    {
+     "name": "הכח המרכז",
+     "short": "מרכז",
+     "city": "ראשון לציון",
+     "colors": [
+      "#F57C00",
+      "#212121"
+     ],
+     "reputation": 48,
+     "stadium": "אצטדיון המייסדים"
+    }
+   ]
+  },
+  {
+   "key": "il3",
+   "name": "ליגה א׳",
+   "countryCode": "IL",
+   "country": "ישראל",
+   "tier": 3,
+   "promotesTo": "il2",
+   "relegatesTo": null,
+   "promoteSpots": 2,
+   "relegateSpots": 0,
+   "strength": 32,
+   "wageFactor": 0.12,
+   "simLevel": "medium",
+   "clubs": [
+    {
+     "name": "הפועל השכונה",
+     "short": "שכונה",
+     "city": "חולון",
+     "colors": [
+      "#D32F2F",
+      "#FFFFFF"
+     ],
+     "reputation": 30,
+     "stadium": "מגרש השכונה"
+    },
+    {
+     "name": "מכבי הפרדס",
+     "short": "פרדס",
+     "city": "פרדס חנה",
+     "colors": [
+      "#388E3C",
+      "#FFFFFF"
+     ],
+     "reputation": 28,
+     "stadium": "מגרש הפרדס"
+    },
+    {
+     "name": "בני הכפר",
+     "short": "כפר",
+     "city": "כפר יונה",
+     "colors": [
+      "#1976D2",
+      "#FFEB3B"
+     ],
+     "reputation": 26,
+     "stadium": "מגרש הכפר"
+    },
+    {
+     "name": "עירוני הגבול",
+     "short": "גבול",
+     "city": "שדרות",
+     "colors": [
+      "#FBC02D",
+      "#D32F2F"
+     ],
+     "reputation": 27,
+     "stadium": "מגרש הגבול"
+    },
+    {
+     "name": "מכבי הקריות",
+     "short": "קריות",
+     "city": "קריית מוצקין",
+     "colors": [
+      "#0288D1",
+      "#FFFFFF"
+     ],
+     "reputation": 32,
+     "stadium": "אצטדיון הקריות"
+    },
+    {
+     "name": "הפועל המעיין",
+     "short": "מעיין",
+     "city": "ראש העין",
+     "colors": [
+      "#C2185B",
+      "#FFFFFF"
+     ],
+     "reputation": 29,
+     "stadium": "מגרש המעיין"
+    },
+    {
+     "name": "בית״ר הגבעה",
+     "short": "גבעה",
+     "city": "גבעת שמואל",
+     "colors": [
+      "#212121",
+      "#FDD835"
+     ],
+     "reputation": 31,
+     "stadium": "מגרש הגבעה"
+    },
+    {
+     "name": "בני המעלה",
+     "short": "מעלה",
+     "city": "מעלה אדומים",
+     "colors": [
+      "#6D4C41",
+      "#FFF8E1"
+     ],
+     "reputation": 25,
+     "stadium": "מגרש המעלה"
+    },
+    {
+     "name": "הפועל הנחל",
+     "short": "נחל",
+     "city": "קריית שמונה",
+     "colors": [
+      "#E64A19",
+      "#1A237E"
+     ],
+     "reputation": 33,
+     "stadium": "מגרש הנחל",
+     "rival": "מכבי הגולן"
+    },
+    {
+     "name": "מכבי האלונים",
+     "short": "אלונים",
+     "city": "קריית טבעון",
+     "colors": [
+      "#2E7D32",
+      "#FFD54F"
+     ],
+     "reputation": 24,
+     "stadium": "מגרש האלונים"
+    },
+    {
+     "name": "מ.ס. החולות",
+     "short": "חולות",
+     "city": "יבנה",
+     "colors": [
+      "#F9A825",
+      "#004D40"
+     ],
+     "reputation": 28,
+     "stadium": "מגרש החולות"
+    },
+    {
+     "name": "הפועל הסלע",
+     "short": "סלע",
+     "city": "דימונה",
+     "colors": [
+      "#455A64",
+      "#FF7043"
+     ],
+     "reputation": 26,
+     "stadium": "מגרש הסלע"
+    }
+   ]
+  },
+  {
+   "key": "be1",
+   "name": "הליגה הבלגית",
+   "countryCode": "BE",
+   "country": "בלגיה",
+   "tier": 1,
+   "promotesTo": null,
+   "relegatesTo": null,
+   "promoteSpots": 0,
+   "relegateSpots": 0,
+   "strength": 64,
+   "wageFactor": 2.2,
+   "simLevel": "medium",
+   "clubs": [
+    {
+     "name": "רויאל ולדרהם",
+     "short": "רויאל",
+     "city": "ולדרהם",
+     "colors": [
+      "#1B1B1B",
+      "#E10600"
+     ],
+     "reputation": 80,
+     "stadium": "שטדיון ולדרהם",
+     "rival": "ספורטינג ולדרהם"
+    },
+    {
+     "name": "ספורטינג ולדרהם",
+     "short": "ספורטינג",
+     "city": "ולדרהם",
+     "colors": [
+      "#00695C",
+      "#FFFFFF"
+     ],
+     "reputation": 66,
+     "stadium": "שטדיון ולדרהם",
+     "rival": "רויאל ולדרהם"
+    },
+    {
+     "name": "קלוב ברוגהאבן",
+     "short": "ברוגהאבן",
+     "city": "ברוגהאבן",
+     "colors": [
+      "#00843D",
+      "#FFFFFF"
+     ],
+     "reputation": 82,
+     "stadium": "שטדיון ברוגהאבן"
+    },
+    {
+     "name": "סטנדרד מוזלוואל",
+     "short": "מוזלוואל",
+     "city": "מוזלוואל",
+     "colors": [
+      "#FFFFFF",
+      "#0A2A6B"
+     ],
+     "reputation": 74,
+     "stadium": "שטדיון מוזלוואל"
+    },
+    {
+     "name": "ק.ו. אנטהובן",
+     "short": "אנטהובן",
+     "city": "אנטהובן",
+     "colors": [
+      "#FFFFFF",
+      "#C8102E"
+     ],
+     "reputation": 60,
+     "stadium": "שטדיון אנטהובן"
+    },
+    {
+     "name": "אולימפיק שרלפון",
+     "short": "שרלפון",
+     "city": "שרלפון",
+     "colors": [
+      "#6A1B9A",
+      "#FFFFFF"
+     ],
+     "reputation": 58,
+     "stadium": "שטדיון שרלפון"
+    },
+    {
+     "name": "פ.צ. הלדנברג",
+     "short": "הלדנברג",
+     "city": "הלדנברג",
+     "colors": [
+      "#2E7D32",
+      "#FFEB3B"
+     ],
+     "reputation": 55,
+     "stadium": "שטדיון הלדנברג"
+    },
+    {
+     "name": "ק.ס.ו. אוסטרהוק",
+     "short": "אוסטרהוק",
+     "city": "אוסטרהוק",
+     "colors": [
+      "#283593",
+      "#E53935"
+     ],
+     "reputation": 52,
+     "stadium": "שטדיון אוסטרהוק"
+    },
+    {
+     "name": "אוניון לוברמונט",
+     "short": "לוברמונט",
+     "city": "לוברמונט",
+     "colors": [
+      "#000000",
+      "#FFFFFF"
+     ],
+     "reputation": 64,
+     "stadium": "שטדיון לוברמונט"
+    },
+    {
+     "name": "ספורטינג גנטברוק",
+     "short": "גנטברוק",
+     "city": "גנטברוק",
+     "colors": [
+      "#AD1457",
+      "#FFFFFF"
+     ],
+     "reputation": 62,
+     "stadium": "שטדיון גנטברוק"
+    },
+    {
+     "name": "ק.ו. מרינדונק",
+     "short": "מרינדונק",
+     "city": "מרינדונק",
+     "colors": [
+      "#9E9D24",
+      "#1B1B1B"
+     ],
+     "reputation": 50,
+     "stadium": "שטדיון מרינדונק"
+    },
+    {
+     "name": "רויאל ליוורמון",
+     "short": "ליוורמון",
+     "city": "ליוורמון",
+     "colors": [
+      "#F57C00",
+      "#000000"
+     ],
+     "reputation": 54,
+     "stadium": "שטדיון ליוורמון"
+    },
+    {
+     "name": "פ.צ. דנדרוורט",
+     "short": "דנדרוורט",
+     "city": "דנדרוורט",
+     "colors": [
+      "#1565C0",
+      "#FFEB3B"
+     ],
+     "reputation": 48,
+     "stadium": "שטדיון דנדרוורט"
+    },
+    {
+     "name": "ק.פ.צ. האסלדל",
+     "short": "האסלדל",
+     "city": "האסלדל",
+     "colors": [
+      "#C8102E",
+      "#FFFFFF"
+     ],
+     "reputation": 56,
+     "stadium": "שטדיון האסלדל"
+    },
+    {
+     "name": "או.ה. לאוונאקר",
+     "short": "לאוונאקר",
+     "city": "לאוונאקר",
+     "colors": [
+      "#0097A7",
+      "#FFFFFF"
+     ],
+     "reputation": 53,
+     "stadium": "שטדיון לאוונאקר"
+    },
+    {
+     "name": "ק.ו. זוטהאוטן",
+     "short": "זוטהאוטן",
+     "city": "זוטהאוטן",
+     "colors": [
+      "#4E342E",
+      "#FFC107"
+     ],
+     "reputation": 47,
+     "stadium": "שטדיון זוטהאוטן"
+    }
+   ]
+  },
+  {
+   "key": "nl1",
+   "name": "הליגה ההולנדית",
+   "countryCode": "NL",
+   "country": "הולנד",
+   "tier": 1,
+   "promotesTo": null,
+   "relegatesTo": null,
+   "promoteSpots": 0,
+   "relegateSpots": 0,
+   "strength": 66,
+   "wageFactor": 2.4,
+   "simLevel": "medium",
+   "clubs": [
+    {
+     "name": "ספרטה הוגוולד",
+     "short": "ספרטה",
+     "city": "הוגוולד",
+     "colors": [
+      "#AD1457",
+      "#FFFFFF"
+     ],
+     "reputation": 78,
+     "stadium": "הוגוולד פארק",
+     "rival": "פ.צ. הוגוולד"
+    },
+    {
+     "name": "פ.צ. הוגוולד",
+     "short": "הוגוולד",
+     "city": "הוגוולד",
+     "colors": [
+      "#9E9D24",
+      "#1B1B1B"
+     ],
+     "reputation": 64,
+     "stadium": "הוגוולד פארק",
+     "rival": "ספרטה הוגוולד"
+    },
+    {
+     "name": "פ.ס.ו. דורנבוש",
+     "short": "דורנבוש",
+     "city": "דורנבוש",
+     "colors": [
+      "#F57C00",
+      "#000000"
+     ],
+     "reputation": 80,
+     "stadium": "דורנבוש פארק"
+    },
+    {
+     "name": "רוטרהאבן ס.צ.",
+     "short": "רוטרהאבן",
+     "city": "רוטרהאבן",
+     "colors": [
+      "#1565C0",
+      "#FFEB3B"
+     ],
+     "reputation": 79,
+     "stadium": "רוטרהאבן פארק",
+     "rival": "ו.פ.ס. אמסטרבורג"
+    },
+    {
+     "name": "ו.פ.ס. אמסטרבורג",
+     "short": "אמסטרבורג",
+     "city": "אמסטרבורג",
+     "colors": [
+      "#C8102E",
+      "#FFFFFF"
+     ],
+     "reputation": 76,
+     "stadium": "אמסטרבורג פארק",
+     "rival": "רוטרהאבן ס.צ."
+    },
+    {
+     "name": "ה.ז.ו. זוידרהם",
+     "short": "זוידרהם",
+     "city": "זוידרהם",
+     "colors": [
+      "#0097A7",
+      "#FFFFFF"
+     ],
+     "reputation": 60,
+     "stadium": "זוידרהם פארק"
+    },
+    {
+     "name": "נ.א.צ. ולקהוף",
+     "short": "ולקהוף",
+     "city": "ולקהוף",
+     "colors": [
+      "#4E342E",
+      "#FFC107"
+     ],
+     "reputation": 55,
+     "stadium": "ולקהוף פארק"
+    },
+    {
+     "name": "ס.ק. ולדן",
+     "short": "ולדן",
+     "city": "ולדן",
+     "colors": [
+      "#003DA5",
+      "#FFFFFF"
+     ],
+     "reputation": 54,
+     "stadium": "ולדן פארק"
+    },
+    {
+     "name": "אטלס ברוקן",
+     "short": "ברוקן",
+     "city": "ברוקן",
+     "colors": [
+      "#7B0F1E",
+      "#87CEEB"
+     ],
+     "reputation": 50,
+     "stadium": "ברוקן פארק"
+    },
+    {
+     "name": "פ.צ. האוטלנד",
+     "short": "האוטלנד",
+     "city": "האוטלנד",
+     "colors": [
+      "#E53935",
+      "#212121"
+     ],
+     "reputation": 66,
+     "stadium": "האוטלנד פארק"
+    },
+    {
+     "name": "ו.ו. הארלמסה",
+     "short": "הארלמסה",
+     "city": "הארלמסה",
+     "colors": [
+      "#FFD100",
+      "#000000"
+     ],
+     "reputation": 52,
+     "stadium": "הארלמסה פארק"
+    },
+    {
+     "name": "פ.צ. הלדרנס",
+     "short": "הלדרנס",
+     "city": "הלדרנס",
+     "colors": [
+      "#1B1B1B",
+      "#E10600"
+     ],
+     "reputation": 48,
+     "stadium": "הלדרנס פארק"
+    },
+    {
+     "name": "רודה הוגנבורג",
+     "short": "הוגנבורג",
+     "city": "הוגנבורג",
+     "colors": [
+      "#00695C",
+      "#FFFFFF"
+     ],
+     "reputation": 57,
+     "stadium": "הוגנבורג פארק"
+    },
+    {
+     "name": "פורטונה מאסדאל",
+     "short": "מאסדאל",
+     "city": "מאסדאל",
+     "colors": [
+      "#00843D",
+      "#FFFFFF"
+     ],
+     "reputation": 56,
+     "stadium": "מאסדאל פארק"
+    },
+    {
+     "name": "אקסלסיור נורדוויק",
+     "short": "נורדוויק",
+     "city": "נורדוויק",
+     "colors": [
+      "#FFFFFF",
+      "#0A2A6B"
+     ],
+     "reputation": 49,
+     "stadium": "נורדוויק פארק"
+    },
+    {
+     "name": "ס.צ. ולגרסט",
+     "short": "ולגרסט",
+     "city": "ולגרסט",
+     "colors": [
+      "#FFFFFF",
+      "#C8102E"
+     ],
+     "reputation": 62,
+     "stadium": "ולגרסט פארק"
+    },
+    {
+     "name": "ו.ו.ו. ברנדפורט",
+     "short": "ברנדפורט",
+     "city": "ברנדפורט",
+     "colors": [
+      "#6A1B9A",
+      "#FFFFFF"
+     ],
+     "reputation": 51,
+     "stadium": "ברנדפורט פארק"
+    },
+    {
+     "name": "א.ז. הורנבק",
+     "short": "הורנבק",
+     "city": "הורנבק",
+     "colors": [
+      "#2E7D32",
+      "#FFEB3B"
+     ],
+     "reputation": 70,
+     "stadium": "הורנבק פארק"
+    }
+   ]
+  },
+  {
+   "key": "pt1",
+   "name": "הליגה הפורטוגלית",
+   "countryCode": "PT",
+   "country": "פורטוגל",
+   "tier": 1,
+   "promotesTo": null,
+   "relegatesTo": null,
+   "promoteSpots": 0,
+   "relegateSpots": 0,
+   "strength": 67,
+   "wageFactor": 2,
+   "simLevel": "medium",
+   "clubs": [
+    {
+     "name": "קלוב ליבראדו דה ריבה",
+     "short": "ליבראדו",
+     "city": "ריבה",
+     "colors": [
+      "#E53935",
+      "#212121"
+     ],
+     "reputation": 85,
+     "stadium": "אשטדיו ריבה",
+     "rival": "ספורטינג דה ריבה"
+    },
+    {
+     "name": "ספורטינג דה ריבה",
+     "short": "ספורטינג",
+     "city": "ריבה",
+     "colors": [
+      "#FFD100",
+      "#000000"
+     ],
+     "reputation": 84,
+     "stadium": "אשטדיו ריבה",
+     "rival": "קלוב ליבראדו דה ריבה"
+    },
+    {
+     "name": "פ.צ. דורו אלטו",
+     "short": "דורו",
+     "city": "דורו אלטו",
+     "colors": [
+      "#1B1B1B",
+      "#E10600"
+     ],
+     "reputation": 84,
+     "stadium": "אשטדיו דורו אלטו"
+    },
+    {
+     "name": "ס.צ. מונטה ויירה",
+     "short": "מונטה",
+     "city": "מונטה ויירה",
+     "colors": [
+      "#00695C",
+      "#FFFFFF"
+     ],
+     "reputation": 72,
+     "stadium": "אשטדיו מונטה ויירה",
+     "rival": "ויטוריה דה קמפוש"
+    },
+    {
+     "name": "ויטוריה דה קמפוש",
+     "short": "ויטוריה",
+     "city": "קמפוש",
+     "colors": [
+      "#00843D",
+      "#FFFFFF"
+     ],
+     "reputation": 66,
+     "stadium": "אשטדיו קמפוש",
+     "rival": "ס.צ. מונטה ויירה"
+    },
+    {
+     "name": "ריו קלארו",
+     "short": "ריו קלארו",
+     "city": "ריו קלארו",
+     "colors": [
+      "#FFFFFF",
+      "#0A2A6B"
+     ],
+     "reputation": 58,
+     "stadium": "אשטדיו ריו קלארו"
+    },
+    {
+     "name": "מריטימו דה אילהה",
+     "short": "מריטימו",
+     "city": "אילהה",
+     "colors": [
+      "#FFFFFF",
+      "#C8102E"
+     ],
+     "reputation": 56,
+     "stadium": "אשטדיו אילהה"
+    },
+    {
+     "name": "פ.צ. בוביישה",
+     "short": "בוביישה",
+     "city": "בוביישה",
+     "colors": [
+      "#6A1B9A",
+      "#FFFFFF"
+     ],
+     "reputation": 60,
+     "stadium": "אשטדיו בוביישה"
+    },
+    {
+     "name": "אקדמיקו דה סרה",
+     "short": "אקדמיקו",
+     "city": "סרה",
+     "colors": [
+      "#2E7D32",
+      "#FFEB3B"
+     ],
+     "reputation": 52,
+     "stadium": "אשטדיו סרה"
+    },
+    {
+     "name": "אוניאו דה פראיה",
+     "short": "פראיה",
+     "city": "פראיה",
+     "colors": [
+      "#283593",
+      "#E53935"
+     ],
+     "reputation": 50,
+     "stadium": "אשטדיו פראיה"
+    },
+    {
+     "name": "פ.צ. אשטרלה בראנקה",
+     "short": "אשטרלה",
+     "city": "אשטרלה בראנקה",
+     "colors": [
+      "#000000",
+      "#FFFFFF"
+     ],
+     "reputation": 48,
+     "stadium": "אשטדיו אשטרלה בראנקה"
+    },
+    {
+     "name": "ס.צ. פארו נובו",
+     "short": "פארו",
+     "city": "פארו נובו",
+     "colors": [
+      "#AD1457",
+      "#FFFFFF"
+     ],
+     "reputation": 51,
+     "stadium": "אשטדיו פארו נובו"
+    },
+    {
+     "name": "ספורטינג דה אוליבאל",
+     "short": "אוליבאל",
+     "city": "אוליבאל",
+     "colors": [
+      "#9E9D24",
+      "#1B1B1B"
+     ],
+     "reputation": 54,
+     "stadium": "אשטדיו אוליבאל"
+    },
+    {
+     "name": "קלוב דפורטיבו טאז׳ו",
+     "short": "טאז׳ו",
+     "city": "טאז׳ו",
+     "colors": [
+      "#F57C00",
+      "#000000"
+     ],
+     "reputation": 55,
+     "stadium": "אשטדיו טאז׳ו"
+    },
+    {
+     "name": "פורטימונטה",
+     "short": "פורטימ׳",
+     "city": "פורטימונטה",
+     "colors": [
+      "#1565C0",
+      "#FFEB3B"
+     ],
+     "reputation": 50,
+     "stadium": "אשטדיו פורטימונטה"
+    },
+    {
+     "name": "פ.צ. אזמבוז׳ה",
+     "short": "אזמבוז׳ה",
+     "city": "אזמבוז׳ה",
+     "colors": [
+      "#C8102E",
+      "#FFFFFF"
+     ],
+     "reputation": 47,
+     "stadium": "אשטדיו אזמבוז׳ה"
+    },
+    {
+     "name": "אתלטיקו ויאנה",
+     "short": "ויאנה",
+     "city": "ויאנה",
+     "colors": [
+      "#0097A7",
+      "#FFFFFF"
+     ],
+     "reputation": 49,
+     "stadium": "אשטדיו ויאנה"
+    },
+    {
+     "name": "פ.צ. סרה דורדה",
+     "short": "דורדה",
+     "city": "סרה דורדה",
+     "colors": [
+      "#4E342E",
+      "#FFC107"
+     ],
+     "reputation": 46,
+     "stadium": "אשטדיו סרה דורדה"
+    }
+   ]
+  },
+  {
+   "key": "cy1",
+   "name": "הליגה הקפריסאית",
+   "countryCode": "CY",
+   "country": "קפריסין",
+   "tier": 1,
+   "promotesTo": null,
+   "relegatesTo": null,
+   "promoteSpots": 0,
+   "relegateSpots": 0,
+   "strength": 48,
+   "wageFactor": 0.9,
+   "simLevel": "result",
+   "clubs": [
+    {
+     "name": "אפולון ניאה פולי",
+     "short": "אפולון",
+     "city": "ניאה פולי",
+     "colors": [
+      "#283593",
+      "#E53935"
+     ],
+     "reputation": 70,
+     "stadium": "אצטדיון ניאה פולי",
+     "rival": "אריס ניאה פולי"
+    },
+    {
+     "name": "אריס ניאה פולי",
+     "short": "אריס",
+     "city": "ניאה פולי",
+     "colors": [
+      "#000000",
+      "#FFFFFF"
+     ],
+     "reputation": 58,
+     "stadium": "אצטדיון ניאה פולי",
+     "rival": "אפולון ניאה פולי"
+    },
+    {
+     "name": "אנאגניסיס לבקארה",
+     "short": "אנאגניסיס",
+     "city": "לבקארה",
+     "colors": [
+      "#AD1457",
+      "#FFFFFF"
+     ],
+     "reputation": 72,
+     "stadium": "אצטדיון לבקארה",
+     "rival": "אתלטיקוס לבקארה"
+    },
+    {
+     "name": "אתלטיקוס לבקארה",
+     "short": "אתלטיקוס",
+     "city": "לבקארה",
+     "colors": [
+      "#9E9D24",
+      "#1B1B1B"
+     ],
+     "reputation": 60,
+     "stadium": "אצטדיון לבקארה",
+     "rival": "אנאגניסיס לבקארה"
+    },
+    {
+     "name": "אלקי פרטלי",
+     "short": "אלקי",
+     "city": "פרטלי",
+     "colors": [
+      "#F57C00",
+      "#000000"
+     ],
+     "reputation": 52,
+     "stadium": "אצטדיון פרטלי"
+    },
+    {
+     "name": "דוקסה אגיה מארינה",
+     "short": "דוקסה",
+     "city": "אגיה מארינה",
+     "colors": [
+      "#1565C0",
+      "#FFEB3B"
+     ],
+     "reputation": 48,
+     "stadium": "אצטדיון אגיה מארינה"
+    },
+    {
+     "name": "אתנאיקוס קורוס",
+     "short": "אתנאיקוס",
+     "city": "קורוס",
+     "colors": [
+      "#C8102E",
+      "#FFFFFF"
+     ],
+     "reputation": 50,
+     "stadium": "אצטדיון קורוס"
+    },
+    {
+     "name": "אנאסטסיס פולמי",
+     "short": "אנאסטסיס",
+     "city": "פולמי",
+     "colors": [
+      "#0097A7",
+      "#FFFFFF"
+     ],
+     "reputation": 55,
+     "stadium": "אצטדיון פולמי"
+    },
+    {
+     "name": "א.א.ק. אקרוטירי",
+     "short": "אקרוטירי",
+     "city": "אקרוטירי",
+     "colors": [
+      "#4E342E",
+      "#FFC107"
+     ],
+     "reputation": 56,
+     "stadium": "אצטדיון אקרוטירי"
+    },
+    {
+     "name": "ניאה קיטיון",
+     "short": "קיטיון",
+     "city": "קיטיון",
+     "colors": [
+      "#003DA5",
+      "#FFFFFF"
+     ],
+     "reputation": 54,
+     "stadium": "אצטדיון קיטיון"
+    },
+    {
+     "name": "אוליבוס דראמיה",
+     "short": "אוליבוס",
+     "city": "דראמיה",
+     "colors": [
+      "#7B0F1E",
+      "#87CEEB"
+     ],
+     "reputation": 46,
+     "stadium": "אצטדיון דראמיה"
+    },
+    {
+     "name": "אסטרו ליוואדיה",
+     "short": "אסטרו",
+     "city": "ליוואדיה",
+     "colors": [
+      "#E53935",
+      "#212121"
+     ],
+     "reputation": 49,
+     "stadium": "אצטדיון ליוואדיה"
+    }
+   ]
+  },
+  {
+   "key": "gr1",
+   "name": "הליגה היוונית",
+   "countryCode": "GR",
+   "country": "יוון",
+   "tier": 1,
+   "promotesTo": null,
+   "relegatesTo": null,
+   "promoteSpots": 0,
+   "relegateSpots": 0,
+   "strength": 55,
+   "wageFactor": 1.3,
+   "simLevel": "medium",
+   "clubs": [
+    {
+     "name": "אולימפיוס תאלאסה",
+     "short": "אולימפיוס",
+     "city": "תאלאסה",
+     "colors": [
+      "#003DA5",
+      "#FFFFFF"
+     ],
+     "reputation": 78,
+     "stadium": "גיפדו תאלאסה",
+     "rival": "פנאתלטיקוס אקרופולי"
+    },
+    {
+     "name": "פנאתלטיקוס אקרופולי",
+     "short": "פנאתלטיקוס",
+     "city": "אקרופולי",
+     "colors": [
+      "#7B0F1E",
+      "#87CEEB"
+     ],
+     "reputation": 76,
+     "stadium": "גיפדו אקרופולי",
+     "rival": "אולימפיוס תאלאסה"
+    },
+    {
+     "name": "אנוסיס מוריאה",
+     "short": "אנוסיס",
+     "city": "מוריאה",
+     "colors": [
+      "#E53935",
+      "#212121"
+     ],
+     "reputation": 70,
+     "stadium": "גיפדו מוריאה"
+    },
+    {
+     "name": "פ.א.ב. תרמאיקוס",
+     "short": "פ.א.ב.",
+     "city": "תרמאיקוס",
+     "colors": [
+      "#FFD100",
+      "#000000"
+     ],
+     "reputation": 74,
+     "stadium": "גיפדו תרמאיקוס",
+     "rival": "אריס תרמאיקוס"
+    },
+    {
+     "name": "אריס תרמאיקוס",
+     "short": "אריס",
+     "city": "תרמאיקוס",
+     "colors": [
+      "#1B1B1B",
+      "#E10600"
+     ],
+     "reputation": 62,
+     "stadium": "גיפדו תרמאיקוס",
+     "rival": "פ.א.ב. תרמאיקוס"
+    },
+    {
+     "name": "אסטרפי פריסטרי",
+     "short": "אסטרפי",
+     "city": "פריסטרי",
+     "colors": [
+      "#00695C",
+      "#FFFFFF"
+     ],
+     "reputation": 52,
+     "stadium": "גיפדו פריסטרי"
+    },
+    {
+     "name": "פ.א.ס. אפירוס",
+     "short": "אפירוס",
+     "city": "אפירוס",
+     "colors": [
+      "#00843D",
+      "#FFFFFF"
+     ],
+     "reputation": 50,
+     "stadium": "גיפדו אפירוס"
+    },
+    {
+     "name": "ארגונאפטס ולוס",
+     "short": "ארגונאפטס",
+     "city": "ולוס",
+     "colors": [
+      "#FFFFFF",
+      "#0A2A6B"
+     ],
+     "reputation": 53,
+     "stadium": "גיפדו ולוס"
+    },
+    {
+     "name": "קרטרוס חאניה",
+     "short": "קרטרוס",
+     "city": "חאניה",
+     "colors": [
+      "#FFFFFF",
+      "#C8102E"
+     ],
+     "reputation": 51,
+     "stadium": "גיפדו חאניה"
+    },
+    {
+     "name": "ביאוטיקוס תבאי",
+     "short": "ביאוטיקוס",
+     "city": "תבאי",
+     "colors": [
+      "#6A1B9A",
+      "#FFFFFF"
+     ],
+     "reputation": 47,
+     "stadium": "גיפדו תבאי"
+    },
+    {
+     "name": "אולימפיה פאטרה",
+     "short": "אולימפיה",
+     "city": "פאטרה",
+     "colors": [
+      "#2E7D32",
+      "#FFEB3B"
+     ],
+     "reputation": 55,
+     "stadium": "גיפדו פאטרה"
+    },
+    {
+     "name": "דוקסה סרס",
+     "short": "דוקסה",
+     "city": "סרס",
+     "colors": [
+      "#283593",
+      "#E53935"
+     ],
+     "reputation": 48,
+     "stadium": "גיפדו סרס"
+    },
+    {
+     "name": "אקראטיטוס קורינתוס",
+     "short": "קורינתוס",
+     "city": "קורינתוס",
+     "colors": [
+      "#000000",
+      "#FFFFFF"
+     ],
+     "reputation": 49,
+     "stadium": "גיפדו קורינתוס"
+    },
+    {
+     "name": "פנליונה מסוליה",
+     "short": "פנליונה",
+     "city": "מסוליה",
+     "colors": [
+      "#AD1457",
+      "#FFFFFF"
+     ],
+     "reputation": 46,
+     "stadium": "גיפדו מסוליה"
+    }
+   ]
+  },
+  {
+   "key": "en1",
+   "name": "הליגה האנגלית",
+   "countryCode": "EN",
+   "country": "אנגליה",
+   "tier": 1,
+   "promotesTo": null,
+   "relegatesTo": null,
+   "promoteSpots": 0,
+   "relegateSpots": 0,
+   "strength": 85,
+   "wageFactor": 15,
+   "simLevel": "medium",
+   "clubs": [
+    {
+     "name": "וסטברידג׳ יונייטד",
+     "short": "יונייטד",
+     "city": "וסטברידג׳",
+     "colors": [
+      "#6A1B9A",
+      "#FFFFFF"
+     ],
+     "reputation": 92,
+     "stadium": "וסטברידג׳ פארק",
+     "rival": "וסטברידג׳ סיטי"
+    },
+    {
+     "name": "וסטברידג׳ סיטי",
+     "short": "סיטי",
+     "city": "וסטברידג׳",
+     "colors": [
+      "#2E7D32",
+      "#FFEB3B"
+     ],
+     "reputation": 90,
+     "stadium": "וסטברידג׳ פארק",
+     "rival": "וסטברידג׳ יונייטד"
+    },
+    {
+     "name": "רויאל קינגסמור",
+     "short": "קינגסמור",
+     "city": "קינגסמור",
+     "colors": [
+      "#283593",
+      "#E53935"
+     ],
+     "reputation": 88,
+     "stadium": "קינגסמור פארק"
+    },
+    {
+     "name": "נורת׳גייט רוברס",
+     "short": "נורת׳גייט",
+     "city": "נורת׳גייט",
+     "colors": [
+      "#000000",
+      "#FFFFFF"
+     ],
+     "reputation": 85,
+     "stadium": "נורת׳גייט פארק",
+     "rival": "סאות׳גייט אתלטיק"
+    },
+    {
+     "name": "סאות׳גייט אתלטיק",
+     "short": "סאות׳גייט",
+     "city": "סאות׳גייט",
+     "colors": [
+      "#AD1457",
+      "#FFFFFF"
+     ],
+     "reputation": 80,
+     "stadium": "סאות׳גייט פארק",
+     "rival": "נורת׳גייט רוברס"
+    },
+    {
+     "name": "בלקמור וונדררס",
+     "short": "בלקמור",
+     "city": "בלקמור",
+     "colors": [
+      "#9E9D24",
+      "#1B1B1B"
+     ],
+     "reputation": 72,
+     "stadium": "בלקמור פארק"
+    },
+    {
+     "name": "קסלטון וילה",
+     "short": "קסלטון",
+     "city": "קסלטון",
+     "colors": [
+      "#F57C00",
+      "#000000"
+     ],
+     "reputation": 78,
+     "stadium": "קסלטון פארק"
+    },
+    {
+     "name": "פורט הייבן סיטי",
+     "short": "הייבן",
+     "city": "פורט הייבן",
+     "colors": [
+      "#1565C0",
+      "#FFEB3B"
+     ],
+     "reputation": 70,
+     "stadium": "פורט הייבן פארק"
+    },
+    {
+     "name": "רדברוק פורסט",
+     "short": "רדברוק",
+     "city": "רדברוק",
+     "colors": [
+      "#C8102E",
+      "#FFFFFF"
+     ],
+     "reputation": 68,
+     "stadium": "רדברוק פארק"
+    },
+    {
+     "name": "אלדרשיר יונייטד",
+     "short": "אלדרשיר",
+     "city": "אלדרשיר",
+     "colors": [
+      "#0097A7",
+      "#FFFFFF"
+     ],
+     "reputation": 66,
+     "stadium": "אלדרשיר פארק"
+    },
+    {
+     "name": "סטונהם אלביון",
+     "short": "סטונהם",
+     "city": "סטונהם",
+     "colors": [
+      "#4E342E",
+      "#FFC107"
+     ],
+     "reputation": 64,
+     "stadium": "סטונהם פארק"
+    },
+    {
+     "name": "קרסנט פאלאס",
+     "short": "קרסנט",
+     "city": "קרסנט",
+     "colors": [
+      "#003DA5",
+      "#FFFFFF"
+     ],
+     "reputation": 67,
+     "stadium": "קרסנט פארק"
+    },
+    {
+     "name": "מילפורד טאון",
+     "short": "מילפורד",
+     "city": "מילפורד",
+     "colors": [
+      "#7B0F1E",
+      "#87CEEB"
+     ],
+     "reputation": 60,
+     "stadium": "מילפורד פארק"
+    },
+    {
+     "name": "לידגייט רובינס",
+     "short": "לידגייט",
+     "city": "לידגייט",
+     "colors": [
+      "#E53935",
+      "#212121"
+     ],
+     "reputation": 62,
+     "stadium": "לידגייט פארק"
+    },
+    {
+     "name": "אוקשוט ריינג׳רס",
+     "short": "אוקשוט",
+     "city": "אוקשוט",
+     "colors": [
+      "#FFD100",
+      "#000000"
+     ],
+     "reputation": 61,
+     "stadium": "אוקשוט פארק"
+    },
+    {
+     "name": "פנהולם בורו",
+     "short": "פנהולם",
+     "city": "פנהולם",
+     "colors": [
+      "#1B1B1B",
+      "#E10600"
+     ],
+     "reputation": 58,
+     "stadium": "פנהולם פארק"
+    },
+    {
+     "name": "דאנבי קאונטי",
+     "short": "דאנבי",
+     "city": "דאנבי",
+     "colors": [
+      "#00695C",
+      "#FFFFFF"
+     ],
+     "reputation": 59,
+     "stadium": "דאנבי פארק"
+    },
+    {
+     "name": "הולוויי יונייטד",
+     "short": "הולוויי",
+     "city": "הולוויי",
+     "colors": [
+      "#00843D",
+      "#FFFFFF"
+     ],
+     "reputation": 63,
+     "stadium": "הולוויי פארק"
+    },
+    {
+     "name": "מרסטון וייל",
+     "short": "מרסטון",
+     "city": "מרסטון",
+     "colors": [
+      "#FFFFFF",
+      "#0A2A6B"
+     ],
+     "reputation": 57,
+     "stadium": "מרסטון פארק"
+    },
+    {
+     "name": "פלינטקומב אתלטיק",
+     "short": "פלינטקומב",
+     "city": "פלינטקומב",
+     "colors": [
+      "#FFFFFF",
+      "#C8102E"
+     ],
+     "reputation": 56,
+     "stadium": "פלינטקומב פארק"
+    }
+   ]
+  },
+  {
+   "key": "es1",
+   "name": "הליגה הספרדית",
+   "countryCode": "ES",
+   "country": "ספרד",
+   "tier": 1,
+   "promotesTo": null,
+   "relegatesTo": null,
+   "promoteSpots": 0,
+   "relegateSpots": 0,
+   "strength": 83,
+   "wageFactor": 9,
+   "simLevel": "medium",
+   "clubs": [
+    {
+     "name": "ריאל ויסטה אלגרה",
+     "short": "ריאל",
+     "city": "ויסטה אלגרה",
+     "colors": [
+      "#0097A7",
+      "#FFFFFF"
+     ],
+     "reputation": 93,
+     "stadium": "אסטדיו ויסטה אלגרה",
+     "rival": "אתלטיקו ויסטה אלגרה"
+    },
+    {
+     "name": "אתלטיקו ויסטה אלגרה",
+     "short": "אתלטיקו",
+     "city": "ויסטה אלגרה",
+     "colors": [
+      "#4E342E",
+      "#FFC107"
+     ],
+     "reputation": 86,
+     "stadium": "אסטדיו ויסטה אלגרה",
+     "rival": "ריאל ויסטה אלגרה"
+    },
+    {
+     "name": "קלוב פורטו קטלה",
+     "short": "קטלה",
+     "city": "פורטו קטלה",
+     "colors": [
+      "#003DA5",
+      "#FFFFFF"
+     ],
+     "reputation": 92,
+     "stadium": "אסטדיו פורטו קטלה"
+    },
+    {
+     "name": "אתלטיקו סן מרקוס",
+     "short": "סן מרקוס",
+     "city": "סן מרקוס",
+     "colors": [
+      "#7B0F1E",
+      "#87CEEB"
+     ],
+     "reputation": 72,
+     "stadium": "אסטדיו סן מרקוס"
+    },
+    {
+     "name": "ריאל ולדלוז",
+     "short": "ולדלוז",
+     "city": "ולדלוז",
+     "colors": [
+      "#E53935",
+      "#212121"
+     ],
+     "reputation": 70,
+     "stadium": "אסטדיו ולדלוז"
+    },
+    {
+     "name": "דפורטיבו פואנטה בלנקה",
+     "short": "פואנטה",
+     "city": "פואנטה בלנקה",
+     "colors": [
+      "#FFD100",
+      "#000000"
+     ],
+     "reputation": 66,
+     "stadium": "אסטדיו פואנטה בלנקה"
+    },
+    {
+     "name": "ספורטינג קוסטה ורדה",
+     "short": "קוסטה",
+     "city": "קוסטה ורדה",
+     "colors": [
+      "#1B1B1B",
+      "#E10600"
+     ],
+     "reputation": 68,
+     "stadium": "אסטדיו קוסטה ורדה"
+    },
+    {
+     "name": "ס.ד. מונטסקורו",
+     "short": "מונטסקורו",
+     "city": "מונטסקורו",
+     "colors": [
+      "#00695C",
+      "#FFFFFF"
+     ],
+     "reputation": 64,
+     "stadium": "אסטדיו מונטסקורו"
+    },
+    {
+     "name": "ריאל אלמנארה",
+     "short": "אלמנארה",
+     "city": "אלמנארה",
+     "colors": [
+      "#00843D",
+      "#FFFFFF"
+     ],
+     "reputation": 74,
+     "stadium": "אסטדיו אלמנארה"
+    },
+    {
+     "name": "יוניון דפורטיבה טורה אלטה",
+     "short": "טורה",
+     "city": "טורה אלטה",
+     "colors": [
+      "#FFFFFF",
+      "#0A2A6B"
+     ],
+     "reputation": 62,
+     "stadium": "אסטדיו טורה אלטה"
+    },
+    {
+     "name": "קלוב ריו סקו",
+     "short": "ריו סקו",
+     "city": "ריו סקו",
+     "colors": [
+      "#FFFFFF",
+      "#C8102E"
+     ],
+     "reputation": 60,
+     "stadium": "אסטדיו ריו סקו"
+    },
+    {
+     "name": "ג׳ימנסטיקה סנטה קלרה",
+     "short": "קלרה",
+     "city": "סנטה קלרה",
+     "colors": [
+      "#6A1B9A",
+      "#FFFFFF"
+     ],
+     "reputation": 58,
+     "stadium": "אסטדיו סנטה קלרה"
+    },
+    {
+     "name": "רסינג פלאיה נגרה",
+     "short": "פלאיה",
+     "city": "פלאיה נגרה",
+     "colors": [
+      "#2E7D32",
+      "#FFEB3B"
+     ],
+     "reputation": 63,
+     "stadium": "אסטדיו פלאיה נגרה"
+    },
+    {
+     "name": "ס.ד. לוס פינרס",
+     "short": "פינרס",
+     "city": "לוס פינרס",
+     "colors": [
+      "#283593",
+      "#E53935"
+     ],
+     "reputation": 59,
+     "stadium": "אסטדיו לוס פינרס"
+    },
+    {
+     "name": "אתלטיקו סיירה אלבה",
+     "short": "סיירה",
+     "city": "סיירה אלבה",
+     "colors": [
+      "#000000",
+      "#FFFFFF"
+     ],
+     "reputation": 65,
+     "stadium": "אסטדיו סיירה אלבה"
+    },
+    {
+     "name": "ריאל מרינאס",
+     "short": "מרינאס",
+     "city": "מרינאס",
+     "colors": [
+      "#AD1457",
+      "#FFFFFF"
+     ],
+     "reputation": 61,
+     "stadium": "אסטדיו מרינאס"
+    },
+    {
+     "name": "דפורטיבו לאס דונאס",
+     "short": "דונאס",
+     "city": "לאס דונאס",
+     "colors": [
+      "#9E9D24",
+      "#1B1B1B"
+     ],
+     "reputation": 57,
+     "stadium": "אסטדיו לאס דונאס"
+    },
+    {
+     "name": "ס.צ. ויז׳ה דל מאר",
+     "short": "ויז׳ה",
+     "city": "ויז׳ה דל מאר",
+     "colors": [
+      "#F57C00",
+      "#000000"
+     ],
+     "reputation": 56,
+     "stadium": "אסטדיו ויז׳ה דל מאר"
+    },
+    {
+     "name": "קלוב קמפו ליברה",
+     "short": "קמפו",
+     "city": "קמפו ליברה",
+     "colors": [
+      "#1565C0",
+      "#FFEB3B"
+     ],
+     "reputation": 55,
+     "stadium": "אסטדיו קמפו ליברה"
+    },
+    {
+     "name": "אוניון קוסטה קלידה",
+     "short": "קלידה",
+     "city": "קוסטה קלידה",
+     "colors": [
+      "#C8102E",
+      "#FFFFFF"
+     ],
+     "reputation": 58,
+     "stadium": "אסטדיו קוסטה קלידה"
+    }
+   ]
+  },
+  {
+   "key": "it1",
+   "name": "הליגה האיטלקית",
+   "countryCode": "IT",
+   "country": "איטליה",
+   "tier": 1,
+   "promotesTo": null,
+   "relegatesTo": null,
+   "promoteSpots": 0,
+   "relegateSpots": 0,
+   "strength": 80,
+   "wageFactor": 7,
+   "simLevel": "medium",
+   "clubs": [
+    {
+     "name": "אינטר ריבה",
+     "short": "אינטר",
+     "city": "ריבה",
+     "colors": [
+      "#FFFFFF",
+      "#0A2A6B"
+     ],
+     "reputation": 87,
+     "stadium": "סטדיו ריבה",
+     "rival": "א.צ. ריבה"
+    },
+    {
+     "name": "א.צ. ריבה",
+     "short": "א.צ.",
+     "city": "ריבה",
+     "colors": [
+      "#FFFFFF",
+      "#C8102E"
+     ],
+     "reputation": 86,
+     "stadium": "סטדיו ריבה",
+     "rival": "אינטר ריבה"
+    },
+    {
+     "name": "ויגורוזה טורבלנקה",
+     "short": "ויגורוזה",
+     "city": "טורבלנקה",
+     "colors": [
+      "#6A1B9A",
+      "#FFFFFF"
+     ],
+     "reputation": 90,
+     "stadium": "סטדיו טורבלנקה"
+    },
+    {
+     "name": "אס מונטפיורה",
+     "short": "מונטפיורה",
+     "city": "מונטפיורה",
+     "colors": [
+      "#2E7D32",
+      "#FFEB3B"
+     ],
+     "reputation": 80,
+     "stadium": "סטדיו מונטפיורה",
+     "rival": "ס.ס. פורטה רוסה"
+    },
+    {
+     "name": "ס.ס. פורטה רוסה",
+     "short": "פורטה",
+     "city": "פורטה רוסה",
+     "colors": [
+      "#283593",
+      "#E53935"
+     ],
+     "reputation": 76,
+     "stadium": "סטדיו פורטה רוסה",
+     "rival": "אס מונטפיורה"
+    },
+    {
+     "name": "אוניונה סרנו",
+     "short": "סרנו",
+     "city": "סרנו",
+     "colors": [
+      "#000000",
+      "#FFFFFF"
+     ],
+     "reputation": 70,
+     "stadium": "סטדיו סרנו"
+    },
+    {
+     "name": "ספורטינג ולמונטה",
+     "short": "ולמונטה",
+     "city": "ולמונטה",
+     "colors": [
+      "#AD1457",
+      "#FFFFFF"
+     ],
+     "reputation": 66,
+     "stadium": "סטדיו ולמונטה"
+    },
+    {
+     "name": "פ.צ. פונטה אלטו",
+     "short": "פונטה",
+     "city": "פונטה אלטו",
+     "colors": [
+      "#9E9D24",
+      "#1B1B1B"
+     ],
+     "reputation": 68,
+     "stadium": "סטדיו פונטה אלטו"
+    },
+    {
+     "name": "א.צ. קסטלבקיו",
+     "short": "קסטלבקיו",
+     "city": "קסטלבקיו",
+     "colors": [
+      "#F57C00",
+      "#000000"
+     ],
+     "reputation": 62,
+     "stadium": "סטדיו קסטלבקיו"
+    },
+    {
+     "name": "פרו מרה",
+     "short": "פרו מרה",
+     "city": "מרה",
+     "colors": [
+      "#1565C0",
+      "#FFEB3B"
+     ],
+     "reputation": 60,
+     "stadium": "סטדיו מרה"
+    },
+    {
+     "name": "וירטוס פורטונובו",
+     "short": "וירטוס",
+     "city": "פורטונובו",
+     "colors": [
+      "#C8102E",
+      "#FFFFFF"
+     ],
+     "reputation": 58,
+     "stadium": "סטדיו פורטונובו"
+    },
+    {
+     "name": "ס.ס. ולדאורה",
+     "short": "ולדאורה",
+     "city": "ולדאורה",
+     "colors": [
+      "#0097A7",
+      "#FFFFFF"
+     ],
+     "reputation": 57,
+     "stadium": "סטדיו ולדאורה"
+    },
+    {
+     "name": "פ.צ. רוקהבלה",
+     "short": "רוקהבלה",
+     "city": "רוקהבלה",
+     "colors": [
+      "#4E342E",
+      "#FFC107"
+     ],
+     "reputation": 59,
+     "stadium": "סטדיו רוקהבלה"
+    },
+    {
+     "name": "פ.צ. פיאנוורדה",
+     "short": "פיאנוורדה",
+     "city": "פיאנוורדה",
+     "colors": [
+      "#003DA5",
+      "#FFFFFF"
+     ],
+     "reputation": 55,
+     "stadium": "סטדיו פיאנוורדה"
+    },
+    {
+     "name": "אוניונה איזולה",
+     "short": "איזולה",
+     "city": "איזולה",
+     "colors": [
+      "#7B0F1E",
+      "#87CEEB"
+     ],
+     "reputation": 54,
+     "stadium": "סטדיו איזולה"
+    },
+    {
+     "name": "ספורטינג סלנטו",
+     "short": "סלנטו",
+     "city": "סלנטו",
+     "colors": [
+      "#E53935",
+      "#212121"
+     ],
+     "reputation": 53,
+     "stadium": "סטדיו סלנטו"
+    },
+    {
+     "name": "אס סולריה",
+     "short": "סולריה",
+     "city": "סולריה",
+     "colors": [
+      "#FFD100",
+      "#000000"
+     ],
+     "reputation": 56,
+     "stadium": "סטדיו סולריה"
+    },
+    {
+     "name": "אתלטיקה מונטה בלדו",
+     "short": "בלדו",
+     "city": "מונטה בלדו",
+     "colors": [
+      "#1B1B1B",
+      "#E10600"
+     ],
+     "reputation": 52,
+     "stadium": "סטדיו מונטה בלדו"
+    }
+   ]
+  },
+  {
+   "key": "de1",
+   "name": "הליגה הגרמנית",
+   "countryCode": "DE",
+   "country": "גרמניה",
+   "tier": 1,
+   "promotesTo": null,
+   "relegatesTo": null,
+   "promoteSpots": 0,
+   "relegateSpots": 0,
+   "strength": 81,
+   "wageFactor": 8,
+   "simLevel": "medium",
+   "clubs": [
+    {
+     "name": "פ.צ. ברגהאוזן",
+     "short": "ברגהאוזן",
+     "city": "ברגהאוזן",
+     "colors": [
+      "#1565C0",
+      "#FFEB3B"
+     ],
+     "reputation": 90,
+     "stadium": "ברגהאוזן ארנה"
+    },
+    {
+     "name": "בורוסיה פלדהיים",
+     "short": "בורוסיה",
+     "city": "פלדהיים",
+     "colors": [
+      "#C8102E",
+      "#FFFFFF"
+     ],
+     "reputation": 84,
+     "stadium": "פלדהיים ארנה",
+     "rival": "ס.ו. קולנהיים"
+    },
+    {
+     "name": "ס.ו. קולנהיים",
+     "short": "קולנהיים",
+     "city": "קולנהיים",
+     "colors": [
+      "#0097A7",
+      "#FFFFFF"
+     ],
+     "reputation": 76,
+     "stadium": "קולנהיים ארנה",
+     "rival": "בורוסיה פלדהיים"
+    },
+    {
+     "name": "ס.ו. ריינטאל",
+     "short": "ריינטאל",
+     "city": "ריינטאל",
+     "colors": [
+      "#4E342E",
+      "#FFC107"
+     ],
+     "reputation": 74,
+     "stadium": "ריינטאל ארנה"
+    },
+    {
+     "name": "פורטונה אלבשטאדט",
+     "short": "אלבשטאדט",
+     "city": "אלבשטאדט",
+     "colors": [
+      "#003DA5",
+      "#FFFFFF"
+     ],
+     "reputation": 66,
+     "stadium": "אלבשטאדט ארנה"
+    },
+    {
+     "name": "ויקטוריה הנסהאפן",
+     "short": "ויקטוריה",
+     "city": "הנסהאפן",
+     "colors": [
+      "#7B0F1E",
+      "#87CEEB"
+     ],
+     "reputation": 70,
+     "stadium": "הנסהאפן ארנה",
+     "rival": "ס.ט. האפנוירטל"
+    },
+    {
+     "name": "ס.ט. האפנוירטל",
+     "short": "האפנוירטל",
+     "city": "הנסהאפן",
+     "colors": [
+      "#E53935",
+      "#212121"
+     ],
+     "reputation": 62,
+     "stadium": "הנסהאפן ארנה",
+     "rival": "ויקטוריה הנסהאפן"
+    },
+    {
+     "name": "1. פ.צ. טאננברג",
+     "short": "טאננברג",
+     "city": "טאננברג",
+     "colors": [
+      "#FFD100",
+      "#000000"
+     ],
+     "reputation": 64,
+     "stadium": "טאננברג ארנה"
+    },
+    {
+     "name": "ט.ו. שטרנהוף",
+     "short": "שטרנהוף",
+     "city": "שטרנהוף",
+     "colors": [
+      "#1B1B1B",
+      "#E10600"
+     ],
+     "reputation": 60,
+     "stadium": "שטרנהוף ארנה"
+    },
+    {
+     "name": "אינטרכט ולדאו",
+     "short": "ולדאו",
+     "city": "ולדאו",
+     "colors": [
+      "#00695C",
+      "#FFFFFF"
+     ],
+     "reputation": 68,
+     "stadium": "ולדאו ארנה"
+    },
+    {
+     "name": "ספ.ו. גרונפלד",
+     "short": "גרונפלד",
+     "city": "גרונפלד",
+     "colors": [
+      "#00843D",
+      "#FFFFFF"
+     ],
+     "reputation": 58,
+     "stadium": "גרונפלד ארנה"
+    },
+    {
+     "name": "ו.פ.ל. אוסטרמור",
+     "short": "אוסטרמור",
+     "city": "אוסטרמור",
+     "colors": [
+      "#FFFFFF",
+      "#0A2A6B"
+     ],
+     "reputation": 63,
+     "stadium": "אוסטרמור ארנה"
+    },
+    {
+     "name": "הרטה נוירינג",
+     "short": "הרטה",
+     "city": "נוירינג",
+     "colors": [
+      "#FFFFFF",
+      "#C8102E"
+     ],
+     "reputation": 61,
+     "stadium": "נוירינג ארנה"
+    },
+    {
+     "name": "ארמיניה זילבריך",
+     "short": "זילבריך",
+     "city": "זילבריך",
+     "colors": [
+      "#6A1B9A",
+      "#FFFFFF"
+     ],
+     "reputation": 55,
+     "stadium": "זילבריך ארנה"
+    },
+    {
+     "name": "אוניון פלדקירכן",
+     "short": "פלדקירכן",
+     "city": "פלדקירכן",
+     "colors": [
+      "#2E7D32",
+      "#FFEB3B"
+     ],
+     "reputation": 57,
+     "stadium": "פלדקירכן ארנה"
+    },
+    {
+     "name": "ק.ס.צ. בלאוברג",
+     "short": "בלאוברג",
+     "city": "בלאוברג",
+     "colors": [
+      "#283593",
+      "#E53935"
+     ],
+     "reputation": 59,
+     "stadium": "בלאוברג ארנה"
+    },
+    {
+     "name": "פ.ס.ו. אייכנדורף",
+     "short": "אייכנדורף",
+     "city": "אייכנדורף",
+     "colors": [
+      "#000000",
+      "#FFFFFF"
+     ],
+     "reputation": 54,
+     "stadium": "אייכנדורף ארנה"
+    },
+    {
+     "name": "ס.ס.ו. האלמבורג",
+     "short": "האלמבורג",
+     "city": "האלמבורג",
+     "colors": [
+      "#AD1457",
+      "#FFFFFF"
+     ],
+     "reputation": 56,
+     "stadium": "האלמבורג ארנה"
+    }
+   ]
+  },
+  {
+   "key": "fr1",
+   "name": "הליגה הצרפתית",
+   "countryCode": "FR",
+   "country": "צרפת",
+   "tier": 1,
+   "promotesTo": null,
+   "relegatesTo": null,
+   "promoteSpots": 0,
+   "relegateSpots": 0,
+   "strength": 76,
+   "wageFactor": 6,
+   "simLevel": "medium",
+   "clubs": [
+    {
+     "name": "סטאד סן לוראן",
+     "short": "סן לוראן",
+     "city": "סן לוראן",
+     "colors": [
+      "#00695C",
+      "#FFFFFF"
+     ],
+     "reputation": 88,
+     "stadium": "סטאד סן לוראן",
+     "rival": "אולימפיק בלמר"
+    },
+    {
+     "name": "אולימפיק בלמר",
+     "short": "בלמר",
+     "city": "בלמר",
+     "colors": [
+      "#00843D",
+      "#FFFFFF"
+     ],
+     "reputation": 80,
+     "stadium": "סטאד בלמר",
+     "rival": "סטאד סן לוראן"
+    },
+    {
+     "name": "א.ס. בלוואל",
+     "short": "בלוואל",
+     "city": "בלוואל",
+     "colors": [
+      "#FFFFFF",
+      "#0A2A6B"
+     ],
+     "reputation": 72,
+     "stadium": "סטאד בלוואל"
+    },
+    {
+     "name": "רסינג מונבריאן",
+     "short": "מונבריאן",
+     "city": "מונבריאן",
+     "colors": [
+      "#FFFFFF",
+      "#C8102E"
+     ],
+     "reputation": 70,
+     "stadium": "סטאד מונבריאן"
+    },
+    {
+     "name": "ז׳ירונדן דה לה קוסט",
+     "short": "ז׳ירונדן",
+     "city": "לה קוסט",
+     "colors": [
+      "#6A1B9A",
+      "#FFFFFF"
+     ],
+     "reputation": 66,
+     "stadium": "סטאד לה קוסט"
+    },
+    {
+     "name": "ל.ו.ס.ק. ברוואן",
+     "short": "ברוואן",
+     "city": "ברוואן",
+     "colors": [
+      "#2E7D32",
+      "#FFEB3B"
+     ],
+     "reputation": 74,
+     "stadium": "סטאד ברוואן"
+    },
+    {
+     "name": "א.ז׳. לה רוש",
+     "short": "לה רוש",
+     "city": "לה רוש",
+     "colors": [
+      "#283593",
+      "#E53935"
+     ],
+     "reputation": 60,
+     "stadium": "סטאד לה רוש"
+    },
+    {
+     "name": "פ.צ. מונבלאן",
+     "short": "מונבלאן",
+     "city": "מונבלאן",
+     "colors": [
+      "#000000",
+      "#FFFFFF"
+     ],
+     "reputation": 62,
+     "stadium": "סטאד מונבלאן"
+    },
+    {
+     "name": "סטאד לורנה",
+     "short": "לורנה",
+     "city": "לורנה",
+     "colors": [
+      "#AD1457",
+      "#FFFFFF"
+     ],
+     "reputation": 64,
+     "stadium": "סטאד לורנה"
+    },
+    {
+     "name": "א.ס. סנט אמנד",
+     "short": "סנט אמנד",
+     "city": "סנט אמנד",
+     "colors": [
+      "#9E9D24",
+      "#1B1B1B"
+     ],
+     "reputation": 58,
+     "stadium": "סטאד סנט אמנד"
+    },
+    {
+     "name": "אולימפיק בסקה",
+     "short": "בסקה",
+     "city": "בסקה",
+     "colors": [
+      "#F57C00",
+      "#000000"
+     ],
+     "reputation": 57,
+     "stadium": "סטאד בסקה"
+    },
+    {
+     "name": "ה.א.צ. נורמן",
+     "short": "נורמן",
+     "city": "נורמן",
+     "colors": [
+      "#1565C0",
+      "#FFEB3B"
+     ],
+     "reputation": 55,
+     "stadium": "סטאד נורמן"
+    },
+    {
+     "name": "סטאד ברסיניאק",
+     "short": "ברסיניאק",
+     "city": "ברסיניאק",
+     "colors": [
+      "#C8102E",
+      "#FFFFFF"
+     ],
+     "reputation": 59,
+     "stadium": "סטאד ברסיניאק"
+    },
+    {
+     "name": "אינטר אוקסיטן",
+     "short": "אוקסיטן",
+     "city": "אוקסיטן",
+     "colors": [
+      "#0097A7",
+      "#FFFFFF"
+     ],
+     "reputation": 56,
+     "stadium": "סטאד אוקסיטן"
+    },
+    {
+     "name": "א.ס. מונבריסון",
+     "short": "מונבריסון",
+     "city": "מונבריסון",
+     "colors": [
+      "#4E342E",
+      "#FFC107"
+     ],
+     "reputation": 54,
+     "stadium": "סטאד מונבריסון"
+    },
+    {
+     "name": "ספורטינג ויילנס",
+     "short": "ויילנס",
+     "city": "ויילנס",
+     "colors": [
+      "#003DA5",
+      "#FFFFFF"
+     ],
+     "reputation": 53,
+     "stadium": "סטאד ויילנס"
+    },
+    {
+     "name": "ר.צ. ריבוביל",
+     "short": "ריבוביל",
+     "city": "ריבוביל",
+     "colors": [
+      "#7B0F1E",
+      "#87CEEB"
+     ],
+     "reputation": 61,
+     "stadium": "סטאד ריבוביל"
+    },
+    {
+     "name": "פ.צ. קורנוואי",
+     "short": "קורנוואי",
+     "city": "קורנוואי",
+     "colors": [
+      "#E53935",
+      "#212121"
+     ],
+     "reputation": 52,
+     "stadium": "סטאד קורנוואי"
+    }
+   ]
+  }
+ ]
+}
