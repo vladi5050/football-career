@@ -101,6 +101,15 @@ export function WeekEndScreen() {
         <p class="gains-note">{rep.gainsNote ?? 'השבוע בלי שינוי שרואים במספרים. העבודה מצטברת.'}</p>
       )}
 
+      {rep && rep.autoEvents && rep.autoEvents.length > 0 && (
+        <section class="paper slim auto-events" aria-label="החלטות שהתקבלו בשבוע מהיר">
+          <h3 class="auto-events-title">בשבוע המהיר החלטנו בשבילך</h3>
+          <ul>
+            {rep.autoEvents.map((t) => <li key={t}>{t}</li>)}
+          </ul>
+        </section>
+      )}
+
       {rep && rep.nearGoals.length > 0 && (
         <section class="near-list">
           {rep.nearGoals.slice(0, 2).map((n) => (

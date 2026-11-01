@@ -911,3 +911,7 @@ button.list-row { width: 100%; min-width: 0; }
 .sat-teams { flex: 1 1 auto; }
 .sat-team { flex: 1 1 0; justify-content: center; }
 .sat-vs { flex: none; }
+
+.auto-events { padding: var(--s3) var(--s4); }
+.auto-events-title { margin: 0 0 var(--s2); font-size: 1rem; font-weight: 700; }
+.auto-events ul { margin: 0; padding-inline-start: 1.1em; display: grid; gap: 4px; font-size: 0.9rem; line-height: 1.4; }
