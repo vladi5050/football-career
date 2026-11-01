@@ -3,3 +3,5 @@ dist
 dev-dist
 test-results
 *.log
+tests/e2e/shots
+.progress

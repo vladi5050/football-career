@@ -1,0 +1,172 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+html {
+  touch-action: manipulation; /* no double-tap zoom on fast taps */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+body {
+  font-family: var(--f-body);
+  font-size: var(--t-md);
+  line-height: 1.4;
+  color: var(--paper);
+  background-color: var(--wall);
+  /* the locker wall: vertical planks */
+  background-image:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.22) 0 2px, transparent 2px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(0, 0, 0, 0.14));
+  background-size: 58px 100%, 58px 100%, 100% 100%;
+  background-position: 0 0, 3px 0, 0 0;
+  background-attachment: fixed;
+  overscroll-behavior-y: none;
+}
+#app {
+  min-height: 100dvh;
+  overflow-x: clip;
+}
+/* iOS Safari < 16 has no overflow: clip; hidden is the fallback (sticky table headers then stay in place) */
+@supports not (overflow-x: clip) {
+  #app, .shell { overflow-x: hidden; }
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+button {
+  cursor: pointer;
+  touch-action: manipulation;
+  border: 0;
+  background: none;
+  padding: 0;
+}
+:focus-visible {
+  outline: 3px solid var(--yellow);
+  outline-offset: 2px;
+}
+img,
+svg {
+  display: block;
+}
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+.num,
+bdi.num {
+  font-variant-numeric: tabular-nums;
+  unicode-bidi: isolate;
+  direction: ltr;
+  display: inline-block;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- shell */
+.shell {
+  position: relative;
+  width: 100%;
+  max-width: var(--col-max);
+  min-width: 0;
+  flex: 0 1 var(--col-max);
+  margin: 0 auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding-left: var(--safe-l);
+  padding-right: var(--safe-r);
+  overflow-x: clip;
+}
+.shell-row {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+}
+.side-panel {
+  display: none;
+}
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: calc(var(--safe-t) + var(--s3)) var(--s4) var(--s4);
+  gap: var(--s3);
+}
+.screen.has-nav {
+  padding-bottom: calc(var(--nav-h) + var(--safe-b) + var(--s3));
+}
+.screen.has-actions {
+  padding-bottom: calc(96px + var(--safe-b));
+}
+.screen.has-nav.has-actions {
+  padding-bottom: calc(var(--nav-h) + 84px + var(--safe-b));
+}
+
+@media (min-width: 600px) {
+  .shell {
+    border-left: 1px solid rgba(0, 0, 0, 0.25);
+    border-right: 1px solid rgba(0, 0, 0, 0.25);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.03), 0 0 60px rgba(0, 0, 0, 0.35);
+    background: rgba(26, 41, 64, 0.35);
+  }
+}
+@media (min-width: 1024px) {
+  .side-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s4);
+    width: 360px;
+    padding: calc(var(--s6) + var(--safe-t)) 0 var(--s6);
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    max-height: 100dvh;
+    overflow: auto;
+  }
+}
+
+/* reduced motion: user setting (html.rm) or OS */
+html.rm *,
+html.rm *::before,
+html.rm *::after {
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 1ms !important;
+  scroll-behavior: auto !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}
+td.num,
+th.num {
+  display: table-cell;
+}

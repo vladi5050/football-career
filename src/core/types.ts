@@ -40,7 +40,12 @@ export interface Person {
   traits: TraitId[];
   relations: Record<number, Relation>; // keyed by other person id (mostly the user's player)
   clubId: number | null;
+  /** R&D addition: agent archetype (agents only). */
+  archetype?: AgentArchetype;
 }
+
+/** R&D addition. shark = כריש, mentor = מנטורית, uncle = דוד */
+export type AgentArchetype = 'shark' | 'mentor' | 'uncle';
 
 export type SquadRole = 'star' | 'starter' | 'rotation' | 'prospect' | 'backup';
 
@@ -72,6 +77,8 @@ export interface Footballer extends Person {
   stats: SeasonStats;
   careerStats: SeasonStats;
   retired?: boolean;
+  /** R&D addition: shirt number (user's player). */
+  shirt?: number;
 }
 
 export type CrestSpec = [shape: number, division: number, palette: number, charge: number];
@@ -92,6 +99,12 @@ export interface Club {
   squad: number[]; // footballer ids
   rivalClubId: number | null;
   stadium: string;
+  /** R&D addition: squad not generated yet (result-only league). Strength comes from league strength + reputation; materialised on demand. */
+  lazy?: boolean;
+  /** R&D addition: region/group hint for multi-group lower leagues (from content). */
+  region?: string;
+  /** R&D addition: reserve (B) team of this club id: never promoted into the parent's league or above. */
+  reserveOf?: number;
 }
 
 export interface League {
@@ -108,6 +121,13 @@ export interface League {
   strength: number; // 1..100 average level
   wageFactor: number; // multiplier vs Israeli Premier League
   simLevel: 'full' | 'medium' | 'result';
+  /** R&D addition: content key (e.g. "il1"). */
+  key?: string;
+  /** R&D addition: all leagues this one promotes into / relegates into (multi-group levels). promotesTo/relegatesTo hold the first. */
+  promotesToIds?: number[];
+  relegatesToIds?: number[];
+  /** R&D addition: region of a regional group (e.g. "צפון"), used to place relegated clubs. */
+  region?: string;
 }
 
 export interface Fixture {
@@ -130,6 +150,12 @@ export interface Season {
   fixtures: Record<number, Fixture[]>; // leagueId -> fixtures
   tables: Record<number, TableRow[]>;
   themes: string[]; // season theme ids
+  /** R&D addition: absWeek of season week 0. */
+  startAbsWeek?: number;
+  /** R&D addition: shuffled club order per league; fixtures are a pure function of it (lets the save drop them). */
+  orders?: Record<number, number[]>;
+  /** R&D addition: small leagues play 3-4 round robins this season (leagues of up to 12 clubs). Older seasons: 2. */
+  multiLeg?: boolean;
 }
 
 // ---------------------------------------------------------------- the user's career
@@ -182,7 +208,35 @@ export interface Career {
   negotiation: Negotiation | null;
   retired: boolean;
   retirementReason?: string;
+  /** R&D addition: fixed people around the user: father, mother, friend, firstCoach -> person id. */
+  circle?: Record<string, number>;
+  /** R&D addition: minutes in the last (up to 5) user matches, newest last. */
+  recentMinutes?: number[];
+  /** R&D addition: ratings in the last (up to 5) matches played, newest last. */
+  recentRatings?: number[];
+  /** R&D addition: the user's last match summary (for event conditions). */
+  lastMatch?: { absWeek: number; result: number; rating: number; started: boolean; minutes: number };
+  /** R&D addition: Hebrew start story line ("סקאוט של אקדמיה..."). */
+  startStory?: string;
+  /** R&D addition: this week's matchday decision, made when the week reaches pre-match (startMatch honours it). */
+  prematch?: PrematchDecision | null;
+  /** R&D addition: the current week runs as a quick week (goes straight into the match after events). */
+  quickFlow?: boolean;
+  /** R&D addition: per attribute, [value at one decimal, absWeek it last moved] (near goals rotate out when stalled). */
+  attrMoved?: Partial<Record<AttrKey, [number, number, number?, number?]>>;
+  /** R&D addition: events quick week answered this week ("title: option"), moved into the week report. */
+  autoAnswered?: string[];
+  /** R&D addition: renewal talks with the current club are off until this absWeek (after the club walked out). */
+  renewalBlockedUntil?: number;
+  /** R&D addition: what the last story answer caused (set by resolveEvent, cleared by the next command). */
+  eventOutcome?: EventOutcome | null;
 }
+
+/** What one story answer caused, shown right after the choice. */
+export interface EventOutcome { title: string; choice: string; lines: { text: string; delta?: string; tone: 'up' | 'down' | 'info' }[]; followUp: boolean }
+
+/** R&D addition: matchday status of the user, decided before the match. */
+export interface PrematchDecision { absWeek: number; lineup: 'starter' | 'bench' | 'youth' | 'out'; subMinute: number | null; reason: string; firstMatch: boolean }
 
 export interface CareerSeasonRecord { season: number; year: number; clubId: number; leagueId: number; apps: number; goals: number; assists: number; avgRating: number; position: number }
 
@@ -209,6 +263,10 @@ export interface Negotiation {
   currentOffer: { wage: number; role: SquadRole; years: number; releaseClause: number | null };
   log: string[];
   status: 'open' | 'signed' | 'walked_away';
+  /** R&D addition: true when currentOffer is the club's last offer (after round 3): only accept or walk away. */
+  final?: boolean;
+  /** R&D addition: the phase to return to when the negotiation closes. */
+  returnPhase?: GamePhase;
 }
 
 // ---------------------------------------------------------------- events
@@ -280,6 +338,14 @@ export interface LiveMatch {
   weather: 'clear' | 'rain' | 'wind';
   started: boolean; // user is in starting XI
   derby: boolean;
+  /** R&D addition: minute the user came on as a substitute (null/undefined = started or did not play). */
+  subMinute?: number | null;
+  /** R&D addition: final whistle reached. */
+  finished?: boolean;
+  /** R&D addition: youth-team (U19) match. The user was not in the senior matchday squad; result does not touch the league table or senior stats. */
+  youth?: boolean;
+  /** R&D addition: the user's first career match (exactly 3 moments, a gentle first one, one scoring chance). */
+  firstMatch?: boolean;
 }
 
 // ---------------------------------------------------------------- the world
@@ -324,6 +390,10 @@ export interface WeekReport {
   openLoops: string[]; // "מה מחכה לך" items
   nearGoals: { text: string; progress: number; target: number }[];
   notable: boolean; // true -> show "world reacts" screen
+  /** R&D addition: events quick week answered for the user this week ("title: chosen option"), so they are not invisible. */
+  autoEvents?: string[];
+  /** R&D addition: Hebrew line shown under "מה השתפר" when no attribute moved by 0.1 or more. */
+  gainsNote?: string;
 }
 
 // ---------------------------------------------------------------- view snapshot sent to UI
@@ -336,7 +406,7 @@ export interface PlayerView {
 
 export interface ClubView { id: number; name: string; short: string; city: string; colors: [string, string]; crest: CrestSpec; reputation: number; leagueName: string; country: string; stadium: string }
 
-export interface PersonView { id: number; name: string; role: Role; traits: TraitId[]; relation: number; age: number; clubId: number | null }
+export interface PersonView { id: number; name: string; role: Role; traits: TraitId[]; relation: number; age: number; clubId: number | null; archetype?: AgentArchetype }
 
 export interface View {
   phase: GamePhase;
@@ -351,12 +421,29 @@ export interface View {
   agent: PersonView;
   coach: PersonView | null;
   rival: (PersonView & { clubName: string; goals: number; overall: number }) | null;
-  career: Pick<Career, 'money' | 'fame' | 'goals' | 'specialties' | 'life' | 'lastPlan' | 'startKind' | 'trophies' | 'history' | 'nationalCaps' | 'nationalGoals' | 'captain' | 'offers' | 'negotiation' | 'retired' | 'retirementReason' | 'seasonsPlayed'>;
+  career: Pick<Career, 'money' | 'fame' | 'goals' | 'specialties' | 'life' | 'lastPlan' | 'startKind' | 'trophies' | 'history' | 'nationalCaps' | 'nationalGoals' | 'captain' | 'offers' | 'negotiation' | 'retired' | 'retirementReason' | 'seasonsPlayed' | 'renewalBlockedUntil'>;
   inbox: ActiveEvent[];
   news: NewsItem[];
   live: LiveMatch | null;
   lastWeekReport: WeekReport | null;
+  /** R&D addition: result of the story answer just made (one command only). */
+  eventOutcome?: EventOutcome | null;
   offerClubs: Record<number, ClubView>;
+  /** R&D addition: the user's squad mates with their relation to him. */
+  teammates?: PersonView[];
+  /** R&D addition: everyone referenced by inbox[].cast plus coach, agent, rival; keyed by id. */
+  people?: Record<number, PersonView>;
+  /** R&D addition: table zones of the user's league (top `champion` rows, top `promote`, bottom `relegate`). */
+  /** rounds: league matches per club this season (small leagues play 3-4 round robins). */
+  leagueZones?: { promote: number; relegate: number; champion?: number; rounds?: number };
+  /** R&D addition: user settings. */
+  settings?: { autoMoments: boolean };
+  /** R&D addition: every club of the career (history + current), keyed by id. */
+  careerClubs?: Record<number, ClubView>;
+  /** R&D addition: career-end lines (Hebrew): the move that changed everything, the person who mattered most. */
+  careerStory?: { turningPoint?: string; keyPerson?: string };
+  /** R&D addition: the user's matchday status for this week, present in the prematch phase. */
+  prematch?: { lineup: 'starter' | 'bench' | 'youth' | 'out'; reason: string; subMinute: number | null };
 }
 
 // ---------------------------------------------------------------- commands (UI -> core)

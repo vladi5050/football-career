@@ -1,0 +1,87 @@
+/* ==========================================================================
+   Design tokens: "locker room" (חדר ההלבשה)
+   See docs/DESIGN.md for usage rules.
+   ========================================================================== */
+:root {
+  /* wall + surfaces */
+  --wall: #22344f;
+  --wall-dark: #1a2940;
+  --wall-light: #2c4263;
+  --paper: #f7f7f2;
+  --paper-2: #efeee6;
+  --board: #eceFea;
+  --board-grid: rgba(30, 79, 216, 0.09);
+  --alu: #b8bdc2;
+  --alu-dark: #8e959c;
+  --alu-light: #dde1e4;
+
+  /* ink + brand */
+  --ink: #1b2a4a;
+  --ink-2: #44506a;
+  --ink-3: #6f7a8f;
+  --orange: #f28c28;
+  --orange-press: #a85a10;
+  --orange-soft: #fde6cd;
+
+  /* coach markers + magnets */
+  --red: #d7263d;
+  --blue: #1e4fd8;
+  --yellow: #f2c230;
+  --green: #2f9e57;
+  --tape: rgba(236, 222, 176, 0.82);
+  --highlight: rgba(242, 194, 48, 0.55);
+
+  /* status */
+  --good: #2f9e57;
+  --bad: #d7263d;
+  --promo: #2f9e57;
+  --releg: #d7263d;
+
+  /* type */
+  --f-display: 'Karantina', 'Assistant', system-ui, sans-serif;
+  --f-body: 'Assistant', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+  --f-hand: 'Amatic SC', 'Assistant', cursive;
+
+  --t-xs: 12px;
+  --t-sm: 14px;
+  --t-md: 16px;
+  --t-lg: 18px;
+  --t-xl: 22px;
+  --t-h3: 28px; /* Karantina */
+  --t-h2: 36px;
+  --t-h1: 48px;
+  --t-hero: 84px;
+
+  /* spacing (4pt) */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 20px;
+  --s6: 24px;
+  --s8: 32px;
+
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --r-pill: 999px;
+
+  --tap: 48px;
+  --col-max: 480px;
+  --nav-h: 64px;
+
+  --shadow-card: 0 1px 0 rgba(0, 0, 0, 0.05), 0 6px 14px rgba(9, 18, 33, 0.35);
+  --shadow-lift: 0 10px 22px rgba(9, 18, 33, 0.45);
+  --shadow-magnet: 0 3px 0 rgba(0, 0, 0, 0.18), 0 5px 9px rgba(9, 18, 33, 0.35);
+
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-snap: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --d-fast: 120ms;
+  --d-med: 180ms;
+  --d-slow: 420ms;
+}

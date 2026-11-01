@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:balance": "BALANCE=1 vitest run tests/unit/balance.test.ts",
     "test:e2e": "node tests/e2e/run.mjs",
     "sim": "vite-node tools/simRunner.ts",
     "validate": "vite-node tools/validateContent.ts"
