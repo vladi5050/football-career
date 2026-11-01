@@ -45,6 +45,8 @@ export function ClubScreen() {
     <main class="screen has-nav club-screen">
       <TopBar v={v} title="המועדון" />
 
+      <div class="cols club-cols">
+      <div class="col col-a">
       {club && (
         <div class="club-hero">
           <Crest spec={club.crest} colors={club.colors} name={club.name} short={club.short} size={86} />
@@ -101,6 +103,8 @@ export function ClubScreen() {
         )}
       </TapedCard>
 
+      </div>
+      <div class="col col-b">
       <h2 class="section-title">אנשים</h2>
       <div class="paper people">
         {v.coach && <PersonRow p={v.coach} tag="המאמן" />}
@@ -142,6 +146,8 @@ export function ClubScreen() {
           </TapedCard>
         </>
       )}
+      </div>
+      </div>
     </main>
   );
 }

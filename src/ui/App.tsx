@@ -92,10 +92,11 @@ export function App() {
   }
   const summer = v?.phase === 'offseason';
   const tabbed = !!v && ((v.phase === 'plan' && TABBED.includes(id)) || (summer && (id === 'weekend' || id === 'settings' || TABBED.includes(id))));
-  const side = tabbed && !summer && id !== 'table' && id !== 'news';
+  // desktop side column (next match, mini table, near goals, headlines) on the week screen only; CSS hides it below 1100px
+  const side = tabbed && !summer && id === 'week';
   const takeover = ['event', 'prematch', 'match', 'negotiation', 'retired'].includes(id) || (id === 'weekend' && !summer);
   return (
-    <div class={`shell-row ${side ? 'has-side' : ''}`}>
+    <div class={`shell-row ${side ? 'has-side' : ''} ${tabbed ? 'is-tabbed' : ''} scr-${id}`}>
       <div class={`shell ${tabbed ? 'with-nav' : ''}`} aria-busy={busy.value}>
         <div key={id} class={`screen-host screen-anim ${takeover ? 'takeover' : navDirection.value === 'back' ? 'back' : ''}`}>
           {el}

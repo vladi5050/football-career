@@ -76,8 +76,7 @@ Buttons: `.btn` (paper), `.btn-primary` (orange, ink text, 800), `.btn-ink`, `.b
   the nav is shown). Back buttons are top-right (RTL start).
 - Bottom nav, 5 tabs: שבוע · טבלה · מועדון · סוכן · עוד (shown only in `phase === 'plan'`).
 - 600px+: the column gets side borders and floats on the wall.
-- 1024px+: two columns. Main column on the right, `SidePanel` (compact table + headlines) on the left.
-  Fixed bars shift with the column (`.shell-row.has-side`).
+- Tablet and desktop layouts: see section 13 (`src/ui/styles/responsive.css`).
 
 ## 6. Motion (`src/ui/styles/anim.css`)
 
@@ -182,3 +181,37 @@ Hash routing (`#/week` etc.) keeps browser / Android back working.
 - Negotiation bubbles drop a leading club name from the engine line (the label already names the speaker).
 - Share card trophies wrap to 2 lines (font 40 → 30 px), then "+N".
 - Scorebug at a moment uses `live.score` (same as the decision overlay); goals without a named scorer count at once.
+
+## 13. Responsive layouts (`src/ui/styles/responsive.css`, `src/ui/useMedia.ts`)
+
+Breakpoints (same values in CSS and in `MQ_TABLET` / `MQ_DESKTOP`):
+
+| Range | Name | Layout |
+| --- | --- | --- |
+| < 700px | phone | The base styles. Nothing in `responsive.css` applies, so phones look exactly as before. |
+| 700-1099px | tablet | Column 900px, bigger type tokens and magnets, two-column screens, bottom nav stays. |
+| >= 1100px | desktop | Nav rail on the right, main area up to 1200px, week side column, card screens centred. |
+
+- **Column wrappers.** `.cols` / `.col` are `display: contents` on phones, so the children stay flex items of
+  `.screen` in their original order. From 700px `.cols` is a 2-column grid. Used on Week (`.week-cols`: board |
+  palette + status), Club (`.club-cols`: hero + my card | people + rival) and Agent (`.agent-cols`: agent | offers + renewal).
+- **Tablet portrait** (`orientation: portrait`): the week board is full width with the palette and status side by
+  side under it, magnets 72px.
+- **Table.** Starts in "מלא" from 700px (`useState(() => matches(MQ_TABLET))`). From 1100px the full view is
+  `LeagueTableAll` (`.ltable.all`): every column (#, team, P, W, D, L, goals, GD, pts, form).
+- **Nav rail (desktop).** The same `.bottom-nav` (same 5 buttons, same order) restyled as a fixed rail on the right
+  (`--rail-w: 104px`), active tab marked with a bar on its inner edge. `.shell-row.is-tabbed` reserves its width.
+- **Action bars (desktop).** `position: sticky; bottom: 0` inside the screen instead of fixed and viewport-centred,
+  so they stay under their own column next to the rail and side panel.
+- **Side column (desktop, week only).** `SidePanel` in `.shell-row.has-side`: next fixture, mini table with
+  "לטבלה המלאה", nearest goal, headlines. The shell (max 820px) and the panel (320px) are centred as a pair.
+- **Match (desktop).** Grid: scorebug across the top (max 760px), pitch in the main column, feed as a 340px side
+  column, decision card centred on the pitch (max 520px).
+- **Card screens** (event, prematch, weekend, contract, reveal, new career, career end, settings, goals, news,
+  more, team editor): max 760px on tablet, 720px on desktop, centred.
+- **Title.** Lockers scaled 1.3 (tablet) / 1.6 (desktop), logo 168 / 200px, buttons max 460 / 440px.
+- **Pointer devices** (`hover: hover` and `pointer: fine`): hover tint on buttons, list rows, table rows and nav;
+  pointer cursor and a small lift on magnets, `grabbing` while dragging. Keyboard focus uses the global
+  `:focus-visible` ring (inset on the nav rail).
+- No horizontal scroll from 360 to 1920px (checked at 360, 390, 430, 768, 820x1180, 1024x768, 1280x800,
+  1440x900, 1920x1080). Shots: `docs/screens/50-*.png`.
