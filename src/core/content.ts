@@ -1,8 +1,11 @@
 // Shape of the JSON content bundle (src/content/*.json). Loaded by the worker / tests and passed into core.
-export interface ClubSeed { name: string; short: string; city: string; colors: [string, string]; reputation: number; stadium: string; rival?: string; crestCharge?: number }
+export interface ClubSeed { name: string; short: string; city: string; colors: [string, string]; reputation: number; stadium: string; rival?: string; crestCharge?: number; /** optional region for regional groups */ region?: string }
 export interface LeagueSeed {
   key: string; name: string; countryCode: string; country: string; tier: number;
-  promotesTo: string | null; relegatesTo: string | null; promoteSpots: number; relegateSpots: number;
+  /** A key, or several keys when the next level has several groups (e.g. Serie C A/B/C). Spots 0 = closed league (MLS). */
+  promotesTo: string | string[] | null; relegatesTo: string | string[] | null; promoteSpots: number; relegateSpots: number;
+  /** optional region of a regional group ("צפון", "דרום") */
+  region?: string;
   strength: number; wageFactor: number; simLevel: 'full' | 'medium' | 'result'; clubs: ClubSeed[];
 }
 export interface NamePool { first: string[]; last: string[] }

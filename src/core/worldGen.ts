@@ -8,7 +8,7 @@ import { makeRng, hashString, seedState, type Rng } from './rng';
 import { ATTR_KEYS, POS_WEIGHTS, clamp, overallOf, changeRelation, pre } from './helpers';
 import { wageFor } from './wages';
 
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 
 /** Balance knobs for the user's hidden potential. */
 export const WORLD_TUNING = { potentialMean: 77, potentialSd: 19, potentialMin: 45, potentialMax: 97 };
@@ -129,6 +129,77 @@ export function fillSquad(world: World, content: Content, rng: Rng, c: Club, lvl
   }
 }
 
+/** XI level of a club from its league and reputation (used for lazy clubs and offers). */
+export function lazyLevel(world: World, c: Club): number {
+  const lg = world.leagues[c.leagueId];
+  let sum = 0;
+  for (const id of lg.clubIds) sum += world.clubs[id].reputation;
+  return clubLevel(lg, c.reputation, sum / Math.max(1, lg.clubIds.length));
+}
+
+/** Generate the squad of a lazy club. Uses its own seeded stream, so the main RNG sequence does not depend on what got materialised. */
+export function materializeClub(world: World, content: Content, clubId: number): boolean {
+  const c = world.clubs[clubId];
+  if (!c || !c.lazy) return false;
+  const rng = makeRng(seedState((world.seed ^ Math.imul(clubId + 1, 0x9e3779b1) ^ Math.imul(world.season.number + 7, 0x85ebca6b)) >>> 0));
+  delete c.lazy;
+  const keep = c.squad.slice();
+  c.squad = [];
+  fillSquad(world, content, rng, c, lazyLevel(world, c));
+  for (const id of keep) if (!c.squad.includes(id)) c.squad.push(id);
+  return true;
+}
+
+/**
+ * Drop the generated squads of background clubs again (save size stays flat over a long career).
+ * A club goes back to lazy when its league is not 'full', it is not the user's league, the rival's club,
+ * a club the user played for or a club with a pending offer. Players the career still references
+ * (relations with the user, events, history, live match) stay in the world and in the squad.
+ */
+export function dematerializeStale(world: World): number {
+  const userId = world.career.playerId;
+  const user = world.people[userId] as Footballer | undefined;
+  const userLeagueId = user?.clubId != null ? world.clubs[user.clubId]?.leagueId : -1;
+  const rival = world.people[world.career.rivalId] as Footballer | undefined;
+  const keepClubs = new Set<number>(world.career.history.map((h) => h.clubId));
+  for (const o of world.career.offers) keepClubs.add(o.fromClubId);
+  if (world.career.negotiation) keepClubs.add(world.career.negotiation.clubId);
+  if (rival?.clubId != null) keepClubs.add(rival.clubId);
+  if (user?.clubId != null) keepClubs.add(user.clubId);
+  const refs = new Set<number>();
+  const walk = (v: unknown): void => {
+    if (typeof v === 'number') refs.add(v);
+    else if (Array.isArray(v)) for (const x of v) walk(x);
+    else if (v && typeof v === 'object') for (const x of Object.values(v)) walk(x);
+  };
+  walk([world.career, world.pending, world.history, world.inbox, world.live, world.lastWeekReport]);
+  if (user) for (const k of Object.keys(user.relations)) refs.add(Number(k));
+  let n = 0;
+  for (const c of world.clubs) {
+    if (c.lazy || keepClubs.has(c.id) || c.leagueId === userLeagueId) continue;
+    const lg = world.leagues[c.leagueId];
+    if (!lg || lg.simLevel === 'full') continue;
+    const kept: number[] = [];
+    for (const id of c.squad) {
+      const p = world.people[id];
+      if (!p) continue;
+      if (refs.has(id) || p.relations[userId]) kept.push(id);
+      else delete world.people[id];
+    }
+    c.squad = kept;
+    c.lazy = true;
+    n++;
+  }
+  return n;
+}
+
+/** Materialise every lazy club of a league. Returns how many were generated. */
+export function materializeLeague(world: World, content: Content, leagueId: number): number {
+  let n = 0;
+  for (const id of world.leagues[leagueId]?.clubIds ?? []) if (materializeClub(world, content, id)) n++;
+  return n;
+}
+
 /** First-XI slots per position (4-3-3 with DM/CM/AM). */
 export const STARTER_SLOTS: Record<Position, number> = { GK: 1, CB: 2, FB: 2, DM: 1, CM: 1, AM: 1, W: 2, ST: 1 };
 
@@ -189,18 +260,23 @@ export function generateWorld(content: Content, seed: number, opts: GenOptions):
   };
   const rng = makeRng(world.rngState);
 
-  // ---- leagues + clubs
+  // ---- leagues + clubs (non-'full' leagues stay lazy: staff now, squads on demand)
   const keyToId = new Map<string, number>();
   leagueSeeds.forEach((ls, i) => keyToId.set(ls.key, i));
+  const ids = (v: string | string[] | null | undefined): number[] =>
+    (v == null ? [] : Array.isArray(v) ? v : [v]).map((k) => keyToId.get(k)).filter((x): x is number => x != null);
   const nameToClub = new Map<string, number>();
   leagueSeeds.forEach((ls, i) => {
+    const up = ids(ls.promotesTo), down = ids(ls.relegatesTo);
     const lg: League = {
       id: i, key: ls.key, name: ls.name, countryCode: ls.countryCode, country: ls.country, tier: ls.tier, clubIds: [],
-      promotesTo: ls.promotesTo ? keyToId.get(ls.promotesTo) ?? null : null,
-      relegatesTo: ls.relegatesTo ? keyToId.get(ls.relegatesTo) ?? null : null,
+      promotesTo: up[0] ?? null, relegatesTo: down[0] ?? null,
       promoteSpots: ls.promoteSpots ?? 0, relegateSpots: ls.relegateSpots ?? 0,
       strength: ls.strength, wageFactor: ls.wageFactor ?? 1, simLevel: ls.simLevel ?? 'result',
     };
+    if (up.length > 1) lg.promotesToIds = up;
+    if (down.length > 1) lg.relegatesToIds = down;
+    if (ls.region) lg.region = ls.region;
     world.leagues.push(lg);
     const avgRep = ls.clubs.reduce((s, c) => s + c.reputation, 0) / Math.max(1, ls.clubs.length);
     for (const cs of ls.clubs) {
@@ -211,6 +287,7 @@ export function generateWorld(content: Content, seed: number, opts: GenOptions):
         crest: crestFor(cs.name, colors, cs.crestCharge), managerId: 0, chairmanId: 0, squad: [], rivalClubId: null,
         stadium: cs.stadium ?? `אצטדיון ${cs.city ?? cs.name}`,
       };
+      if (cs.region) c.region = cs.region;
       world.clubs.push(c);
       lg.clubIds.push(c.id);
       nameToClub.set(cs.name, c.id);
@@ -218,7 +295,9 @@ export function generateWorld(content: Content, seed: number, opts: GenOptions):
       const chair = makePerson(world, content, rng, 'chairman', ls.countryCode, rng.int(45, 72), c.id);
       c.managerId = mgr.id;
       c.chairmanId = chair.id;
-      fillSquad(world, content, rng, c, clubLevel(lg, cs.reputation, avgRep));
+      // only 'full' leagues get squads up front; the rest are generated when the story reaches them (start, offers, moves)
+      if (lg.simLevel !== 'full') c.lazy = true;
+      else fillSquad(world, content, rng, c, clubLevel(lg, cs.reputation, avgRep));
     }
   });
   leagueSeeds.forEach((ls) => {
@@ -250,6 +329,7 @@ export function generateWorld(content: Content, seed: number, opts: GenOptions):
   const pick = rollStart(world, rng, opts.pos);
   const startClub = world.clubs[pick.clubId];
   const startLeague = world.leagues[startClub.leagueId];
+  materializeLeague(world, content, startLeague.id);
   const target = rng.float(35, 45);
   const potential = Math.round(clamp(rng.normal(WORLD_TUNING.potentialMean, WORLD_TUNING.potentialSd), WORLD_TUNING.potentialMin, WORLD_TUNING.potentialMax));
   const user = makeFootballer(world, content, rng, opts.pos, 16, target, potential, startClub.id, 'IL');
@@ -269,6 +349,7 @@ export function generateWorld(content: Content, seed: number, opts: GenOptions):
   // ---- rival
   const rivalClubId = startClub.rivalClubId ?? pickOtherClub(rng, world, startLeague, startClub.id);
   const rivalClub = world.clubs[rivalClubId];
+  materializeClub(world, content, rivalClub.id);
   const rivalPos: Position = rng.chance(0.7) ? opts.pos : adjacentPos(rng, opts.pos);
   const rival = makeFootballer(world, content, rng, rivalPos, rng.chance(0.6) ? 16 : 17, target + rng.float(-1, 4), clamp(potential + rng.float(-6, 6), 60, 94), rivalClub.id, 'IL');
   rival.traits = ['ambitious', rng.pick(['jealous', 'calm', 'hot_tempered'] as TraitId[]), rng.pick(['party_animal', 'workaholic', 'gossip'] as TraitId[])];
@@ -315,13 +396,20 @@ function pickOtherClub(rng: Rng, world: World, lg: League, notId: number): numbe
 
 interface StartPick { kind: Career['startKind']; clubId: number }
 
+/** Academy countries for a foreign-academy start (where Israeli teenagers really go). */
+/** Countries with a top league of strength 75+ (their second tiers promote into it). */
+export const BIG5 = ['DE', 'IT', 'ES', 'FR', 'EN'];
+export const ACADEMY_COUNTRIES = ['BE', 'NL', 'PT', 'AT', 'CY', 'GR', 'DE', 'IT', 'ES', 'FR', 'EN'];
+/** Weight of an Israeli youth start by tier: mostly tier 1-2 academies, some tier 3, rarely lower. */
+const IL_START_TIER_W: Record<number, number> = { 1: 0.45, 2: 0.38, 3: 0.14, 4: 0.03 };
+
 function rollStart(world: World, rng: Rng, pos: Position): StartPick {
   let wIsrael = 60, wAcademy = 25, wAbroad = 15;
   if (pos === 'GK' || pos === 'CB') { wIsrael -= 5; wAcademy += 5; }
   if (pos === 'W' || pos === 'ST') { wIsrael -= 5; wAcademy += 4; wAbroad += 1; }
-  const il = world.leagues.filter((l) => l.countryCode === 'IL');
-  const academyLeagues = world.leagues.filter((l) => ['BE', 'NL', 'PT'].includes(l.countryCode));
-  const abroadLeagues = world.leagues.filter((l) => l.countryCode !== 'IL');
+  const il = world.leagues.filter((l) => l.countryCode === 'IL' && l.clubIds.length);
+  const academyLeagues = world.leagues.filter((l) => ACADEMY_COUNTRIES.includes(l.countryCode) && l.tier <= 2 && l.clubIds.length);
+  const abroadLeagues = world.leagues.filter((l) => l.countryCode !== 'IL' && l.clubIds.length);
   if (!academyLeagues.length) wAcademy = 0;
   if (!abroadLeagues.length) wAbroad = 0;
   if (!il.length) wIsrael = 0;
@@ -329,17 +417,24 @@ function rollStart(world: World, rng: Rng, pos: Position): StartPick {
   const r = rng.next() * (wIsrael + wAcademy + wAbroad);
   const kind: Career['startKind'] = r < wIsrael ? 'israel' : r < wIsrael + wAcademy ? 'foreign_academy' : 'raised_abroad';
   let pool: League[];
-  if (kind === 'israel') {
-    pool = il.length ? il.filter((l) => l.tier >= 2) : world.leagues;
-    if (!pool.length) pool = il.length ? il : world.leagues;
-  } else if (kind === 'foreign_academy') pool = academyLeagues;
-  else pool = abroadLeagues;
-  // lower tiers preferred; within a league, clubs with weaker depth at the position
-  const minTier = Math.min(...pool.map((l) => l.tier));
-  const maxTier = Math.max(...pool.map((l) => l.tier));
-  const leagueW = (l: League): number => (kind === 'israel' ? 1 : 1 + (l.tier - minTier)) * (l.tier === maxTier && kind !== 'israel' ? 1.5 : 1);
+  let leagueW: (l: League) => number;
+  if (kind === 'israel' && il.length) {
+    pool = il;
+    // a tier's weight is shared by its groups
+    const groupsPerTier = new Map<number, number>();
+    for (const l of il) groupsPerTier.set(l.tier, (groupsPerTier.get(l.tier) ?? 0) + 1);
+    leagueW = (l) => (IL_START_TIER_W[l.tier] ?? 0.01) / (groupsPerTier.get(l.tier) ?? 1);
+  } else if (kind === 'foreign_academy') {
+    pool = academyLeagues;
+    // mid-level academies (Belgium, Netherlands, Portugal...) more than the giants
+    leagueW = (l) => (l.strength >= 75 ? 0.05 : 1) * (l.tier === 1 ? 1 : BIG5.includes(l.countryCode) ? 0.2 : 0.6) * (['BE', 'NL', 'PT'].includes(l.countryCode) ? 1.6 : 1);
+  } else {
+    pool = abroadLeagues.length ? abroadLeagues : world.leagues;
+    leagueW = (l) => (l.tier >= 2 ? (BIG5.includes(l.countryCode) ? 0.6 : 1.2) : 1) * (l.strength >= 75 ? 0.3 : 1);
+  }
   const lg = rng.weightedPick(pool, leagueW) ?? world.leagues[0];
-  const clubId = rng.weightedPick(lg.clubIds, (id) => 1 + (100 - world.clubs[id].reputation) / 40)!;
+  // academies: bigger clubs run bigger academies, but every club has one
+  const clubId = rng.weightedPick(lg.clubIds, (id) => 0.6 + world.clubs[id].reputation / 100)!;
   return { kind, clubId };
 }
 

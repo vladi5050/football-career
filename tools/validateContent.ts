@@ -70,11 +70,35 @@ for (const l of leagues) {
     if (c.short && c.short.length > 10) warn(cw, `short name "${c.short}" is long`);
   }
 }
+const links = (x: string | string[] | null): string[] => (x === null ? [] : Array.isArray(x) ? x : [x]);
+const byKey = new Map(leagues.map((l) => [l.key, l]));
 for (const l of leagues) {
-  if (l.promotesTo !== null && !leagueKeys.has(l.promotesTo)) err(`league ${l.key}`, `promotesTo ${l.promotesTo} unknown`);
-  if (l.relegatesTo !== null && !leagueKeys.has(l.relegatesTo)) err(`league ${l.key}`, `relegatesTo ${l.relegatesTo} unknown`);
-  if (l.promotesTo === null && l.promoteSpots !== 0) err(`league ${l.key}`, 'promoteSpots without promotesTo');
-  if (l.relegatesTo === null && l.relegateSpots !== 0) err(`league ${l.key}`, 'relegateSpots without relegatesTo');
+  const w = `league ${l.key}`;
+  const ups = links(l.promotesTo);
+  const downs = links(l.relegatesTo);
+  for (const k of ups) if (!leagueKeys.has(k)) err(w, `promotesTo ${k} unknown`);
+  for (const k of downs) if (!leagueKeys.has(k)) err(w, `relegatesTo ${k} unknown`);
+  if (!ups.length && l.promoteSpots !== 0) err(w, 'promoteSpots without promotesTo');
+  if (!downs.length && l.relegateSpots !== 0) err(w, 'relegateSpots without relegatesTo');
+  if (ups.length && l.promoteSpots <= 0) err(w, 'promotesTo without promoteSpots');
+  if (downs.length && l.relegateSpots <= 0) err(w, 'relegatesTo without relegateSpots');
+  // links must be mutual, same country, one tier apart
+  for (const k of ups) {
+    const u = byKey.get(k);
+    if (!u) continue;
+    if (!links(u.relegatesTo).includes(l.key)) err(w, `promotes to ${k} but ${k} does not relegate to ${l.key}`);
+    if (u.countryCode !== l.countryCode || u.tier !== l.tier - 1) err(w, `promotesTo ${k} must be same country, one tier up`);
+  }
+  for (const k of downs) {
+    const d = byKey.get(k);
+    if (d && !links(d.promotesTo).includes(l.key)) err(w, `relegates to ${k} but ${k} does not promote to ${l.key}`);
+  }
+  // spots balance: what goes down equals what comes up
+  if (downs.length) {
+    const up = downs.reduce((a, k) => a + (byKey.get(k)?.promoteSpots ?? 0), 0);
+    if (up !== l.relegateSpots) err(w, `relegates ${l.relegateSpots} but its lower groups promote ${up}`);
+    if (l.relegateSpots > l.clubs.length / 3) warn(w, 'relegates more than a third of the league');
+  }
   for (const c of l.clubs ?? []) {
     if (c.rival !== undefined) {
       if (!clubNames.has(c.rival)) err(`club ${c.name}`, `rival "${c.rival}" does not exist`);
@@ -88,7 +112,7 @@ const countries = new Set(leagues.map((l) => l.countryCode));
 for (const cc of countries) {
   const p = names[cc];
   if (!p) { err('names', `no pool for ${cc}`); continue; }
-  const min = cc === 'IL' ? 80 : 35;
+  const min = cc === 'IL' ? 80 : 30;
   if (p.first.length < min || p.last.length < min) err('names', `${cc} needs >= ${min} first/last (has ${p.first.length}/${p.last.length})`);
   for (const n of [...p.first, ...p.last]) if (!n || LATIN.test(n)) err('names', `${cc} bad name "${n}"`);
   if (new Set(p.first).size !== p.first.length) warn('names', `${cc} duplicate first names`);

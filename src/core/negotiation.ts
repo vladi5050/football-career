@@ -5,6 +5,7 @@ import type { Rng } from './rng';
 import { addNews, avg, changeRelation, clamp, count, fmtMoney, ovr, pre, pushHistory, userPlayer } from './helpers';
 import { wageFor } from './wages';
 import { selectXI } from './matchSim';
+import { materializeLeague } from './worldGen';
 
 export const ROLE_RANK: Record<SquadRole, number> = { backup: 0, prospect: 1, rotation: 2, starter: 3, star: 4 };
 export const ROLE_HE: Record<SquadRole, string> = { star: 'כוכב', starter: 'הרכב', rotation: 'רוטציה', prospect: 'כישרון צעיר', backup: 'ספסל' };
@@ -83,6 +84,17 @@ export function agentRange(world: World, rng: Rng, ceiling: number): [number, nu
   return [r100(centre * (1 - w)), r100(centre * (1 + w))];
 }
 
+/** Biggest monthly wage a club offers relative to what he earns now: ~2.5x per move (4x into a much stronger league), 2x on renewal. */
+export function wageCap(world: World, clubId: number, p: Footballer): number {
+  const cur = p.contract?.monthlyWage ?? 0;
+  if (!cur) return Infinity;
+  if (p.clubId === clubId) return cur * 2;
+  const from = p.clubId != null ? world.leagues[world.clubs[p.clubId].leagueId] : null;
+  const to = world.leagues[world.clubs[clubId].leagueId];
+  const jump = from ? to.strength - from.strength : 0;
+  return Math.max(cur * (jump >= 15 ? 4 : 2.5), 6000);
+}
+
 /** Why a renewal may come with a pay cut (benched or declining), or null when he is performing. */
 export function payCutReason(world: World, p: Footballer): string | null {
   const mins = world.career.recentMinutes ?? [];
@@ -114,6 +126,7 @@ export function openNegotiation(world: World, content: Content, rng: Rng, clubId
   const cur = renewal ? user.contract!.monthlyWage : 0;
   const cut = renewal ? payCutReason(world, user) : null;
   if (renewal && !cut) base = Math.max(base, cur * 1.08);
+  base = Math.min(base, wageCap(world, clubId, user) / 1.05);
   const hidden = ceilingFor(base, clubRole, clubRole, null, value, years);
   let startWage = offer ? offer.wage : Math.round((hidden * rng.float(0.72, 0.85)) / 100) * 100;
   if (renewal && !cut) startWage = Math.max(startWage, Math.round((cur * rng.float(0.96, 1.02)) / 100) * 100);
@@ -149,14 +162,17 @@ export function negotiateRound(world: World, content: Content, rng: Rng, demand:
     neg.log.push(line);
     return line;
   }
-  let drop = 8 + Math.max(0, wageGap) * 140 + Math.max(0, roleGap) * 12;
+  // patience: gentle for asks the agent called fair (inside his range), steep only for wild asks
+  let drop = 6 + Math.max(0, wageGap) * 60 + Math.max(0, roleGap) * 12;
   if (demand.releaseClause != null && demand.releaseClause < value * 0.6) drop += 10;
+  if (demand.wage <= neg.agentRange[1] && roleGap <= 0) drop = Math.min(drop, 28);
   neg.patience = Math.round(neg.patience - drop);
   if (neg.patience <= 0) {
     neg.status = 'walked_away';
     const chair = world.people[c.chairmanId];
     changeRelation(chair, user.id, -8, { tag: 'walked_away', week: world.absWeek, weight: -15 });
     pushHistory(world, 'talks_collapsed', `השיחות עם ${c.name} התפוצצו`);
+    if (neg.offerId == null) world.career.renewalBlockedUntil = world.absWeek + 40;
     if (neg.offerId != null) world.career.offers = world.career.offers.filter((o) => o.id !== neg.offerId);
     const line = `${c.name} קמים מהשולחן. "אין על מה לדבר."`;
     neg.log.push(line);
@@ -221,8 +237,9 @@ export function userWalkAway(world: World): string {
 }
 
 /** Move the user to another club (transfer). */
-export function moveUser(world: World, _content: Content, toClubId: number, fee: number): void {
+export function moveUser(world: World, content: Content, toClubId: number, fee: number): void {
   const user = userPlayer(world);
+  materializeLeague(world, content, world.clubs[toClubId].leagueId);
   const from = user.clubId != null ? world.clubs[user.clubId] : null;
   const to = world.clubs[toClubId];
   if (from) {

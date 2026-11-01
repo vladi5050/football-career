@@ -39,7 +39,7 @@ describe('save format', () => {
     const v1 = JSON.stringify({ format: 'football-career-save', version: 1, savedAt: 0, world: { ...w, version: 1 } });
     const back = deserialize(v1);
     expect(Object.keys(back.people).length).toBe(Object.keys(w.people).length);
-    expect(back.version).toBe(2);
+    expect(back.version).toBe(3);
   });
 
   it('real content: save stays under 1.5MB after several seasons', async () => {

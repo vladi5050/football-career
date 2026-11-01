@@ -10,9 +10,9 @@ import { SQUAD_MIX, clubLevel, makeFootballer, npcPotential } from './worldGen';
 export const SEASON_REF_WEEKS = 38;
 
 export const DEV_TUNING = {
-  trainGain: 0.12, // per slot per week, before factors
-  gymGain: 0.06,
-  passiveGain: 0.025,
+  trainGain: 0.33, // per slot per week, before factors: a 16-year-old sees about +0.3-0.6 on what he trains
+  gymGain: 0.12,
+  passiveGain: 0.003,
   gapScale: 12, // growth slows as overall approaches potential: factor = gap / gapScale
 };
 
@@ -25,8 +25,8 @@ export const PLAN_HE: Record<PlanSlot, string> = {
 
 export function ageFactor(age: number): number {
   if (age <= 18) return 1.1;
-  if (age <= 21) return 0.95;
-  if (age <= 24) return 0.7;
+  if (age <= 21) return 0.75;
+  if (age <= 24) return 0.5;
   if (age <= 27) return 0.4;
   if (age <= 29) return 0.2;
   if (age <= 31) return 0.08;
@@ -128,11 +128,14 @@ export function applyTraining(world: World, plan: WeekPlan, rng: Rng): AttrGain[
     const army = world.career.life.armyStatus === 'serving' ? 0.7 : 1;
     // per-season growth does not depend on the calendar length (seasons are 25-41 weeks)
     const cal = SEASON_REF_WEEKS / Math.max(20, world.season.totalWeeks || SEASON_REF_WEEKS);
-    const f = ageFactor(user.age) * gapFactor(user) * minutesFactor(world) * facilities * army * (0.8 + user.morale / 250) * cal;
+    const mf = minutesFactor(world);
+    const f = ageFactor(user.age) * gapFactor(user) * mf * facilities * army * (0.8 + user.morale / 250) * cal;
+    // what he trains shows even without minutes (passive growth stays tied to playing time)
+    const ft = (f / mf) * (0.8 + 0.2 * mf);
     for (const slot of plan) {
       if (slot.startsWith('train_')) {
         const key = slot.slice(6) as AttrKey;
-        user.attr[key] = Math.min(99, user.attr[key] + DEV_TUNING.trainGain * f * rng.float(0.8, 1.2));
+        user.attr[key] = Math.min(99, user.attr[key] + DEV_TUNING.trainGain * ft * rng.float(0.8, 1.2));
       } else if (slot === 'extra_gym') {
         user.attr.pace = Math.min(99, user.attr.pace + DEV_TUNING.gymGain * f);
         user.attr.stamina = Math.min(99, user.attr.stamina + DEV_TUNING.gymGain * f);
@@ -252,6 +255,7 @@ export function retireAndRegen(world: World, content: Content, rng: Rng): string
   const avgRepByLeague = new Map<number, number>();
   for (const lg of world.leagues) avgRepByLeague.set(lg.id, lg.clubIds.reduce((s, id) => s + world.clubs[id].reputation, 0) / Math.max(1, lg.clubIds.length));
   for (const c of world.clubs) {
+    if (c.lazy) continue; // no squad yet: generated fresh (at the current level) when needed
     // retirements
     for (const id of c.squad.slice()) {
       if (id === userId) continue;
@@ -296,21 +300,59 @@ function retireNpc(world: World, squad: number[], p: Footballer): void {
   if (!isProtected(world, p.id)) delete world.people[p.id];
 }
 
-/** Hebrew "near goal" lines: attributes close to the next multiple of 10. */
-export function nearAttrGoals(p: Footballer): { text: string; progress: number; target: number }[] {
-  const out: { text: string; progress: number; target: number; gap: number }[] = [];
+/** Attributes the plan actually trains (a train slot, or the gym for pace and stamina). */
+export function trainedAttrs(plan: WeekPlan | null | undefined): Set<AttrKey> {
+  const out = new Set<AttrKey>();
+  for (const slot of plan ?? []) {
+    if (slot.startsWith('train_')) out.add(slot.slice(6) as AttrKey);
+    else if (slot === 'extra_gym') { out.add('pace'); out.add('stamina'); }
+  }
+  return out;
+}
+
+/** Once a week: remember when each attribute last moved (at one decimal). */
+export function trackAttrProgress(world: World): void {
+  const u = userPlayer(world);
+  const st = (world.career.attrMoved ??= {});
+  for (const k of ATTR_KEYS) {
+    const v = Math.floor(u.attr[k] * 10) / 10;
+    const s = st[k];
+    if (!s || v > s[0]) st[k] = [v, world.absWeek];
+  }
+}
+
+/** No visible progress for 3 weeks or more. */
+export function attrStalled(world: World, k: AttrKey): boolean {
+  const s = world.career.attrMoved?.[k];
+  return !!s && world.absWeek - s[1] >= 3;
+}
+
+/** "תאמן דריבל השבוע כדי לסגור את זה" */
+export function trainHint(k: AttrKey): string {
+  return `תאמן ${ATTR_HE[k]} השבוע כדי לסגור את זה`;
+}
+
+/**
+ * Near goals on attributes: the next multiple of 10, only for attributes that are moving.
+ * Trained attributes qualify from 2.5 away; untrained ones only when 1 away, with a hint, and drop out after 3 weeks without progress.
+ */
+export function nearAttrGoals(world: World): { text: string; progress: number; target: number; key: AttrKey; trained: boolean }[] {
+  const p = userPlayer(world);
+  const trained = trainedAttrs(world.career.lastPlan);
+  const out: { text: string; progress: number; target: number; key: AttrKey; trained: boolean; gap: number }[] = [];
   const w = POS_WEIGHTS[p.pos];
   for (const k of ATTR_KEYS) {
-    if (!w[k] && !(p.pos === 'GK' && k === 'gk')) continue;
+    const isTrained = trained.has(k);
+    if (!isTrained && !w[k] && !(p.pos === 'GK' && k === 'gk')) continue;
     const v = p.attr[k];
     const next = Math.floor(v / 10) * 10 + 10;
     const gap = next - v;
-    if (gap <= 1.5 && next <= 99) {
-      const cur = Math.floor(v * 10) / 10;
-      out.push({ text: `${ATTR_HE[k]}: ${cur.toFixed(1)} מתוך ${next}`, progress: cur, target: next, gap });
-    }
+    if (next > 99 || gap > (isTrained ? 2.5 : 1) || attrStalled(world, k)) continue;
+    const cur = Math.floor(v * 10) / 10;
+    const base = next - cur < 0.2 ? `${ATTR_HE[k]}: כמעט ${next}` : `${ATTR_HE[k]}: ${cur.toFixed(1)} מתוך ${next}`;
+    out.push({ text: isTrained ? base : `${base}. ${trainHint(k)}`, progress: cur, target: next, key: k, trained: isTrained, gap });
   }
-  return out.sort((a, b) => a.gap - b.gap).slice(0, 2).map(({ text, progress, target }) => ({ text, progress, target }));
+  return out.sort((a, b) => Number(b.trained) - Number(a.trained) || a.gap - b.gap).slice(0, 2).map(({ gap: _g, ...r }) => { void _g; return r; });
 }
 
 export function relationNote(world: World, id: number): number {

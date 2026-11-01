@@ -99,6 +99,10 @@ export interface Club {
   squad: number[]; // footballer ids
   rivalClubId: number | null;
   stadium: string;
+  /** R&D addition: squad not generated yet (result-only league). Strength comes from league strength + reputation; materialised on demand. */
+  lazy?: boolean;
+  /** R&D addition: region/group hint for multi-group lower leagues (from content). */
+  region?: string;
 }
 
 export interface League {
@@ -117,6 +121,11 @@ export interface League {
   simLevel: 'full' | 'medium' | 'result';
   /** R&D addition: content key (e.g. "il1"). */
   key?: string;
+  /** R&D addition: all leagues this one promotes into / relegates into (multi-group levels). promotesTo/relegatesTo hold the first. */
+  promotesToIds?: number[];
+  relegatesToIds?: number[];
+  /** R&D addition: region of a regional group (e.g. "צפון"), used to place relegated clubs. */
+  region?: string;
 }
 
 export interface Fixture {
@@ -141,6 +150,8 @@ export interface Season {
   themes: string[]; // season theme ids
   /** R&D addition: absWeek of season week 0. */
   startAbsWeek?: number;
+  /** R&D addition: shuffled club order per league; fixtures are a pure function of it (lets the save drop them). */
+  orders?: Record<number, number[]>;
 }
 
 // ---------------------------------------------------------------- the user's career
@@ -207,6 +218,12 @@ export interface Career {
   prematch?: PrematchDecision | null;
   /** R&D addition: the current week runs as a quick week (goes straight into the match after events). */
   quickFlow?: boolean;
+  /** R&D addition: per attribute, [value at one decimal, absWeek it last moved] (near goals rotate out when stalled). */
+  attrMoved?: Partial<Record<AttrKey, [number, number]>>;
+  /** R&D addition: events quick week answered this week ("title: option"), moved into the week report. */
+  autoAnswered?: string[];
+  /** R&D addition: renewal talks with the current club are off until this absWeek (after the club walked out). */
+  renewalBlockedUntil?: number;
 }
 
 /** R&D addition: matchday status of the user, decided before the match. */
@@ -364,6 +381,8 @@ export interface WeekReport {
   openLoops: string[]; // "מה מחכה לך" items
   nearGoals: { text: string; progress: number; target: number }[];
   notable: boolean; // true -> show "world reacts" screen
+  /** R&D addition: events quick week answered for the user this week ("title: chosen option"), so they are not invisible. */
+  autoEvents?: string[];
   /** R&D addition: Hebrew line shown under "מה השתפר" when no attribute moved by 0.1 or more. */
   gainsNote?: string;
 }
@@ -393,7 +412,7 @@ export interface View {
   agent: PersonView;
   coach: PersonView | null;
   rival: (PersonView & { clubName: string; goals: number; overall: number }) | null;
-  career: Pick<Career, 'money' | 'fame' | 'goals' | 'specialties' | 'life' | 'lastPlan' | 'startKind' | 'trophies' | 'history' | 'nationalCaps' | 'nationalGoals' | 'captain' | 'offers' | 'negotiation' | 'retired' | 'retirementReason' | 'seasonsPlayed'>;
+  career: Pick<Career, 'money' | 'fame' | 'goals' | 'specialties' | 'life' | 'lastPlan' | 'startKind' | 'trophies' | 'history' | 'nationalCaps' | 'nationalGoals' | 'captain' | 'offers' | 'negotiation' | 'retired' | 'retirementReason' | 'seasonsPlayed' | 'renewalBlockedUntil'>;
   inbox: ActiveEvent[];
   news: NewsItem[];
   live: LiveMatch | null;
@@ -407,6 +426,10 @@ export interface View {
   leagueZones?: { promote: number; relegate: number; champion?: number };
   /** R&D addition: user settings. */
   settings?: { autoMoments: boolean };
+  /** R&D addition: every club of the career (history + current), keyed by id. */
+  careerClubs?: Record<number, ClubView>;
+  /** R&D addition: career-end lines (Hebrew): the move that changed everything, the person who mattered most. */
+  careerStory?: { turningPoint?: string; keyPerson?: string };
   /** R&D addition: the user's matchday status for this week, present in the prematch phase. */
   prematch?: { lineup: 'starter' | 'bench' | 'youth' | 'out'; reason: string; subMinute: number | null };
 }

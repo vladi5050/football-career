@@ -43,7 +43,7 @@ function sane(w: World, seasons: number): void {
   expect(u.age).toBeGreaterThanOrEqual(16 + Math.min(seasons, 22));
   expect(w.career.history.length).toBe(w.career.seasonsPlayed);
   for (const h of w.career.history) { expect(h.apps).toBeGreaterThanOrEqual(0); expect(h.position).toBeGreaterThan(0); }
-  for (const c of w.clubs) { expect(c.squad.length).toBeGreaterThanOrEqual(19); expect(c.squad.length).toBeLessThanOrEqual(27); }
+  for (const c of w.clubs.filter((x) => !x.lazy)) { expect(c.squad.length).toBeGreaterThanOrEqual(19); expect(c.squad.length).toBeLessThanOrEqual(27); }
   const v = buildView(w);
   expect(v.player.overall).toBeGreaterThan(0);
   expect(JSON.stringify(v).length).toBeLessThan(200_000);

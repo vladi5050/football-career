@@ -7,7 +7,7 @@ import type { Rng } from './rng';
 import {
   POS_HE, changeRelation, clamp, firstName, overallOf, ovr, posGroup, pushHistory, relationOf, userPlayer, pre,
 } from './helpers';
-import { STARTER_SLOTS } from './worldGen';
+import { STARTER_SLOTS, lazyLevel } from './worldGen';
 import { fixtureFor, tablePosition } from './schedule';
 
 // ------------------------------------------------------------------ tuning
@@ -15,7 +15,7 @@ import { fixtureFor, tablePosition } from './schedule';
 export const RATING_START = 6.4;
 
 export const MATCH_TUNING = {
-  base: 1.25, // expected goals per team, equal sides, neutral
+  base: 1.2, // expected goals per team, equal sides, neutral
   home: 1.22,
   away: 0.9,
   k: 0.05, // sensitivity to strength difference
@@ -42,8 +42,15 @@ export function selectionScore(world: World, p: Footballer, c: Club, pos: Positi
   return s;
 }
 
+/** Offset between a lazy club's level and the XI overall a generated squad at that level shows. */
+export const LAZY_XI_OFFSET = 0.6;
+
 export function selectXI(world: World, clubId: number, exclude?: number): TeamStrength {
   const c = world.clubs[clubId];
+  if (c.lazy) {
+    const l = lazyLevel(world, c) + LAZY_XI_OFFSET;
+    return { gk: l, def: l, mid: l, att: l, overall: l, xi: SLOTS.map(() => -1), slots: SLOTS };
+  }
   const avail: Footballer[] = [];
   for (const id of c.squad) {
     const p = world.people[id] as Footballer;
@@ -192,7 +199,7 @@ export function simFixture(world: World, f: Fixture, rng: Rng, withStats: boolea
 // ------------------------------------------------------------------ key moments
 
 const KINDS_BY_POS: Record<Position, [MomentKind, number][]> = {
-  ST: [['shot', 2], ['one_on_one', 1.5], ['header', 2], ['dribble', 4], ['penalty', 0.15], ['free_kick', 0.3]],
+  ST: [['shot', 1.2], ['one_on_one', 0.9], ['header', 1.2], ['dribble', 4], ['through_ball', 1.5], ['penalty', 0.15], ['free_kick', 0.3]],
   W: [['dribble', 4], ['shot', 3], ['one_on_one', 2], ['cross', 2.5], ['header', 0.6], ['free_kick', 0.4]],
   AM: [['through_ball', 4], ['long_shot', 2], ['dribble', 2.5], ['shot', 1.5], ['free_kick', 0.8], ['interception', 0.8]],
   CM: [['through_ball', 4], ['long_shot', 2.5], ['interception', 3], ['tackle', 1], ['free_kick', 0.5]],

@@ -12,6 +12,7 @@ export function monthlyLivingCost(world: World): number {
   let m = 0;
   if (k.life.home === 'rented') m += clamp(wage * 0.2, 2800, 22000);
   if (u.age >= 18) m += wage * 0.12;
+  else if (k.life.home === 'rented') m += wage * 0.3; // a teenager abroad: food, flights home, phone
   if (f.car) m += clamp(wage * 0.04, 800, 6000);
   if (f.helping_family) m += clamp(wage * 0.08, 600, 15000);
   if ((f.party ?? 0) > 0) m *= 1.15;

@@ -3,7 +3,9 @@ import { describe, expect, it } from 'vitest';
 import { realContent } from './_content';
 import { runMany, summary } from '../../tools/simRunner';
 
-describe('balance (real content)', () => {
+// Slow (~minutes): runs only with BALANCE=1 (npm run test:balance).
+declare const process: { env: Record<string, string | undefined> };
+describe.skipIf(!process.env.BALANCE)('balance (real content)', () => {
   it('40 careers land in sane ranges', async () => {
     const content = await realContent();
     if (!content) return;

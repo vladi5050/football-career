@@ -4,8 +4,8 @@ import type { Club, Footballer, League, SquadRole, TransferOffer, World } from '
 import type { Rng } from './rng';
 import { addNews, avg, changeRelation, clamp, fmtMoney, ovr, pushHistory, userClub, userPlayer, pre } from './helpers';
 import { isWindowOpen, sortedTable } from './schedule';
-import { clubLevel, makePerson } from './worldGen';
-import { clubViewRole, marketWage, playerValue } from './negotiation';
+import { BIG5, clubLevel, makePerson, materializeClub } from './worldGen';
+import { clubViewRole, marketWage, playerValue, wageCap } from './negotiation';
 import { selectXI } from './matchSim';
 
 export const TRANSFER_TUNING = { weeklyBase: 0.01 };
@@ -52,7 +52,10 @@ export function agentNote(world: World, rng: Rng, clubName: string): string {
   return rng.pick(list).replace('{club}', clubName);
 }
 
-/** Create a transfer offer to the user. */
+/** Where Israeli players typically move abroad (multiplier on offer weight). Big-five and others are scaled by fame and level. */
+export const ABROAD_DESTINATIONS: Record<string, number> = { BE: 1.6, NL: 1.4, CY: 1.6, GR: 1.4, AT: 1.3, PL: 1.3, US: 1.2, PT: 1.0, CH: 1.0, DK: 0.9, SE: 0.8, NO: 0.8, RO: 0.9, BG: 0.8, HR: 0.8, RS: 0.7, TR: 1.0, SC: 0.7, CZ: 0.8, HU: 0.8, SK: 0.7 };
+
+/** Create a transfer offer to the user. Any club in any league can ask, low tiers included. */
 export function spawnOffer(world: World, content: Content, rng: Rng, kind: OfferKind): TransferOffer | null {
   const user = userPlayer(world);
   const mine = userClub(world);
@@ -63,37 +66,49 @@ export function spawnOffer(world: World, content: Content, rng: Rng, kind: Offer
   if (lastMove != null && world.absWeek - lastMove < 26 && kind !== 'lower') return null;
   const o = ovr(user);
   const home = world.leagues[mine.leagueId];
-  // 'lower' = a step down to play: stays in the same country
-  const pool = kind === 'abroad' ? world.leagues.filter((l) => l.countryCode !== home.countryCode)
-    : kind === 'lower' ? world.leagues.filter((l) => l.countryCode === home.countryCode) : world.leagues;
+  const homeCountry = home.countryCode;
+  const mineLvl = estLevel(world, mine);
+  // 'lower' = a step down to play: mostly the same country
+  const pool = kind === 'abroad' ? world.leagues.filter((l) => l.countryCode !== homeCountry)
+    : kind === 'lower' ? world.leagues.filter((l) => l.countryCode === homeCountry || l.countryCode === 'IL') : world.leagues;
   const cands: { c: Club; w: number }[] = [];
   for (const lg of pool) {
+    let sum = 0;
+    for (const id of lg.clubIds) sum += world.clubs[id].reputation;
+    const avgRep = sum / Math.max(1, lg.clubIds.length);
+    const jump = lg.strength - home.strength;
+    let lw = 1;
+    if (jump > 6) lw *= Math.exp(-(jump - 6) / 4); // scouts mostly watch similar levels: big jumps are rare
+    if (lg.countryCode !== homeCountry) {
+      lw *= o >= 64 ? 0.25 : 0.07;
+      if (user.nationality === 'IL' && lg.countryCode !== 'IL') lw *= ABROAD_DESTINATIONS[lg.countryCode] ?? (lg.strength >= 75 ? 1 : 0.4);
+    }
+    if (lg.tier === 2 && BIG5.includes(lg.countryCode) && homeCountry !== lg.countryCode) lw *= 0.7; // a promotion away from the giants
+    if (lg.strength >= 75) lw *= 0.45 * clamp((world.career.fame / 80) ** 2, 0.03, 1); // the big leagues scout names, and rarely
+    if (lg.tier >= 3) lw *= user.age >= 31 ? 1.2 : user.age >= 26 ? 0.6 : 0.35; // low tiers call veterans
+    if (lw < 1e-4) continue;
     for (const id of lg.clubIds) {
       if (id === mine.id || world.career.offers.some((x) => x.fromClubId === id)) continue;
       const c = world.clubs[id];
       if (kind === 'bigger' && c.reputation <= mine.reputation + 3) continue;
-      if (kind === 'lower' && estLevel(world, c) > estLevel(world, mine) - 2) continue;
-      const lvl = estLevel(world, c);
+      const lvl = clubLevel(lg, c.reputation, avgRep);
+      if (kind === 'lower' && lvl > mineLvl - 2) continue;
       const d = o - lvl; // >0 he would be a starter there
-      if (d < -2 || d > 14) continue;
-      let w = Math.exp(-Math.abs(d - 3) / 4) * (0.5 + c.reputation / 100);
-      // scouts mostly watch similar levels: big jumps are rare
-      const jump = lg.strength - home.strength;
-      if (jump > 6) w *= Math.exp(-(jump - 6) / 4);
-      if (lg.countryCode !== home.countryCode) w *= o >= 64 ? 0.35 : 0.1;
-      if (lg.strength >= 75) w *= clamp(world.career.fame / 70, 0.05, 1); // the big leagues scout names
+      if (d < -2 || d > (user.age >= 31 ? 30 : 14)) continue;
+      const w = lw * Math.exp(-Math.abs(d - 3) / 4) * (0.5 + c.reputation / 100);
       cands.push({ c, w });
     }
   }
   const pick = rng.weightedPick(cands, (x) => x.w);
   if (!pick) return null;
   const c = pick.c;
+  materializeClub(world, content, c.id);
   const role: SquadRole = clubViewRole(world, c.id, user);
   const value = playerValue(world, content, user);
   let fee = Math.round((value * rng.float(0.7, 1.1)) / 10000) * 10000;
   if (user.contract?.releaseClause != null) fee = Math.min(fee, user.contract.releaseClause);
   if (user.contract && user.contract.endSeason <= world.season.number) fee = 0; // free agent at season end
-  const wage = Math.round((marketWage(world, content, c.id, user) * rng.float(0.78, 0.92)) / 100) * 100;
+  const wage = Math.round((Math.min(marketWage(world, content, c.id, user), wageCap(world, c.id, user) / 1.15) * rng.float(0.78, 0.92)) / 100) * 100;
   const offer: TransferOffer = {
     id: world.nextId++, fromClubId: c.id, fee, wage, role, years: user.age < 28 ? rng.int(3, 4) : rng.int(1, 2),
     expiresWeek: world.absWeek + rng.int(2, 4), viaAgentNote: agentNote(world, rng, c.name),
@@ -128,7 +143,7 @@ export function npcTransfers(world: World, content: Content, rng: Rng): string[]
   if (!isWindowOpen(world)) return [];
   const lines: string[] = [];
   const leagues = activeLeagues(world);
-  const clubIds = leagues.flatMap((l) => l.clubIds);
+  const clubIds = leagues.flatMap((l) => l.clubIds).filter((id) => !world.clubs[id].lazy);
   const userId = world.career.playerId;
   for (const buyerId of clubIds) {
     if (!rng.chance(0.1)) continue;
@@ -187,7 +202,8 @@ export function sackings(world: World, content: Content, rng: Rng): string[] {
   if (world.season.week < 6) return [];
   const lines: string[] = [];
   const mine = userClub(world);
-  for (const lg of world.leagues) {
+  // only the leagues the user follows (his own + nearby): far-away coaching changes are noise and cost
+  for (const lg of activeLeagues(world)) {
     const rows = sortedTable(world.season.tables[lg.id] ?? []);
     const n = rows.length;
     rows.forEach((r, i) => {

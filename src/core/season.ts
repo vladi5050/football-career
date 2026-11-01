@@ -5,12 +5,12 @@ import type { Rng } from './rng';
 import { addNews, avg, changeRelation, clamp, ovr, pushHistory, userClub, userLeague, userPlayer, pre, count } from './helpers';
 import { buildSeason, promoteRelegate, sortedTable, tablePosition } from './schedule';
 import { npcSeasonDevelopment, retireAndRegen } from './development';
-import { emptyStats } from './worldGen';
+import { dematerializeStale, emptyStats, materializeLeague } from './worldGen';
 import { seasonEndClubs } from './transfers';
 import { updateGoals } from './goals';
 
 export const RETIRE_PROMPT_AGE = 33;
-export const NATIONAL_TUNING = { callUp: 72.5, keep: 70.5 };
+export const NATIONAL_TUNING = { callUp: 77, keep: 72 };
 export const RETIRE_FORCED_AGE = 39;
 
 export function pickThemes(content: Content, rng: Rng): string[] {
@@ -20,7 +20,11 @@ export function pickThemes(content: Content, rng: Rng): string[] {
 
 /** Create season `number` (fixtures, tables, themes) and reset season stats. */
 export function startSeason(world: World, content: Content, rng: Rng, number: number, year: number): void {
-  world.season = buildSeason(world, rng, number, year, pickThemes(content, rng), userLeague(world)?.id ?? null);
+  // the user's league always has real squads (promoted lazy clubs get theirs now)
+  const ul = userLeague(world);
+  if (number > 1) dematerializeStale(world);
+  if (ul) materializeLeague(world, content, ul.id);
+  world.season = buildSeason(world, rng, number, year, pickThemes(content, rng), ul?.id ?? null);
   for (const c of world.clubs) for (const id of c.squad) {
     const p = world.people[id] as Footballer;
     if (p && p.role === 'player') p.stats = emptyStats();
@@ -127,14 +131,14 @@ export function endSeason(world: World, content: Content, rng: Rng): SeasonEndRe
 
 function retireOldStaff(world: World, content: Content, rng: Rng): void {
   void content; void rng;
+  let pool: number[] | null = null;
   for (const c of world.clubs) {
     const m = world.people[c.managerId];
     if (m && m.age >= 70) {
       // promote someone from the free pool or keep the job open for a fresh face
-      m.clubId = null;
-      let pick: number | null = null;
-      for (const k in world.people) { const p = world.people[k]; if (p.role === 'coach' && p.clubId == null && p.age < 66 && p.id !== m.id) { pick = p.id; break; } }
-      if (pick != null) { c.managerId = pick; world.people[pick].clubId = c.id; } else m.clubId = c.id;
+      if (!pool) { pool = []; for (const k in world.people) { const p = world.people[k]; if (p.role === 'coach' && p.clubId == null && p.age < 66) pool.push(p.id); } }
+      const pick = pool.pop();
+      if (pick != null) { m.clubId = null; c.managerId = pick; world.people[pick].clubId = c.id; }
     }
   }
 }
@@ -161,26 +165,38 @@ function updateLifeStage(world: World, rng: Rng): void {
 }
 
 /** National team call-ups during international windows. Returns Hebrew line or null. */
+/** International break: a called-up player plays the window's 2 matches. A regular stays in the squad on the lower `keep` bar. */
 export function nationalWindow(world: World, rng: Rng): string | null {
   const u = userPlayer(world);
   if (u.injury || world.career.retired) return null;
   const o = ovr(u);
-  const threshold = world.career.nationalCaps > 10 ? NATIONAL_TUNING.keep : NATIONAL_TUNING.callUp;
+  const capped = world.career.nationalCaps > 0;
+  const threshold = capped ? NATIONAL_TUNING.keep : NATIONAL_TUNING.callUp;
   const ratings = world.career.recentRatings ?? [];
-  const form = ratings.length ? avg(ratings) : 6.3;
-  if (o + (form - 6.5) * 3 < threshold || u.age < 18) return null;
-  const first = world.career.nationalCaps === 0;
-  world.career.nationalCaps += 1;
+  const form = ratings.length ? avg(ratings) : 6.5;
+  if (o + (form - 6.6) * 3 < threshold || u.age < 18) return null;
+  const first = !capped;
+  const scoreP = { ST: 0.3, W: 0.2, AM: 0.18, CM: 0.08, DM: 0.04, FB: 0.03, CB: 0.05, GK: 0 }[u.pos];
+  // 2 matches; a fringe player may sit one out
+  const margin = o - threshold;
+  let caps = 0, goals = 0;
+  for (let m = 0; m < 2; m++) {
+    if (m > 0 && !rng.chance(clamp(0.55 + margin * 0.08, 0.35, 0.95))) continue;
+    caps++;
+    if (rng.chance(scoreP)) goals++;
+  }
+  world.career.nationalCaps += caps;
+  world.career.nationalGoals += goals;
   world.history.flags.national_caps = world.career.nationalCaps;
-  const scoreP = { ST: 0.35, W: 0.25, AM: 0.22, CM: 0.1, DM: 0.05, FB: 0.04, CB: 0.05, GK: 0 }[u.pos];
-  const g = rng.chance(scoreP) ? 1 : 0;
-  world.career.nationalGoals += g;
-  world.career.fame = clamp(world.career.fame + (first ? 5 : 1), 0, 100);
+  world.career.fame = clamp(world.career.fame + (first ? 5 : caps * 0.6 + goals), 0, 100);
   const coach = userClub(world) ? world.people[userClub(world)!.managerId] : undefined;
   changeRelation(coach, u.id, 1);
+  const g = goals === 1 ? 'שער אחד' : goals > 1 ? `${goals} שערים` : '';
   if (first) {
     pushHistory(world, 'national_debut', 'קיבלת זימון ראשון לנבחרת');
-    addNews(world, { kind: 'career', headline: `${u.name} זומן לנבחרת לראשונה` });
+    addNews(world, { kind: 'career', headline: `${u.name} זומן לנבחרת לראשונה`, body: caps === 2 ? 'שני משחקים בפגרת הנבחרות' : 'משחק בכורה בפגרת הנבחרות' });
+    return `זימון ראשון לנבחרת!${goals ? ` ואפילו ${goals === 1 ? 'כבשת' : `כבשת ${goals}`}.` : ''}`;
   }
-  return first ? `זימון ראשון לנבחרת!${g ? ' ואפילו כבשת.' : ''}` : `עוד הופעה בנבחרת${g ? ', עם שער' : ''}.`;
+  if (goals) addNews(world, { kind: 'career', headline: `${u.name} כבש בנבחרת`, body: `${count(world.career.nationalCaps, 'הופעה', 'הופעות', true)}, ${count(world.career.nationalGoals, 'שער', 'שערים')}` });
+  return `פגרת נבחרות: ${caps === 2 ? 'שני משחקים' : 'משחק אחד'}${g ? `, ${g}` : ''}. ${count(world.career.nationalCaps, 'הופעה', 'הופעות', true)} בסך הכל.`;
 }

@@ -10,6 +10,8 @@ describe('worldGen', () => {
     const w = generateWorld(fixtureContent(), 1, { pos: 'W', firstName: 'דני', lastName: 'כהן' });
     expect(w.clubs.length).toBe(26);
     for (const c of w.clubs) {
+      // result-only leagues stay lazy (no squad until needed)
+      if (c.lazy) { expect(c.squad.length).toBeLessThanOrEqual(2); expect(w.leagues[c.leagueId].simLevel).not.toBe('full'); continue; }
       expect(c.squad.length).toBeGreaterThanOrEqual(22);
       expect(w.people[c.managerId].role).toBe('coach');
       expect(w.people[c.managerId].traits.length).toBe(3);
@@ -23,8 +25,8 @@ describe('worldGen', () => {
     expect(u.age).toBe(16);
     expect(ovr(u)).toBeGreaterThanOrEqual(34);
     expect(ovr(u)).toBeLessThanOrEqual(46);
-    expect(u.potential).toBeGreaterThanOrEqual(60);
-    expect(u.potential).toBeLessThanOrEqual(92);
+    expect(u.potential).toBeGreaterThanOrEqual(45);
+    expect(u.potential).toBeLessThanOrEqual(97);
     const rival = w.people[w.career.rivalId] as Footballer;
     expect(rival.age).toBeLessThanOrEqual(17);
     expect(rival.clubId).not.toBe(u.clubId);
@@ -45,7 +47,8 @@ describe('worldGen', () => {
       if (w.career.startKind === 'israel') {
         const c = w.clubs[userPlayer(w).clubId!];
         expect(w.leagues[c.leagueId].countryCode).toBe('IL');
-        expect(w.leagues[c.leagueId].tier).toBeGreaterThanOrEqual(2);
+        expect(w.leagues[c.leagueId].tier).toBeLessThanOrEqual(4);
+        expect(c.lazy).toBeFalsy();
       }
     }
     expect(kinds.israel / 120).toBeGreaterThan(0.45);

@@ -11,13 +11,13 @@ import {
   addNews, avg, changeRelation, clamp, count, firstName, ovr, pre, pushHistory, relationOf, userClub, userLeague, userPlayer,
 } from './helpers';
 import { generateWorld } from './worldGen';
-import { applyResult, fixtureFor, fixturesInWeek, isBreakWeek, isWindowOpen, nextFixture, sortedTable, tablePosition, windowName } from './schedule';
+import { applyResult, fixtureFor, fixturesInWeek, isWindowOpen, matchWeeks, SEASON_EXTRA_WEEKS, nextFixture, sortedTable, tablePosition, windowName } from './schedule';
 import { lifeSeasonStep, weeklyLivingCost } from './life';
 import {
   advanceLive, applyMomentResult, decideLineup, finalizeLive, resolveMomentAuto as resolveAuto, simFixture, startLiveMatch,
 } from './matchSim';
 import {
-  applyPlanImmediate, applyTraining, autoPlan, defaultPlan, rollUserInjury, weeklyRecovery,
+  applyPlanImmediate, applyTraining, autoPlan, defaultPlan, rollUserInjury, trackAttrProgress, weeklyRecovery,
 } from './development';
 import { autoOptionId, checkPromises, compileEvents, resolveEvent, rollWeekEvents, syncFlags } from './events';
 import { acceptCurrent, negotiateRound, openNegotiation, userWalkAway } from './negotiation';
@@ -184,9 +184,16 @@ function quickWeek(world: World, content: Content, rng: Rng, toast: string[]): v
   if (world.phase === 'event') {
     for (const ev of world.inbox.slice()) {
       if (isMajorEvent(content, ev)) continue;
-      toast.push(...resolveEvent(world, content, ev.uid, autoOptionId(content, ev), rng).notes);
+      const opt = autoOptionId(content, ev);
+      const text = ev.options.find((o) => o.id === opt)?.text;
+      world.career.autoAnswered = [...(world.career.autoAnswered ?? []), text ? `${ev.title}: ${text}` : ev.title].slice(-3);
+      toast.push(...resolveEvent(world, content, ev.uid, opt, rng).notes);
     }
-    if (world.inbox.length) { toast.push('יש החלטה גדולה שמחכה לך'); return; }
+    if (world.inbox.length) {
+      if (world.history.flags.major_toast_week !== world.absWeek) toast.push('יש החלטה גדולה שמחכה לך');
+      world.history.flags.major_toast_week = world.absWeek;
+      return;
+    }
     enterMatchOrWeekend(world, content, rng, toast);
     afterEffects(world, content, rng, toast);
   } else if (world.phase === 'prematch') {
@@ -371,6 +378,7 @@ function completeWeek(world: World, content: Content, rng: Rng, live: LiveMatch 
 
   // ---- training, injuries, money
   const gains = applyTraining(world, world.career.lastPlan ?? defaultPlan(u), rng);
+  trackAttrProgress(world);
   const inj = rollUserInjury(world, rng, world.career.lastPlan ?? defaultPlan(u), minutes);
   if (inj) notable = true;
   // a year of wages is paid over the season's weeks; living costs follow life choices
@@ -382,7 +390,7 @@ function completeWeek(world: World, content: Content, rng: Rng, live: LiveMatch 
   meanwhile.push(...npcTransfers(world, content, rng));
   const offer = weeklyOffers(world, content, rng);
   if (offer) { notable = true; addNews(world, { kind: 'transfer', headline: `${world.clubs[offer.fromClubId].name} מתעניינים ${pre('ב', u.name)}` }); }
-  if (isBreakWeek(week)) {
+  if (!matchWeeks(world.season.totalWeeks, SEASON_EXTRA_WEEKS).includes(week)) {
     const n = nationalWindow(world, rng);
     if (n) { meanwhile.unshift(n); if (n.startsWith('זימון ראשון')) notable = true; }
   }
@@ -398,6 +406,7 @@ function completeWeek(world: World, content: Content, rng: Rng, live: LiveMatch 
     headline: headline ?? (inj ? `${firstName(u.name)} נפצע` : null), meanwhile: meanwhile.slice(0, 5), openLoops: openLoops(world),
     nearGoals: nearGoals(world), notable,
   };
+  if (world.career.autoAnswered?.length) { report.autoEvents = world.career.autoAnswered; world.career.autoAnswered = []; }
   if (!gains.length) report.gainsNote = u.injury ? 'פצוע. השבוע בלי אימונים.' : u.age >= 30 ? 'השבוע בלי שינוי במספרים. שומרים על מה שיש.' : 'השבוע בלי שינוי שרואים במספרים. העבודה מצטברת.';
   world.lastWeekReport = report;
 }
@@ -466,8 +475,10 @@ function openLoops(world: World): string[] {
   if (rival && !rival.retired && u.pos !== 'GK' && rival.clubId != null) {
     const rf = fixtureFor(world, rival.clubId, world.season.week);
     const rg = rf?.played ? rf.scorers?.filter((x) => x.playerId === rival.id).length ?? 0 : 0;
-    if (rg > 0) pool.push(`${firstName(rival.name)} ${rg === 1 ? 'כבש' : rg === 2 ? 'כבש צמד' : `כבש ${rg}`} השבוע. ${count(rival.stats.goals, 'שער', 'שערים')} לו, ${count(u.stats.goals, 'שער', 'שערים')} לך`);
-    else pool.push(`${firstName(rival.name)}: ${count(rival.stats.goals, 'שער', 'שערים')} העונה. אתה: ${count(u.stats.goals, 'שער', 'שערים')}`);
+    // only when there is news: he scored this week, or the race is on (both scoring), and not every week
+    const race = (n: number): string => (n ? count(n, 'שער', 'שערים') : 'עוד בלי שערים');
+    if (rg > 0) pool.push(`${firstName(rival.name)} ${rg === 1 ? 'כבש' : rg === 2 ? 'כבש צמד' : `כבש ${rg}`} השבוע. ${race(rival.stats.goals)} לו העונה, ${race(u.stats.goals)} לך`);
+    else if (rival.stats.goals > 0 && u.stats.goals > 0 && world.season.week % 4 === 0) pool.push(`המרוץ מול ${firstName(rival.name)}: ${count(rival.stats.goals, 'שער', 'שערים')} לו, ${count(u.stats.goals, 'שער', 'שערים')} לך`);
   }
   if (!isWindowOpen(world)) {
     const mid = Math.floor(world.season.totalWeeks / 2) - 1;
@@ -525,55 +536,40 @@ function contractExpired(world: World): boolean {
   return !!u.contract && u.contract.endSeason <= world.season.number;
 }
 
+/** Value of an offer to the user: wage, weighted by the role he would get. */
+function offerScore(o: { wage: number; role: string }): number {
+  return o.wage * ({ star: 1.3, starter: 1.15, rotation: 1, prospect: 0.95, backup: 0.8 } as Record<string, number>)[o.role];
+}
+
 /**
- * Offseason -> next season. An expired contract is never decided for the user: the first press opens the renewal talks
- * (or points at the offers on the table); only when nothing is left (no renewal, no offers) does a short fallback deal keep him at a club.
+ * Offseason -> next season. With an expired contract the UI asks first ("לבדוק הצעות" / "המועדון יחליט");
+ * pressing on means the club decides, in one press: the best pending offer, else a renewal, else a club the agent finds,
+ * else a short fallback deal.
  */
 function beginNextSeason(world: World, content: Content, rng: Rng, toast: string[]): void {
   const u = userPlayer(world);
   if (contractExpired(world)) {
-    const f = world.history.flags;
-    const asked = f.offseason_prompt ?? 0;
     const c = userClub(world)!;
-    const pending = world.career.offers.filter((o) => o.expiresWeek > world.absWeek);
-    if (asked === 0) {
-      f.offseason_prompt = 1;
-      const r = openNegotiation(world, content, rng, c.id, null, 'offseason');
-      if (typeof r !== 'string') {
-        world.phase = 'negotiation';
-        toast.push(`החוזה שלך נגמר. ${c.name} מוכנים לשבת על חידוש`);
-        return;
-      }
-      if (pending.length) {
-        toast.push(`${c.name} לא מחדשים. יש ${count(pending.length, 'הצעה', 'הצעות', true)} על השולחן אצל הסוכן`);
-        return;
-      }
-    }
-    if (asked <= 1 && pending.length) {
-      f.offseason_prompt = 2;
-      toast.push(`בלי חוזה אין עונה. ${count(pending.length, 'הצעה', 'הצעות', true)} עדיין על השולחן`);
-      return;
-    }
-    if (asked <= 2) {
-      // nothing on the table: the agent finds a club and the user decides in the talks
-      f.offseason_prompt = 3;
+    const pending = world.career.offers.filter((o) => o.expiresWeek >= world.absWeek).sort((a, b) => offerScore(b) - offerScore(a));
+    const sign = (r: ReturnType<typeof openNegotiation>): boolean => {
+      if (typeof r === 'string') return false;
+      toast.push(...acceptCurrent(world, content));
+      world.career.negotiation = null;
+      return !contractExpired(world);
+    };
+    let done = false;
+    for (const o of pending) { if (sign(openNegotiation(world, content, rng, o.fromClubId, o, 'offseason'))) { done = true; break; } }
+    if (!done) done = sign(openNegotiation(world, content, rng, c.id, null, 'offseason'));
+    if (!done) {
       const o = spawnOffer(world, content, rng, 'lower') ?? spawnOffer(world, content, rng, 'any');
-      if (o) {
-        const r = openNegotiation(world, content, rng, o.fromClubId, o, 'offseason');
-        if (typeof r !== 'string') {
-          world.phase = 'negotiation';
-          toast.push(`הסוכן מצא לך מועדון: ${world.clubs[o.fromClubId].name}`);
-          return;
-        }
-      }
+      if (o) done = sign(openNegotiation(world, content, rng, o.fromClubId, o, 'offseason'));
     }
-    if (contractExpired(world)) {
+    if (!done && contractExpired(world)) {
       u.contract = { ...u.contract!, endSeason: world.season.number + 1, role: 'backup', monthlyWage: Math.round(u.contract!.monthlyWage * 0.8 / 100) * 100 };
       toast.push('אף אחד לא סגר איתך. נשארת בחוזה קצר ומקוצץ');
       pushHistory(world, 'short_deal', `נשארת ${pre('ב', c.name)} בחוזה קצר`);
     }
   }
-  world.history.flags.offseason_prompt = 0;
   world.absWeek++;
   startSeason(world, content, rng, world.season.number + 1, world.season.year + 1);
   world.career.negotiation = null;
@@ -612,11 +608,74 @@ function personView(world: World, id: number | null | undefined): PersonView | n
   return v;
 }
 
+/** How much overall a player can still add at this age (scout's realism). */
+function growthLeft(age: number): number {
+  return age <= 18 ? 40 : age <= 21 ? 26 : age <= 24 ? 12 : age <= 27 ? 5 : age <= 29 ? 2 : 0.5;
+}
+
+/** Scout's potential estimate: centred on what is really reachable, width by agent (mentor narrow, uncle wide), narrowing with age. */
 export function potentialRange(world: World, p: Footballer): [number, number] {
-  const hw = clamp(Math.round(10 - (p.age - 16) * 0.9), 2, 10);
-  const off = Math.round((((world.seed >>> 3) % 7) - 3) * hw / 4);
-  const lo = clamp(Math.round(p.potential - hw + off), 1, 99);
-  return [lo, clamp(lo + hw * 2, lo, 99)];
+  const o = ovr(p);
+  const reach = Math.max(o, Math.min(p.potential, o + growthLeft(p.age)));
+  const ag = world.people[world.career.agentId];
+  const base = ag?.archetype === 'mentor' ? 3 : ag?.archetype === 'shark' ? 5 : 7;
+  const hw = Math.max(1, Math.round(base * clamp((31 - p.age) / 14, 0.3, 1)));
+  const jitter = ((world.seed >>> 5) % 3) - 1; // the scout is never exactly right
+  const centre = reach + jitter;
+  const lo = clamp(Math.round(centre - hw), 1, 99);
+  const hi = clamp(Math.round(Math.min(centre + hw, o + growthLeft(p.age) + 1)), lo, 99);
+  return [Math.max(lo, Math.min(Math.floor(o), hi)), hi];
+}
+
+/** Every club of the career (history + current), for the career-end timeline and share card. */
+function careerClubs(world: World): Record<number, ClubView> {
+  const out: Record<number, ClubView> = {};
+  for (const h of world.career.history) if (world.clubs[h.clubId]) out[h.clubId] = clubView(world, h.clubId);
+  const c = userClub(world);
+  if (c) out[c.id] = clubView(world, c.id);
+  return out;
+}
+
+/** "The decision that changed everything" and "the person who mattered most", from the career's own history. */
+export function careerStory(world: World): { turningPoint?: string; keyPerson?: string } {
+  const out: { turningPoint?: string; keyPerson?: string } = {};
+  const h = world.career.history;
+  const u = userPlayer(world);
+  // the move with the biggest jump in league level
+  let best = 0;
+  for (let i = 1; i < h.length; i++) {
+    if (h[i].clubId === h[i - 1].clubId) continue;
+    const a = world.leagues[h[i - 1].leagueId], b = world.leagues[h[i].leagueId];
+    if (!a || !b) continue;
+    const jump = Math.abs(b.strength - a.strength) + (a.countryCode !== b.countryCode ? 8 : 0) + 1;
+    if (jump > best) {
+      best = jump;
+      const from = world.clubs[h[i - 1].clubId]?.name ?? 'המועדון הקודם';
+      const to = world.clubs[h[i].clubId]?.name ?? 'מועדון חדש';
+      const age = u.age - (world.season.number - h[i].season);
+      out.turningPoint = `המעבר ${pre('מ', from)} ${pre('ל', to)}, בגיל ${Math.max(16, age)}`;
+    }
+  }
+  if (!out.turningPoint) {
+    const tags = ['moved_abroad', 'came_home', 'title', 'national_debut', 'senior_debut', 'first_goal'];
+    for (const t of tags) {
+      const e = world.history.entries.find((x) => x.tag === t && x.text);
+      if (e) { out.turningPoint = e.text; break; }
+    }
+  }
+  // the person with the strongest bond (or feud), memories count double
+  const ROLE_HE: Record<string, string> = { coach: 'המאמן', agent: 'הסוכן', family: 'מהמשפחה', player: 'שחקן', journalist: 'עיתונאי', chairman: 'יו״ר' };
+  let top: { name: string; role: string; v: number; neg: boolean } | null = null;
+  for (const k in world.people) {
+    const p = world.people[k];
+    if (p.id === u.id) continue;
+    const r = p.relations[u.id];
+    if (!r) continue;
+    const v = Math.abs(r.score) + r.memories.reduce((s, m) => s + Math.abs(m.weight), 0) * 2;
+    if (!top || v > top.v) top = { name: p.name, role: p.id === world.career.rivalId ? 'המתחרה' : ROLE_HE[p.role] ?? '', v, neg: r.score < 0 };
+  }
+  if (top && top.v >= 10) out.keyPerson = `${top.name}, ${top.role}${top.neg ? '. לא תמיד לטובה' : ''}`;
+  return out;
 }
 
 export function buildView(world: World): View {
@@ -665,6 +724,7 @@ export function buildView(world: World): View {
       money: k.money, fame: k.fame, goals: k.goals, specialties: k.specialties, life: k.life, lastPlan: k.lastPlan, startKind: k.startKind,
       trophies: k.trophies, history: k.history, nationalCaps: k.nationalCaps, nationalGoals: k.nationalGoals, captain: k.captain, offers: k.offers,
       negotiation: k.negotiation ? { ...k.negotiation, hiddenCeiling: 0, final: !!k.negotiation.final } : null, retired: k.retired, retirementReason: k.retirementReason, seasonsPlayed: k.seasonsPlayed,
+      ...(k.renewalBlockedUntil != null && k.renewalBlockedUntil > world.absWeek ? { renewalBlockedUntil: k.renewalBlockedUntil } : {}),
     })),
     inbox: world.inbox.map((e) => ({ ...e })),
     news: world.news.slice(0, 20),
@@ -675,6 +735,8 @@ export function buildView(world: World): View {
     people,
     leagueZones: lg ? { promote: lg.promotesTo != null ? lg.promoteSpots : 0, relegate: lg.relegatesTo != null ? lg.relegateSpots : 0, champion: 1 } : undefined,
     settings: { autoMoments: world.settings.autoMoments },
+    careerClubs: careerClubs(world),
+    careerStory: careerStory(world),
     ...(world.phase === 'prematch' && k.prematch ? { prematch: { lineup: k.prematch.lineup, reason: k.prematch.reason, subMinute: k.prematch.subMinute } } : {}),
   };
 }

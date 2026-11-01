@@ -142,7 +142,7 @@ describe('round 3: contracts', () => {
     if (b.career.negotiation!.currentOffer.wage < 40000) expect(b.career.negotiation!.log.join(' ')).toContain('הסוכן');
   });
 
-  it('BUG-04: an expired contract is never auto-renewed; the offseason opens the talks instead', () => {
+  it('BUG-04/18: an expired contract is decided in one press ("המועדון יחליט"), preferring a pending offer', () => {
     let w = start(17);
     let g = 0;
     while (w.phase !== 'offseason' && g++ < 400) {
@@ -154,16 +154,15 @@ describe('round 3: contracts', () => {
     expect(w.phase).toBe('offseason');
     const u = userPlayer(w);
     u.contract!.endSeason = w.season.number;
-    const wage = u.contract!.monthlyWage;
     const season = w.season.number;
+    // nothing is signed while the user looks at the offseason
+    expect(userPlayer(w).contract!.endSeason).toBe(season);
+    const pending = w.career.offers[0];
     w = run(w, { type: 'finishWeek' });
-    expect(w.season.number).toBe(season);
-    expect(['negotiation', 'offseason']).toContain(w.phase);
-    expect(userPlayer(w).contract!.monthlyWage).toBe(wage);
-    // walking away and pressing on never loops forever: a season starts within a few presses
-    for (let i = 0; i < 6 && w.season.number === season; i++) w = w.phase === 'negotiation' ? run(w, { type: 'walkAway' }) : run(w, { type: 'finishWeek' });
     expect(w.season.number).toBe(season + 1);
+    expect(w.phase).toBe('plan');
     expect(userPlayer(w).contract!.endSeason).toBeGreaterThan(season);
+    if (pending) expect(userPlayer(w).clubId).toBe(pending.fromClubId);
   });
 
   it('youth wages are small (IL youth around 2,500-8,000)', () => {

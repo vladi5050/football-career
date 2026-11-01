@@ -1,5 +1,6 @@
 // Test helpers: fixture content (always), real content (when src/content exists), big synthetic world.
 import fixture from '../fixtures/content.min.json';
+import large from '../fixtures/content.large.leagues.json';
 import type { Content, LeagueSeed } from '../../src/core/content';
 import { normalizeContent } from '../../src/core/contentLoad';
 
@@ -39,4 +40,10 @@ export function bigContent(leagues = 20, clubsPer = 20): Content {
   }
   // link IL tiers pairwise for promotion
   return { ...c, leagues: out };
+}
+
+/** Synthetic world pyramid (~70 leagues, ~1,230 clubs): regional groups, a 3-group level, closed leagues. See tests/fixtures/genLarge.mjs. */
+export function largeContent(): Content {
+  const c = fixtureContent();
+  return { ...c, leagues: JSON.parse(JSON.stringify(large)) as LeagueSeed[] };
 }

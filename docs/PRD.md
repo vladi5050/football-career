@@ -13,7 +13,7 @@ Goals for v1:
 - Events feel personal: at least 1 in 4 cites a past choice ("כי בשבוע X...").
 - A full career is playable to retirement, and the career-end card can be shared.
 
-Non-goals for v1: multiplayer, servers or accounts, real club names or crests, monetisation, real-time timers, loot boxes, punishment for days without play, cup or European competitions (P2), several careers at once.
+Non-goals for v1: multiplayer, servers or accounts, real crests or logos, distribution of the real-name build, monetisation, real-time timers, loot boxes, punishment for days without play, cup or European competitions (P2), several careers at once.
 
 ## 3. Principles (apply to every screen)
 1. One primary action per screen: an orange button at the bottom, in thumb reach, at least 48px high.
@@ -96,7 +96,7 @@ One button on S4 (and on S9 as a secondary action). It repeats `lastPlan` and au
 - **Rival**: one fixed rival footballer (same age ±1, same or a related position), shown on S8 and S9 as a 3-number comparison (goals, rating, caps or value). He trains too, moves clubs, and appears in events (`rival` selector). Relations and memories carry across clubs.
 - **News**: generated from sim facts only (results, transfers, sackings, promotions, your career beats, effect `news(...)`).
 - **"בינתיים בליגה"**: one line per week on a transfer, a sacking or a streak in your league.
-- **Living world**: every league plays every week. Clubs buy, sell and sack managers. Teams get promoted and relegated between il1/il2/il3. Managers and agents are persons with traits who keep their memories when they change roles.
+- **Living world**: every league plays every week. Clubs buy, sell and sack managers. Teams get promoted and relegated along every linked pyramid (Israel il1, il2, il3n/il3s, four Liga Bet groups; England down to the National League; Spain, Italy, Greece with regional groups). A level with several groups lists them as an array in `relegatesTo`; the upper league's `relegateSpots` equals the sum of its groups' `promoteSpots` (validator rule). MLS, USL and the extra top flights (Denmark to Argentina) are closed: no links, spots 0. Managers and agents are persons with traits who keep their memories when they change roles.
 
 ## 10. Season themes
 Each season draws 2 of the 20 themes in `themes.json`. A theme multiplies the weights of event categories (`categoryBoost`) and may unlock theme-specific events (`theme(id)` in `when`). Some themes are forced by state: `contract_year` when `contractLeft <= 1`, `army_call` at 17-18 in Israel, `farewell_tour` after a retirement announcement. The themes appear at the start of the season on S9 as a 1-line headline each.
@@ -111,22 +111,22 @@ Each season draws 2 of the 20 themes in `themes.json`. A theme multiplies the we
 
 ## 12. Career-end share card
 A 9:16 canvas image styled like a framed shirt: name, shirt number, clubs as crests in order, the big numbers (apps, goals, caps, trophies), "the decision that changed everything" (the highest-weight history entry), and the person who mattered most (the highest absolute relation). Footer: "שחק את הקריירה שלך" + game name. Shared through the Web Share API, with a download fallback. A smaller mid-career share card for a newspaper headline after a big goal is P1.
-- [ ] Renders offline. No network calls. Contains no real names unless the user imported them.
+- [ ] Renders offline. No network calls. Never draws a real crest or logo: clubs appear as generated crests in their colours.
 
 ## 13. Team editor
-Reached from S1. The user imports a local JSON file in the `leagues.json` shape (optionally also `names.json`) to rename leagues, clubs, cities, stadiums and colours, and optionally to add their own crest images as data URLs. Validation uses the same rules as `tools/validateContent.ts` (shared code), and every error is shown in Hebrew. The data is stored in IndexedDB only and passed as `clubsOverride` to `newCareer`. **Nothing is ever uploaded.** We ship no real names or crests, and we document that the import is for private use.
+Reached from S1. The user imports a local JSON file in the `leagues.json` shape (optionally also `names.json`) to rename leagues, clubs, cities, stadiums and colours, and optionally to add their own crest images as data URLs. Validation uses the same rules as `tools/validateContent.ts` (shared code), and every error is shown in Hebrew. The data is stored in IndexedDB only and passed as `clubsOverride` to `newCareer`. **Nothing is ever uploaded.** The bundled content already uses real league and club names (owner decision: a private build, not for distribution); the editor lets the user correct a name or squad change, or add their own crest images. We ship no crests or logos.
 - [ ] An invalid file never breaks the game: the error list is shown and the defaults stay.
 - [ ] No network request happens during or after import (checked in e2e).
 
 ## 14. Content scope (v1, delivered)
 | File | Content |
 |---|---|
-| `src/content/leagues.json` | 13 leagues, 214 fictional clubs: IL tiers 1/2/3 (14/16/12), BE 16, NL 18, PT 18, CY 12, GR 14, EN-like 20, ES-like 20, IT-like 18, DE-like 18, FR-like 18. |
-| `src/content/names.json` | 11 pools. IL has 88 first and 86 last names (Jewish, Arab, Ethiopian-Israeli, Russian-Israeli). The others have 35-36 first and last names each. All in Hebrew script. |
-| `src/content/wages.json` | Monthly NIS bands per country, tier and age group. |
+| `src/content/leagues.json` | Real leagues and clubs, 2025-26 compositions (owner decision, private build): 64 leagues, 1,084 clubs, 28 countries. Hebrew names as Israeli fans write them, real colours, stadiums, cities and derbies (`rival`); no crests or logos. Israel 8 leagues to tier 4 (Liga Alef North/South, four Liga Bet groups); England 5 tiers; Spain, Italy, Germany, France 3-4 tiers (regional groups as arrays); NL, PT, BE, SC, TR, GR, CY, AT, CH 2-3 tiers; MLS split East/West (15+15) plus USL, closed; top flights only for DK, NO, SE, PL, CZ, HR, RS, RO, SA, JP, BR and AR (30 clubs split into two groups of 15). Tiers 1-2 of the major countries are checked; Israeli tiers 3-4 and some foreign third tiers are best-effort and editable in the team editor. |
+| `src/content/names.json` | 28 pools, one per country. IL has 88 first and 86 last names (Jewish, Arab, Ethiopian-Israeli, Russian-Israeli). The others have 30-36 first and last names each. All in Hebrew script. |
+| `src/content/wages.json` | Monthly NIS bands per country, tier and age group: Israel hand-set (tiers 1-4), every other country/tier is the Israeli tier-1 band × the league's `wageFactor`. |
 | `src/content/themes.json` | 20 season themes. |
 | `src/content/events.json` | 163 templates (36 chain-only follow-ups, 36 chains), 507 variants, 487 options, all 15 categories. 17 are gated to youth age (stage(youth) or a maximum age of 17-19), 13 of them added in round 3 (12 events plus 1 follow-up): school, the youth coach, the first senior call-up, debut nerves, a trial abroad, growing pains. Every template marks exactly one `default` option. Variant titles and option texts are unique across the whole file (the validator enforces this). |
-| `tools/validateContent.ts` | Schema, references, conditions, effects, placeholders, chains, history tags. Exit code 1 on error. |
+| `tools/validateContent.ts` | Schema, references, conditions, effects, placeholders, chains, history tags, promotion links (single key or array, mutual, same country, one tier apart, spots balance). Exit code 1 on error. |
 
 Writing rules (enforced or reviewed): unique titles and option texts across templates, no prefix letter glued to a digit ("ב-3"), body ≤ 220 chars, option ≤ 60 chars, Hebrew only, no em-dashes, a real dilemma (no option strictly dominates), mixed tone, every `because` tag produced by some `history(tag)`.
 
