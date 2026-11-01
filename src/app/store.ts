@@ -174,7 +174,7 @@ function alreadyOnScreen(text: string, v: View): boolean {
     shown.push(...rep.meanwhile, ...rep.openLoops);
     if (rep.headline) shown.push(rep.headline);
   }
-  shown.push(...v.news.slice(0, 3).map((n) => n.headline));
+  if (screen.value === 'news') shown.push(...v.news.slice(0, 3).map((n) => n.headline));
   return shown.some((s) => {
     const n = norm(s);
     return n === t || (t.length > 12 && n.includes(t));

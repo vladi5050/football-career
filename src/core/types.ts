@@ -223,7 +223,7 @@ export interface Career {
   /** R&D addition: the current week runs as a quick week (goes straight into the match after events). */
   quickFlow?: boolean;
   /** R&D addition: per attribute, [value at one decimal, absWeek it last moved] (near goals rotate out when stalled). */
-  attrMoved?: Partial<Record<AttrKey, [number, number]>>;
+  attrMoved?: Partial<Record<AttrKey, [number, number, number?, number?]>>;
   /** R&D addition: events quick week answered this week ("title: option"), moved into the week report. */
   autoAnswered?: string[];
   /** R&D addition: renewal talks with the current club are off until this absWeek (after the club walked out). */

@@ -310,21 +310,25 @@ export function trainedAttrs(plan: WeekPlan | null | undefined): Set<AttrKey> {
   return out;
 }
 
-/** Once a week: remember when each attribute last moved (at one decimal). */
+/** Once a week: remember when each attribute last moved, at one decimal and at whole numbers (what the UI shows). */
 export function trackAttrProgress(world: World): void {
   const u = userPlayer(world);
   const st = (world.career.attrMoved ??= {});
   for (const k of ATTR_KEYS) {
     const v = Math.floor(u.attr[k] * 10) / 10;
+    const whole = Math.floor(u.attr[k]);
     const s = st[k];
-    if (!s || v > s[0]) st[k] = [v, world.absWeek];
+    if (!s) { st[k] = [v, world.absWeek, whole, world.absWeek]; continue; }
+    const wholeMoved = s[2] === undefined || whole > s[2];
+    st[k] = [v > s[0] ? v : s[0], v > s[0] ? world.absWeek : s[1], wholeMoved ? whole : s[2]!, wholeMoved ? world.absWeek : (s[3] ?? world.absWeek)];
   }
 }
 
-/** No visible progress for 3 weeks or more. */
+/** No visible progress: 3 weeks without a tenth, or 8 weeks without a whole point (a crawl the screen can't show). */
 export function attrStalled(world: World, k: AttrKey): boolean {
   const s = world.career.attrMoved?.[k];
-  return !!s && world.absWeek - s[1] >= 3;
+  if (!s) return false;
+  return world.absWeek - s[1] >= 3 || (s[3] !== undefined && world.absWeek - s[3] >= 8);
 }
 
 /** "תאמן דריבל השבוע כדי לסגור את זה" */

@@ -850,8 +850,8 @@
 }
 .toast {
   width: 100%;
-  min-height: 0;
-  padding: 6px 12px;
+  min-height: 40px;
+  padding: 8px 12px;
   font: inherit;
   font-size: 13px;
   font-weight: 700;
