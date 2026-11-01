@@ -8,7 +8,7 @@ import type {
 } from './types';
 import { makeRng, type Rng } from './rng';
 import {
-  addNews, avg, changeRelation, clamp, count, firstName, ovr, pre, pushHistory, relationOf, userClub, userLeague, userPlayer,
+  addNews, avg, changeRelation, clamp, count, firstName, fmtMoney, ovr, pre, pushHistory, relationOf, userClub, userLeague, userPlayer,
 } from './helpers';
 import { generateWorld } from './worldGen';
 import { applyResult, fixtureFor, fixturesInWeek, isWindowOpen, matchWeeks, SEASON_EXTRA_WEEKS, nextFixture, sortedTable, tablePosition, windowName } from './schedule';
@@ -20,7 +20,7 @@ import {
   applyPlanImmediate, applyTraining, autoPlan, defaultPlan, rollUserInjury, trackAttrProgress, weeklyRecovery,
 } from './development';
 import { autoOptionId, checkPromises, compileEvents, resolveEvent, rollWeekEvents, syncFlags } from './events';
-import { acceptCurrent, negotiateRound, openNegotiation, userWalkAway } from './negotiation';
+import { acceptCurrent, negotiateRound, openNegotiation, ROLE_HE as SQUAD_ROLE_HE, userWalkAway } from './negotiation';
 import { activeLeagues, expireOffers, npcTransfers, sackings, spawnOffer, weeklyOffers } from './transfers';
 import { nearGoals, updateGoals } from './goals';
 import { endSeason, nationalWindow, RETIRE_FORCED_AGE, startSeason } from './season';
@@ -467,7 +467,7 @@ function openLoops(world: World): string[] {
     const tw = Math.max(1, world.season.totalWeeks);
     const months = Math.max(0, (u.contract.endSeason - world.season.number) * 12 + Math.round(((tw - world.season.week) / tw) * 10));
     if (u.contract.endSeason <= world.season.number) pool.push(months <= 1 ? 'החוזה שלך נגמר בעוד חודש' : `החוזה שלך נגמר בעוד ${months} חודשים`);
-    else if (months <= 18) pool.push(`עוד ${months} חודשים לסוף החוזה`);
+    else if (months <= 18) pool.push(`עוד ${count(months, 'חודש', 'חודשים')} לסוף החוזה`);
   }
   const ng = nearGoals(world)[0];
   if (ng) pool.push(ng.text);
@@ -553,9 +553,18 @@ function beginNextSeason(world: World, content: Content, rng: Rng, toast: string
     const pending = world.career.offers.filter((o) => o.expiresWeek >= world.absWeek).sort((a, b) => offerScore(b) - offerScore(a));
     const sign = (r: ReturnType<typeof openNegotiation>): boolean => {
       if (typeof r === 'string') return false;
-      toast.push(...acceptCurrent(world, content));
+      const n = world.career.negotiation;
+      const terms = n ? { club: world.clubs[n.clubId].name, ...n.currentOffer } : null;
+      const lines = acceptCurrent(world, content);
       world.career.negotiation = null;
-      return !contractExpired(world);
+      if (contractExpired(world)) return false;
+      // the club decided: say exactly what was signed (club, wage, role, years)
+      if (terms) {
+        const line = `המועדון החליט: ${terms.club}, ${fmtMoney(terms.wage)} לחודש, ${SQUAD_ROLE_HE[terms.role]}, ${pre('ל', count(terms.years, 'שנה', 'שנים', true))}`;
+        toast.unshift(line);
+        addNews(world, { kind: 'transfer', headline: line });
+      } else toast.push(...lines);
+      return true;
     };
     let done = false;
     for (const o of pending) { if (sign(openNegotiation(world, content, rng, o.fromClubId, o, 'offseason'))) { done = true; break; } }
@@ -566,7 +575,7 @@ function beginNextSeason(world: World, content: Content, rng: Rng, toast: string
     }
     if (!done && contractExpired(world)) {
       u.contract = { ...u.contract!, endSeason: world.season.number + 1, role: 'backup', monthlyWage: Math.round(u.contract!.monthlyWage * 0.8 / 100) * 100 };
-      toast.push('אף אחד לא סגר איתך. נשארת בחוזה קצר ומקוצץ');
+      toast.unshift(`אף אחד לא סגר איתך. נשארת ${pre('ב', c.name)}: ${fmtMoney(u.contract.monthlyWage)} לחודש, ${SQUAD_ROLE_HE.backup}, לעונה אחת`);
       pushHistory(world, 'short_deal', `נשארת ${pre('ב', c.name)} בחוזה קצר`);
     }
   }
@@ -733,7 +742,10 @@ export function buildView(world: World): View {
     offerClubs,
     teammates,
     people,
-    leagueZones: lg ? { promote: lg.promotesTo != null ? lg.promoteSpots : 0, relegate: lg.relegatesTo != null ? lg.relegateSpots : 0, champion: 1 } : undefined,
+    leagueZones: lg ? {
+      promote: lg.promotesTo != null ? lg.promoteSpots : 0, relegate: lg.relegatesTo != null ? lg.relegateSpots : 0, champion: 1,
+      rounds: c ? (world.season.fixtures[lg.id] ?? []).filter((f) => f.home === c.id || f.away === c.id).length : undefined,
+    } : undefined,
     settings: { autoMoments: world.settings.autoMoments },
     careerClubs: careerClubs(world),
     careerStory: careerStory(world),

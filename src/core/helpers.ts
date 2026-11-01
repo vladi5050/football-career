@@ -176,3 +176,12 @@ export function pushHistory(world: World, tag: string, text?: string, templateId
   world.history.entries.push(e);
   if (world.history.entries.length > 300) world.history.entries.splice(0, world.history.entries.length - 300);
 }
+
+/** Club/league regions in one vocabulary: 'north' / 'south' (content) and "צפון" / "דרום" (league groups) are the same thing. */
+export function normRegion(r: string | null | undefined): string | undefined {
+  if (!r) return undefined;
+  const v = r.trim().toLowerCase();
+  if (v === 'north' || v === 'צפון') return 'צפון';
+  if (v === 'south' || v === 'דרום') return 'דרום';
+  return r;
+}

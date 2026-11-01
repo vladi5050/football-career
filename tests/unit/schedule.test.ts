@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { fixtureContent } from './_content';
 import { newGame } from '../../src/core/game';
 import { makeRng, seedState } from '../../src/core/rng';
-import { applyResult, doubleRoundRobin, emptyRow, promoteRelegate, SEASON_EXTRA_WEEKS, sortedTable } from '../../src/core/schedule';
+import { applyResult, doubleRoundRobin, emptyRow, legsFor, promoteRelegate, SEASON_EXTRA_WEEKS, sortedTable } from '../../src/core/schedule';
 import { simFixture } from '../../src/core/matchSim';
 
 const content = fixtureContent();
@@ -27,19 +27,23 @@ describe('schedule', () => {
     });
   }
 
-  it('season fixtures: each pair plays twice, home and away', () => {
+  it('season fixtures: each pair meets twice (home and away), small leagues 3-4 times', () => {
     const w = newGame({ type: 'newCareer', seed: 3, pos: 'ST', firstName: 'א', lastName: 'ב' }, content);
     for (const lg of w.leagues) {
       const fx = w.season.fixtures[lg.id];
       const n = lg.clubIds.length;
-      expect(fx.length).toBe(n * (n - 1));
+      const legs = legsFor(n);
+      expect(fx.length).toBe((n * (n - 1) * legs) / 2);
       for (const a of lg.clubIds) for (const b of lg.clubIds) if (a !== b) {
-        expect(fx.filter((f) => f.home === a && f.away === b).length).toBe(1);
+        const ab = fx.filter((f) => f.home === a && f.away === b).length, ba = fx.filter((f) => f.home === b && f.away === a).length;
+        expect(ab + ba).toBe(legs);
+        expect(ab).toBeGreaterThanOrEqual(1);
+        expect(ba).toBeGreaterThanOrEqual(1);
       }
     }
     // season length = the user's league rounds + break weeks; every league fits inside it
     const ul = w.leagues[w.clubs[(w.people[w.career.playerId] as { clubId: number }).clubId].leagueId];
-    expect(w.season.totalWeeks).toBe((ul.clubIds.length - (ul.clubIds.length % 2 ? 0 : 1)) * 2 + SEASON_EXTRA_WEEKS);
+    expect(w.season.totalWeeks).toBe(((ul.clubIds.length - (ul.clubIds.length % 2 ? 0 : 1)) * legsFor(ul.clubIds.length)) + SEASON_EXTRA_WEEKS);
     for (const lg of w.leagues) for (const f of w.season.fixtures[lg.id]) expect(f.week).toBeLessThan(w.season.totalWeeks);
     // the user's league never plays twice in a week, and has no long run of empty weeks at the end
     const weeks = w.season.fixtures[ul.id].map((f) => f.week);
@@ -65,7 +69,7 @@ describe('schedule', () => {
     for (const lg of w.leagues) {
       const t = w.season.tables[lg.id];
       const n = lg.clubIds.length;
-      for (const r of t) { expect(r.p).toBe((n - 1) * 2); expect(r.w + r.d + r.l).toBe(r.p); }
+      for (const r of t) { expect(r.p).toBe((n - 1) * legsFor(n)); expect(r.w + r.d + r.l).toBe(r.p); }
       expect(t.reduce((s, r) => s + r.gf, 0)).toBe(t.reduce((s, r) => s + r.ga, 0));
     }
     const il1 = w.leagues.find((l) => l.key === 'il1')!, il2 = w.leagues.find((l) => l.key === 'il2')!;

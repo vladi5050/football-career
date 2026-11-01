@@ -23,7 +23,8 @@ function candidates(world: World): Goal[] {
   if (u.careerStats.apps < 10) out.push(mk(world, 'apps10', '10 הופעות בקבוצה הבוגרת', 'apps', 10, 'ביטחון +5'));
   if (u.careerStats.goals === 0 && u.pos !== 'GK') out.push(mk(world, 'first_goal', 'השער הראשון בקריירה', 'goals', 1, 'מוניטין +3'));
   const sg = SEASON_GOALS[u.pos];
-  if (sg > 0 && u.careerStats.apps >= 5) out.push(mk(world, `season_goals_${world.season.number}`, `${sg} שערים העונה`, 'goals', sg, 'מוניטין +4'));
+  // the season tally waits until the first career goal is in (otherwise both read "0 of 1")
+  if (sg > 0 && u.careerStats.apps >= 5 && (u.careerStats.goals > 0 || sg > 1)) out.push(mk(world, `season_goals_${world.season.number}`, `${count(sg, 'שער', 'שערים')} העונה`, 'goals', sg, 'מוניטין +4'));
   if (u.pos === 'GK' && u.careerStats.apps >= 5) out.push(mk(world, `clean_${world.season.number}`, '8 שערים נקיים העונה', 'custom', 8, 'מוניטין +4'));
   if (!foreign && u.age >= 18 && ovr(u) >= 55) out.push(mk(world, 'abroad', 'לעבור לליגה בחו״ל', 'transfer', 1, 'מוניטין +8'));
   if (c.nationalCaps === 0 && ovr(u) >= 58) out.push(mk(world, 'national', 'זימון ראשון לנבחרת', 'national', 1, 'מוניטין +10'));
@@ -102,7 +103,7 @@ function unitOf(g: Goal): { one: string; many: string; fem: boolean } | null {
 
 /** At most 2 near-goal bars. progress and target are always in the same unit (attribute 49.6 of 50, 8 of 10 goals). */
 export function nearGoals(world: World): { text: string; progress: number; target: number }[] {
-  const out: { text: string; progress: number; target: number; key: string; urgency: number }[] = [];
+  const out: { text: string; progress: number; target: number; key: string; urgency: number; left?: number }[] = [];
   for (const n of nearAttrGoals(world)) out.push({ text: n.text, progress: n.progress, target: n.target, key: `attr:${n.key}`, urgency: (n.target - n.progress) / (n.trained ? 2 : 1) });
   const trained = trainedAttrs(world.career.lastPlan);
   for (const g of world.career.goals) {
@@ -122,8 +123,10 @@ export function nearGoals(world: World): { text: string; progress: number; targe
     }
     const unit = unitOf(g);
     if (!unit) continue;
+    // one bar per thing: "first career goal" and "goals this season" can ask for the same next goal
+    if (g.kind === 'goals' && out.some((o) => o.key.startsWith('goals:') && o.left === left)) continue;
     if (left <= 1 || g.progress / g.target >= 0.8) {
-      out.push({ text: `${g.text}: עוד ${count(Math.ceil(left), unit.one, unit.many, unit.fem)}`, progress: g.progress, target: g.target, key: g.id, urgency: left / g.target });
+      out.push({ text: `${g.text}: עוד ${count(Math.ceil(left), unit.one, unit.many, unit.fem)}`, progress: g.progress, target: g.target, key: g.kind === 'goals' ? `goals:${g.id}` : g.id, urgency: left / g.target, left });
     }
   }
   return out.sort((a, b) => a.urgency - b.urgency).slice(0, 2).map(({ text, progress, target }) => ({ text, progress, target }));

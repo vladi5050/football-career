@@ -103,6 +103,8 @@ export interface Club {
   lazy?: boolean;
   /** R&D addition: region/group hint for multi-group lower leagues (from content). */
   region?: string;
+  /** R&D addition: reserve (B) team of this club id: never promoted into the parent's league or above. */
+  reserveOf?: number;
 }
 
 export interface League {
@@ -152,6 +154,8 @@ export interface Season {
   startAbsWeek?: number;
   /** R&D addition: shuffled club order per league; fixtures are a pure function of it (lets the save drop them). */
   orders?: Record<number, number[]>;
+  /** R&D addition: small leagues play 3-4 round robins this season (leagues of up to 12 clubs). Older seasons: 2. */
+  multiLeg?: boolean;
 }
 
 // ---------------------------------------------------------------- the user's career
@@ -423,7 +427,8 @@ export interface View {
   /** R&D addition: everyone referenced by inbox[].cast plus coach, agent, rival; keyed by id. */
   people?: Record<number, PersonView>;
   /** R&D addition: table zones of the user's league (top `champion` rows, top `promote`, bottom `relegate`). */
-  leagueZones?: { promote: number; relegate: number; champion?: number };
+  /** rounds: league matches per club this season (small leagues play 3-4 round robins). */
+  leagueZones?: { promote: number; relegate: number; champion?: number; rounds?: number };
   /** R&D addition: user settings. */
   settings?: { autoMoments: boolean };
   /** R&D addition: every club of the career (history + current), keyed by id. */

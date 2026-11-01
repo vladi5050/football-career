@@ -5,7 +5,7 @@
 import type { Attributes, Club, Fixture, Footballer, Person, Position, SeasonStats, TableRow, World } from './types';
 import { ATTR_KEYS } from './helpers';
 import { SAVE_VERSION } from './worldGen';
-import { SEASON_EXTRA_WEEKS, fixturesFromRounds, matchWeeks, roundsFromOrder } from './schedule';
+import { SEASON_EXTRA_WEEKS, fixturesFromRounds, leagueRounds, matchWeeks } from './schedule';
 
 export const SAVE_FORMAT = 'football-career-save';
 
@@ -17,7 +17,7 @@ type FixtureT = [number, number, number, number, number, number, Fixture['scorer
 /** Staff without relations (coaches, chairmen, journalists far from the user). */
 type StaffT = [number, string, Person['role'], number, string, Person['traits'], number | null];
 /** Club: [id, name, short, city, country, league, reputation, budget, colors, crest, manager, chairman, squad, rival, stadium, extra?] */
-type ClubT = [number, string, string, string, string, number, number, number, Club['colors'], Club['crest'], number, number, number[], number | null, string, { lazy?: true; region?: string }?];
+type ClubT = [number, string, string, string, string, number, number, number, Club['colors'], Club['crest'], number, number, number[], number | null, string, { lazy?: true; region?: string; reserveOf?: number }?];
 /** v3: a league's fixtures as the results of its played prefix ("hg ag" base-36 pairs); the list itself comes from season.orders. */
 type FixturesT = FixtureT[] | string;
 interface CompactWorld extends Omit<World, 'people' | 'season' | 'clubs'> {
@@ -42,14 +42,15 @@ function staffable(p: Person): boolean {
 const encStaff = (p: Person): StaffT => [p.id, p.name, p.role, p.age, p.nationality, p.traits, p.clubId];
 const decStaff = (t: StaffT): Person => ({ id: t[0], name: t[1], role: t[2], age: t[3], nationality: t[4], traits: t[5], relations: {}, clubId: t[6] });
 
-const CLUB_KEYS = new Set(['id', 'name', 'short', 'city', 'countryCode', 'leagueId', 'reputation', 'budget', 'colors', 'crest', 'managerId', 'chairmanId', 'squad', 'rivalClubId', 'stadium', 'lazy', 'region']);
+const CLUB_KEYS = new Set(['id', 'name', 'short', 'city', 'countryCode', 'leagueId', 'reputation', 'budget', 'colors', 'crest', 'managerId', 'chairmanId', 'squad', 'rivalClubId', 'stadium', 'lazy', 'region', 'reserveOf']);
 function encClub(c: Club): Club | ClubT {
   for (const k in c) if (!CLUB_KEYS.has(k)) return c;
   const t: ClubT = [c.id, c.name, c.short, c.city, c.countryCode, c.leagueId, c.reputation, c.budget, c.colors, c.crest, c.managerId, c.chairmanId, c.squad, c.rivalClubId, c.stadium];
-  const x: { lazy?: true; region?: string } = {};
+  const x: { lazy?: true; region?: string; reserveOf?: number } = {};
   if (c.lazy) x.lazy = true;
   if (c.region != null) x.region = c.region;
-  if (x.lazy || x.region != null) t.push(x);
+  if (c.reserveOf != null) x.reserveOf = c.reserveOf;
+  if (x.lazy || x.region != null || x.reserveOf != null) t.push(x);
   return t;
 }
 function decClub(t: Club | ClubT): Club {
@@ -60,6 +61,7 @@ function decClub(t: Club | ClubT): Club {
   };
   if (t[15]?.lazy) c.lazy = true;
   if (t[15]?.region != null) c.region = t[15].region;
+  if (t[15]?.reserveOf != null) c.reserveOf = t[15].reserveOf;
   return c;
 }
 
@@ -67,7 +69,7 @@ function decClub(t: Club | ClubT): Club {
 function regenFixtures(season: World['season'], leagueId: number): Fixture[] | null {
   const order = season.orders?.[leagueId];
   if (!order) return null;
-  return fixturesFromRounds(roundsFromOrder(order), matchWeeks(season.totalWeeks, SEASON_EXTRA_WEEKS));
+  return fixturesFromRounds(leagueRounds(order, !!season.multiLeg), matchWeeks(season.totalWeeks, SEASON_EXTRA_WEEKS));
 }
 
 /** Results-only encoding when the stored list equals the regenerated one and the played fixtures are a prefix (scorers are dropped). */

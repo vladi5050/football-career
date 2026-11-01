@@ -1,4 +1,5 @@
 // Round 3 (QA fixes): pre-match truth, moment counts, final offer, no auto-decisions, autosave phases, near goals, Hebrew, calendar.
+import { legsFor } from '../../src/core/schedule';
 import { describe, expect, it } from 'vitest';
 import { fixtureContent } from './_content';
 import { apply, buildView, newGame } from '../../src/core/game';
@@ -243,7 +244,7 @@ describe('round 3: week end', () => {
   it('UX-1: the season is as long as the user league plus a few break weeks', () => {
     const w = start(3);
     const lg = w.leagues[userClub(w)!.leagueId];
-    const rounds = (lg.clubIds.length - (lg.clubIds.length % 2 ? 0 : 1)) * 2;
+    const rounds = (lg.clubIds.length - (lg.clubIds.length % 2 ? 0 : 1)) * legsFor(lg.clubIds.length);
     expect(w.season.totalWeeks).toBeLessThanOrEqual(rounds + 3);
     for (const l of w.leagues) for (const f of w.season.fixtures[l.id]) expect(f.week).toBeLessThan(w.season.totalWeeks);
   });

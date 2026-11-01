@@ -12,7 +12,7 @@ import { fixtureFor, isWindowOpen, nextFixture } from './schedule';
 import { spawnOffer } from './transfers';
 
 export const EVENT_TUNING = {
-  silenceShare: 0.5, // silence weight = share x total weight  -> ~1/3 of weeks
+  silenceShare: 0.4, // silence weight = share x total weight  -> about 1/3 of weeks silent (chains fill some)
   recentPenalty: 0.3,
   recentWeeks: 3,
   defaultCooldown: 12,

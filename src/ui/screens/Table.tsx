@@ -12,7 +12,7 @@ export function leagueRound(v: View): { played: number; total: number } {
   const n = v.table.length;
   const me = v.table.find((r) => r.clubId === v.club?.id);
   const played = me?.p ?? Math.max(0, ...v.table.map((r) => r.p));
-  return { played, total: Math.max(1, (n - 1) * 2) };
+  return { played, total: Math.max(1, v.leagueZones?.rounds ?? (n - 1) * 2) };
 }
 
 /**

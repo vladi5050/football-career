@@ -1,5 +1,5 @@
 // Fixtures (double round-robin), season calendar, transfer windows, tables, promotion/relegation.
-import { pre } from './helpers';
+import { normRegion, pre } from './helpers';
 import type { Fixture, League, Season, TableRow, World } from './types';
 import type { Rng } from './rng';
 
@@ -30,6 +30,24 @@ export function roundsFromOrder(order: number[]): [number, number][][] {
   }
   const second = rounds.map((round) => round.map(([h, a]) => [a, h] as [number, number]));
   return rounds.concat(second);
+}
+
+/** Round robins per season by league size: up to 10 clubs play 4 times, 11-12 clubs 3 times (Scotland, Switzerland, Austria), else twice. */
+export function legsFor(n: number): number {
+  return n <= 10 ? 4 : n <= 12 ? 3 : 2;
+}
+
+/** The season's rounds for a club order: the double round robin, plus a third/fourth leg for small leagues (later legs in reverse round order). */
+export function leagueRounds(order: number[], multiLeg: boolean): [number, number][][] {
+  const base = roundsFromOrder(order);
+  const legs = multiLeg ? legsFor(order.length) : 2;
+  if (legs <= 2) return base;
+  const half = base.length / 2;
+  const first = base.slice(0, half), second = base.slice(half);
+  const out = base.slice();
+  out.push(...first.slice().reverse());
+  if (legs >= 4) out.push(...second.slice().reverse());
+  return out;
 }
 
 /** Fixture list of a league for a season calendar (match-week slots). */
@@ -73,7 +91,7 @@ export function buildSeason(world: World, rng: Rng, number: number, year: number
   let maxRounds = 1;
   for (const lg of world.leagues) {
     orders[lg.id] = rng.shuffle(lg.clubIds.slice());
-    roundsBy[lg.id] = roundsFromOrder(orders[lg.id]);
+    roundsBy[lg.id] = leagueRounds(orders[lg.id], true);
     maxRounds = Math.max(maxRounds, roundsBy[lg.id].length);
   }
   // season length follows the user's league; other leagues fit their rounds into the same match weeks (2 rounds in some weeks)
@@ -84,7 +102,7 @@ export function buildSeason(world: World, rng: Rng, number: number, year: number
     fixtures[lg.id] = fixturesFromRounds(roundsBy[lg.id], slots);
     tables[lg.id] = lg.clubIds.map(emptyRow);
   }
-  return { number, year, week: 0, totalWeeks, fixtures, tables, themes, startAbsWeek: world.absWeek, orders };
+  return { number, year, week: 0, totalWeeks, fixtures, tables, themes, startAbsWeek: world.absWeek, orders, multiLeg: true };
 }
 
 export function fixturesInWeek(world: World, leagueId: number, week: number): Fixture[] {
@@ -173,6 +191,47 @@ function linksUp(lg: League): number[] {
  * - Spots 0 or no links = a closed league (MLS, USL).
  * Returns Hebrew news lines.
  */
+/** Region of a regional group: its own, else the region most of its clubs share. */
+function groupRegion(world: World, g: League): string | undefined {
+  if (g.region) return normRegion(g.region);
+  const n = new Map<string, number>();
+  for (const id of g.clubIds) { const r = world.clubs[id].region; if (r) n.set(r, (n.get(r) ?? 0) + 1); }
+  let best: string | undefined, bn = 0;
+  for (const [r, k] of n) if (k > bn) { best = r; bn = k; }
+  return bn * 2 > g.clubIds.length ? best : undefined;
+}
+
+/** Best one-to-one assignment of clubs to slots (exact for up to 7 clubs, greedy beyond). Returns slot index per club. */
+function assignSlots(clubs: number[], slots: League[], fit: (id: number, g: League) => number): number[] {
+  const n = clubs.length;
+  if (n <= 7 && slots.length === n) {
+    let best: number[] = [], bestS = -Infinity;
+    const cur: number[] = [], used = new Array<boolean>(n).fill(false);
+    const rec = (k: number, sc: number): void => {
+      if (k === n) { if (sc > bestS) { bestS = sc; best = cur.slice(); } return; }
+      for (let i = 0; i < n; i++) {
+        if (used[i]) continue;
+        used[i] = true; cur.push(i);
+        rec(k + 1, sc + fit(clubs[k], slots[i]) - i * 1e-3 * (k + 1));
+        cur.pop(); used[i] = false;
+      }
+    };
+    rec(0, 0);
+    return best;
+  }
+  const free = slots.map((_, i) => i);
+  const out = new Array<number>(n).fill(-1);
+  // clubs with the strongest preference pick first
+  const pref = clubs.map((id, k) => ({ k, spread: Math.max(...slots.map((g) => fit(id, g))) - Math.min(...slots.map((g) => fit(id, g))) }));
+  pref.sort((a, b) => b.spread - a.spread || a.k - b.k);
+  for (const { k } of pref) {
+    let bi = -1, bs = -Infinity;
+    for (const i of free) { const sc = fit(clubs[k], slots[i]) - i * 1e-3; if (sc > bs) { bs = sc; bi = i; } }
+    if (bi >= 0) { out[k] = bi; free.splice(free.indexOf(bi), 1); }
+  }
+  return out;
+}
+
 export function promoteRelegate(world: World): { lines: string[]; promoted: number[]; relegated: number[] } {
   const lines: string[] = [];
   const promoted: number[] = [];
@@ -186,6 +245,13 @@ export function promoteRelegate(world: World): { lines: string[]; promoted: numb
   };
   const ppg = (r: TableRow): number => (r.p ? r.pts / r.p : 0) + (r.gf - r.ga) / Math.max(1, r.p) / 100;
   const moved = new Set<number>();
+  const dest = new Map<number, number>(); // club -> league after this summer's moves so far
+  const canGoUp = (clubId: number, upper: League): boolean => {
+    const parent = world.clubs[clubId]?.reserveOf;
+    if (parent == null || !world.clubs[parent]) return true;
+    const pl = world.leagues[dest.get(parent) ?? world.clubs[parent].leagueId];
+    return !(pl && pl.countryCode === upper.countryCode && pl.tier <= upper.tier);
+  };
   // one link set per upper league
   for (const upper of world.leagues) {
     const downTo = linksDown(upper).map((id) => world.leagues[id]).filter(Boolean);
@@ -200,9 +266,12 @@ export function promoteRelegate(world: World): { lines: string[]; promoted: numb
     const guaranteed: { r: TableRow; g: League; place: number }[] = [];
     const rest: { r: TableRow; g: League; place: number }[] = [];
     for (const g of groups) {
+      // reserve teams never go up into their parent's league or above it: the next eligible club takes the spot
+      let eligible = 0;
       rows(g).forEach((r, i) => {
-        if (moved.has(r.clubId) || i >= Math.max(1, rows(g).length - 2)) return;
-        (i < g.promoteSpots ? guaranteed : rest).push({ r, g, place: i });
+        if (moved.has(r.clubId) || i >= Math.max(1, rows(g).length - 2) || !canGoUp(r.clubId, upper)) return;
+        (eligible < g.promoteSpots ? guaranteed : rest).push({ r, g, place: eligible });
+        eligible++;
       });
     }
     const byRank = (a: { r: TableRow; place: number }, b: { r: TableRow; place: number }): number => a.place - b.place || ppg(b.r) - ppg(a.r);
@@ -211,26 +280,29 @@ export function promoteRelegate(world: World): { lines: string[]; promoted: numb
     const up = guaranteed.concat(rest).slice(0, n);
     if (up.length < n) n = up.length;
     const down = ur.slice(ur.length - n).map((r) => r.clubId);
-    // relegated clubs fill the slots the promoted clubs leave, by region/city when possible
+    // relegated clubs fill the slots the promoted clubs leave: allowed group first, then region, then city.
+    // The whole assignment is chosen at once, so a club without a region never takes the slot a regional club needs.
     const vacancies = up.map((u) => u.g);
     const allowed = new Set(downTo.map((l) => l.id));
-    for (const id of down) {
+    const fit = (id: number, g: League): number => {
       const c = world.clubs[id];
-      let bestI = -1, bestS = -Infinity;
-      vacancies.forEach((g, i) => {
-        let sc = allowed.has(g.id) ? 10 : 0;
-        if (c.region && (g.region === c.region || g.clubIds.some((x) => world.clubs[x].region === c.region))) sc += 5;
-        if (c.city && g.clubIds.some((x) => world.clubs[x].city === c.city)) sc += 3;
-        sc -= i * 0.01; // round-robin order on ties
-        if (sc > bestS) { bestS = sc; bestI = i; }
-      });
-      const to = vacancies.splice(bestI, 1)[0] ?? downTo[0];
+      let sc = allowed.has(g.id) ? 100 : 0;
+      const gr = groupRegion(world, g);
+      if (c.region && gr) sc += c.region === gr ? 20 : -20;
+      if (c.city && g.clubIds.some((x) => world.clubs[x].city === c.city)) sc += 3;
+      return sc;
+    };
+    const order = assignSlots(down, vacancies, fit);
+    down.forEach((id, k) => {
+      const to = vacancies[order[k]] ?? downTo[0];
       moves.push({ clubId: id, from: upper, to });
+      dest.set(id, to.id);
       relegated.push(id);
       moved.add(id);
-    }
+    });
     for (const u of up) {
       moves.push({ clubId: u.r.clubId, from: u.g, to: upper });
+      dest.set(u.r.clubId, upper.id);
       promoted.push(u.r.clubId);
       moved.add(u.r.clubId);
     }

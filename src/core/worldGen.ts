@@ -5,7 +5,7 @@ import type {
   TraitId, World,
 } from './types';
 import { makeRng, hashString, seedState, type Rng } from './rng';
-import { ATTR_KEYS, POS_WEIGHTS, clamp, overallOf, changeRelation, pre } from './helpers';
+import { ATTR_KEYS, POS_WEIGHTS, clamp, overallOf, changeRelation, normRegion, pre } from './helpers';
 import { wageFor } from './wages';
 
 export const SAVE_VERSION = 3;
@@ -287,7 +287,8 @@ export function generateWorld(content: Content, seed: number, opts: GenOptions):
         crest: crestFor(cs.name, colors, cs.crestCharge), managerId: 0, chairmanId: 0, squad: [], rivalClubId: null,
         stadium: cs.stadium ?? `אצטדיון ${cs.city ?? cs.name}`,
       };
-      if (cs.region) c.region = cs.region;
+      const region = normRegion(cs.region) ?? normRegion(ls.region);
+      if (region) c.region = region;
       world.clubs.push(c);
       lg.clubIds.push(c.id);
       nameToClub.set(cs.name, c.id);
@@ -303,6 +304,7 @@ export function generateWorld(content: Content, seed: number, opts: GenOptions):
   leagueSeeds.forEach((ls) => {
     for (const cs of ls.clubs) {
       if (cs.rival && nameToClub.has(cs.rival)) world.clubs[nameToClub.get(cs.name)!].rivalClubId = nameToClub.get(cs.rival)!;
+      if (cs.reserve && cs.parent && nameToClub.has(cs.parent)) world.clubs[nameToClub.get(cs.name)!].reserveOf = nameToClub.get(cs.parent)!;
     }
   });
 
