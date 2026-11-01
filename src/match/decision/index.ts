@@ -28,12 +28,30 @@ export interface DecisionMomentOptions {
 
 const AUTO_CLOSE_MS = 5200;
 
+/** Situations shown lately (about the last 5 matches), so the same picture does not repeat within or across matches. */
+const RECENT_KEY = 'fc.dm.recent.v1';
+const RECENT_MAX = 24;
+let recentMem: string[] = [];
+function recentVariants(): string[] {
+  try {
+    const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(RECENT_KEY) : null;
+    if (raw) { const a = JSON.parse(raw); if (Array.isArray(a)) recentMem = a.filter((x) => typeof x === 'string').slice(-RECENT_MAX); }
+  } catch { /* storage off: keep the in-memory list */ }
+  return recentMem;
+}
+function rememberVariant(key: string): void {
+  recentMem = [...recentMem.filter((k) => k !== key), key].slice(-RECENT_MAX);
+  try { if (typeof localStorage !== 'undefined') localStorage.setItem(RECENT_KEY, JSON.stringify(recentMem)); } catch { /* ignore */ }
+}
+
 export function playDecisionMoment(host: HTMLElement, spec: MomentSpec, opts: DecisionMomentOptions): Promise<MomentResult> {
   injectCss();
   const rnd = opts.rnd ?? Math.random;
   const reduced = opts.reducedMotion ?? (typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches);
   const def = kindDef(spec.kind);
-  const { variant, fixText } = renumber(pickVariant(def, spec, opts.pos), opts.shirt);
+  const picked = pickVariant(def, spec, opts.pos, recentVariants());
+  rememberVariant(`${def.kind}/${picked.id}`);
+  const { variant, fixText } = renumber(picked, opts.shirt);
   const options = buildOptions(def, variant, spec, opts.attr);
   const hint = hintOption(options, opts.attr, opts.pos, rnd());
   const timerS = opts.timer ?? (spec.context.lateClose ? 11 : 15);
@@ -323,10 +341,10 @@ const CSS = `
 @keyframes dmBlink{50%{opacity:.6}}
 .dm-timer-n{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 12px/1 var(--f-body,'Assistant');color:#1b2a4a;text-shadow:0 0 3px rgba(255,255,255,.7)}
 .dm-root[data-phase=act] .dm-timer,.dm-root[data-phase=result] .dm-timer{opacity:0;transition:opacity .3s}
-.dm-opts{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding-top:4px}
+.dm-opts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px;padding-top:4px}
 .dm-opts.odd .dm-card:last-child{grid-column:1 / -1}
 .dm-opts.gone{display:none}
-.dm-card{position:relative;min-height:84px;padding:10px 11px 9px;border-radius:14px;border:0;text-align:right;cursor:pointer;
+.dm-card{position:relative;min-width:0;overflow-wrap:anywhere;min-height:84px;padding:10px 11px 9px;border-radius:14px;border:0;text-align:right;cursor:pointer;
   background:linear-gradient(180deg,#ffffff 0%,#f1f2ee 100%);color:#1b2a4a;font-family:inherit;
   box-shadow:0 4px 0 #9aa1a8,0 8px 16px rgba(0,0,0,.28);display:flex;flex-direction:column;justify-content:space-between;gap:8px;
   transition:transform .12s ease,box-shadow .12s ease,opacity .25s ease;touch-action:manipulation}

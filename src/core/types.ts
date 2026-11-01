@@ -79,6 +79,8 @@ export interface Footballer extends Person {
   retired?: boolean;
   /** R&D addition: shirt number (user's player). */
   shirt?: number;
+  /** R&D addition: training persistence 1..100 (user's player). Rolled at career start, moves slowly with the weekly plan and events. */
+  persistence?: number;
 }
 
 export type CrestSpec = [shape: number, division: number, palette: number, charge: number];
@@ -230,6 +232,35 @@ export interface Career {
   renewalBlockedUntil?: number;
   /** R&D addition: what the last story answer caused (set by resolveEvent, cleared by the next command). */
   eventOutcome?: EventOutcome | null;
+  /** R&D addition: the club of the last senior match the user was in the squad for (first match at a new club is a key match). */
+  matchClubId?: number;
+  /** R&D addition: matches run automatically in a row by a faster season speed ('balanced' plays one in three anyway). */
+  ffAutoMatches?: number;
+  /** R&D addition: absWeek of an automatic week that stopped for a decision: its match still runs without moments. */
+  ffWeek?: number;
+  /** R&D addition: summary of the last fast-forward (weeks run automatically). Shown while absWeek === lastSkip.absWeek. */
+  lastSkip?: SkipSummary | null;
+}
+
+/** R&D addition: season speed. full = every match; balanced = important matches only; key = key matches only. */
+export type SeasonSpeed = 'full' | 'balanced' | 'key';
+
+/** R&D addition: one user match run automatically during a fast-forward. */
+export interface SkipMatch { seasonWeek: number; oppId: number; oppName: string; home: boolean; us: number; them: number; rating: number | null; goals: number; assists: number; youth?: boolean }
+
+/** R&D addition: what happened in the weeks a fast-forward ran automatically. */
+export interface SkipSummary {
+  absWeek: number; // the week the run stopped in
+  weeks: number; // weeks completed automatically
+  matches: SkipMatch[];
+  posBefore: number;
+  posAfter: number;
+  gains: AttrGain[];
+  autoEvents: string[];
+  /** Hebrew line: why the run stopped here. */
+  stopReason: string;
+  /** Where the run stopped: at a week's plan (an important match), at a decision, or at a week's end. */
+  at: 'plan' | 'event' | 'weekend';
 }
 
 /** What one story answer caused, shown right after the choice. */
@@ -299,7 +330,10 @@ export interface EventHistory {
 
 export type MomentKind =
   | 'shot' | 'one_on_one' | 'header' | 'dribble' | 'through_ball' | 'long_shot' | 'interception'
-  | 'tackle' | 'block' | 'clearance' | 'save' | 'rush_out' | 'penalty' | 'free_kick' | 'cross';
+  | 'tackle' | 'block' | 'clearance' | 'save' | 'rush_out' | 'penalty' | 'free_kick' | 'cross'
+  // round 6: position-true moves (decision moments; the arcade player maps them to the nearest scene)
+  | 'hold_up' | 'press' | 'counter' | 'cutback' | 'overlap' | 'between_lines' | 'switch_play' | 'second_ball'
+  | 'build_up' | 'recovery' | 'last_man' | 'aerial_duel' | 'set_piece_defend' | 'distribution' | 'claim_cross';
 
 export interface ContextMods { lateClose: boolean; hostileCrowd: boolean; rivalInvolved: boolean; rain: boolean; derby: boolean }
 
@@ -368,7 +402,7 @@ export interface World {
   live: LiveMatch | null;
   phase: GamePhase;
   lastWeekReport: WeekReport | null;
-  settings: { autoMoments: boolean };
+  settings: { autoMoments: boolean; /** R&D addition (default 'full'). */ seasonSpeed?: SeasonSpeed };
 }
 
 export type GamePhase = 'plan' | 'event' | 'prematch' | 'match' | 'postmatch' | 'weekend' | 'offseason' | 'negotiation' | 'retired';
@@ -394,6 +428,8 @@ export interface WeekReport {
   autoEvents?: string[];
   /** R&D addition: Hebrew line shown under "מה השתפר" when no attribute moved by 0.1 or more. */
   gainsNote?: string;
+  /** R&D addition: why gains were big or small this week ("מתקנים ★★★★☆ · התמדה גבוהה · קרוב לתקרה"). */
+  trainingWhy?: string;
 }
 
 // ---------------------------------------------------------------- view snapshot sent to UI
@@ -402,9 +438,15 @@ export interface PlayerView {
   id: number; name: string; age: number; pos: Position; attr: Attributes; overall: number;
   potentialRange: [number, number]; form: number; fitness: number; morale: number;
   injury: Injury | null; contract: Contract | null; stats: SeasonStats; careerStats: SeasonStats; shirt: number;
+  /** R&D addition: training persistence 1..100. */
+  persistence?: number;
 }
 
-export interface ClubView { id: number; name: string; short: string; city: string; colors: [string, string]; crest: CrestSpec; reputation: number; leagueName: string; country: string; stadium: string }
+export interface ClubView {
+  id: number; name: string; short: string; city: string; colors: [string, string]; crest: CrestSpec; reputation: number; leagueName: string; country: string; stadium: string;
+  /** R&D addition: training facilities, 1..5 stars (derived from reputation, league strength and wage level). */
+  facilities?: number;
+}
 
 export interface PersonView { id: number; name: string; role: Role; traits: TraitId[]; relation: number; age: number; clubId: number | null; archetype?: AgentArchetype }
 
@@ -437,7 +479,9 @@ export interface View {
   /** rounds: league matches per club this season (small leagues play 3-4 round robins). */
   leagueZones?: { promote: number; relegate: number; champion?: number; rounds?: number };
   /** R&D addition: user settings. */
-  settings?: { autoMoments: boolean };
+  settings?: { autoMoments: boolean; seasonSpeed?: SeasonSpeed };
+  /** R&D addition: the last fast-forward, while the game is still in the week it stopped in. */
+  skip?: SkipSummary | null;
   /** R&D addition: every club of the career (history + current), keyed by id. */
   careerClubs?: Record<number, ClubView>;
   /** R&D addition: career-end lines (Hebrew): the move that changed everything, the person who mattered most. */
@@ -449,9 +493,9 @@ export interface View {
 // ---------------------------------------------------------------- commands (UI -> core)
 
 export type Command =
-  | { type: 'newCareer'; seed?: number; pos: Position; firstName: string; lastName: string; shirt?: number; clubsOverride?: unknown }
+  | { type: 'newCareer'; seed?: number; pos: Position; firstName: string; lastName: string; shirt?: number; clubsOverride?: unknown; seasonSpeed?: SeasonSpeed }
   | { type: 'setPlan'; plan: WeekPlan }
-  | { type: 'quickWeek' } // repeat last plan, auto-resolve events with default option, jump to match
+  | { type: 'quickWeek'; /** R&D addition: keep running weeks automatically up to the next stop (important match, decision, offer, offseason). */ untilNext?: boolean } // repeat last plan, auto-resolve events with default option, jump to match
   | { type: 'resolveEvent'; uid: number; optionId: string }
   | { type: 'startMatch' }
   | { type: 'momentResult'; result: MomentResult }
@@ -463,6 +507,7 @@ export type Command =
   | { type: 'walkAway' }
   | { type: 'requestRenewal' }
   | { type: 'retire' }
-  | { type: 'setAutoMoments'; value: boolean };
+  | { type: 'setAutoMoments'; value: boolean }
+  | { type: 'setSeasonSpeed'; value: SeasonSpeed };
 
 export interface ApplyResult { view: View; saveDue: boolean; toast?: string[] }

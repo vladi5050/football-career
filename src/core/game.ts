@@ -4,11 +4,11 @@
 // last week -> offseason -> plan (new season) ; negotiation is a modal phase that returns where it started ; retired is final.
 import type { Content } from './content';
 import type {
-  ClubView, Command, Footballer, GamePhase, LiveMatch, MomentResult, MomentSpec, PersonView, View, WeekPlan, WeekReport, World,
+  AttrKey, ClubView, Command, Footballer, GamePhase, LiveMatch, MomentResult, MomentSpec, PersonView, SkipMatch, SkipSummary, View, WeekPlan, WeekReport, World,
 } from './types';
 import { makeRng, type Rng } from './rng';
 import {
-  addNews, avg, changeRelation, clamp, count, firstName, fmtMoney, ovr, pre, pushHistory, relationOf, userClub, userLeague, userPlayer,
+  ATTR_KEYS, addNews, avg, changeRelation, clamp, count, firstName, fmtMoney, ovr, pre, pushHistory, relationOf, userClub, userLeague, userPlayer,
 } from './helpers';
 import { generateWorld } from './worldGen';
 import { applyResult, fixtureFor, fixturesInWeek, isWindowOpen, matchWeeks, SEASON_EXTRA_WEEKS, nextFixture, sortedTable, tablePosition, windowName } from './schedule';
@@ -17,8 +17,10 @@ import {
   advanceLive, applyMomentResult, decideLineup, finalizeLive, resolveMomentAuto as resolveAuto, simFixture, startLiveMatch,
 } from './matchSim';
 import {
-  applyPlanImmediate, applyTraining, autoPlan, defaultPlan, rollUserInjury, trackAttrProgress, weeklyRecovery,
+  applyPlanImmediate, applyTraining, autoPlan, clubFacilities, defaultPlan, persistenceOf, rollPersistence, rollUserInjury, trackAttrProgress,
+  trainingWhy, weeklyPersistence, weeklyRecovery,
 } from './development';
+import { importantMatch, isStopEvent, seasonSpeed } from './seasonSpeed';
 import { autoOptionId, checkPromises, compileEvents, resolveEvent, rollWeekEvents, syncFlags } from './events';
 import { acceptCurrent, negotiateRound, openNegotiation, ROLE_HE as SQUAD_ROLE_HE, userWalkAway } from './negotiation';
 import { activeLeagues, atReserve, expireOffers, npcTransfers, RESERVE_TUNING, reserveCallUp, reserveRelease, sackings, spawnOffer, weeklyOffers } from './transfers';
@@ -34,6 +36,8 @@ export function newGame(cmd: Extract<Command, { type: 'newCareer' }>, content: C
   const rng = makeRng(world.rngState);
   startSeason(world, content, rng, 1, 2026);
   world.phase = 'plan';
+  userPlayer(world).persistence = rollPersistence(seed);
+  if (cmd.seasonSpeed && cmd.seasonSpeed !== 'full') world.settings.seasonSpeed = cmd.seasonSpeed;
   if (world.career.startStory) addNews(world, { kind: 'career', headline: world.career.startStory });
   return world;
 }
@@ -49,14 +53,17 @@ export function apply(world: World, cmd: Command, content: Content): ApplyOut {
   if (cmd.type === 'newCareer') return { world: newGame(cmd, content) };
   const rng = makeRng(world.rngState);
   const toast: string[] = [];
-  if (world.career.retired && cmd.type !== 'setAutoMoments') return { world, toast: ['הקריירה הסתיימה'] };
+  if (world.career.retired && cmd.type !== 'setAutoMoments' && cmd.type !== 'setSeasonSpeed') return { world, toast: ['הקריירה הסתיימה'] };
   world.career.eventOutcome = null;
   switch (cmd.type) {
     case 'setPlan':
       if (world.phase !== 'plan') { toast.push('אפשר לתכנן רק בתחילת השבוע'); break; }
       doPlan(world, content, rng, cmd.plan, toast);
       break;
-    case 'quickWeek': quickWeek(world, content, rng, toast); break;
+    case 'quickWeek':
+      if (cmd.untilNext && world.phase === 'plan') fastForward(world, content, rng, toast, true);
+      else quickWeek(world, content, rng, toast);
+      break;
     case 'resolveEvent': {
       const r = resolveEvent(world, content, cmd.uid, cmd.optionId, rng);
       world.career.eventOutcome = r.outcome ?? null; // the outcome sheet shows the notes
@@ -88,7 +95,9 @@ export function apply(world: World, cmd: Command, content: Content): ApplyOut {
     case 'finishWeek':
       if (world.phase === 'postmatch' || world.phase === 'weekend') advanceWeek(world, content, rng, toast);
       else if (world.phase === 'offseason') beginNextSeason(world, content, rng, toast);
-      else toast.push('השבוע עוד לא נגמר');
+      else { toast.push('השבוע עוד לא נגמר'); break; }
+      // faster season speeds: the weeks that don't need the player run by themselves, up to the next stop
+      if (seasonSpeed(world) !== 'full' && phaseOf(world) === 'plan') fastForward(world, content, rng, toast, false);
       break;
     case 'respondOffer': {
       const offer = world.career.offers.find((o) => o.id === cmd.offerId);
@@ -144,6 +153,10 @@ export function apply(world: World, cmd: Command, content: Content): ApplyOut {
       break;
     }
     case 'setAutoMoments': world.settings.autoMoments = cmd.value; break;
+    case 'setSeasonSpeed':
+      if (cmd.value === 'full') delete world.settings.seasonSpeed;
+      else world.settings.seasonSpeed = cmd.value;
+      break;
   }
   return { world, toast: toast.length ? toast : undefined };
 }
@@ -173,7 +186,7 @@ export function isMajorEvent(content: Content, ev: { templateId: string; categor
 }
 
 /** Quick week: repeat the last plan, auto-answer minor events, skip pre-match and go straight into the match. Stops on a major decision. */
-function quickWeek(world: World, content: Content, rng: Rng, toast: string[]): void {
+function quickWeek(world: World, content: Content, rng: Rng, toast: string[], keep: (c: Content, ev: { templateId: string; category: string }) => boolean = isMajorEvent): void {
   if (world.phase === 'plan') {
     const u = userPlayer(world);
     const plan = world.career.lastPlan ?? defaultPlan(u);
@@ -185,7 +198,7 @@ function quickWeek(world: World, content: Content, rng: Rng, toast: string[]): v
   world.career.quickFlow = true;
   if (world.phase === 'event') {
     for (const ev of world.inbox.slice()) {
-      if (isMajorEvent(content, ev)) continue;
+      if (keep(content, ev)) continue;
       const opt = autoOptionId(content, ev);
       const text = ev.options.find((o) => o.id === opt)?.text;
       world.career.autoAnswered = [...(world.career.autoAnswered ?? []), text ? `${ev.title}: ${text}` : ev.title].slice(-3);
@@ -201,6 +214,98 @@ function quickWeek(world: World, content: Content, rng: Rng, toast: string[]): v
   } else if (world.phase === 'prematch') {
     startMatch(world, content, rng, toast);
   }
+}
+
+export const FF_MAX_WEEKS = 60;
+
+/**
+ * Fast-forward: run quick weeks one after another until the next stop. A stop is an important match for the season speed
+ * ('full' uses the 'balanced' rules here, so the button still means something), a decision the player must make
+ * (transfer, contract, injury, captaincy, national team), a new offer, a new injury, a first national call-up,
+ * a negotiation, the offseason or retirement. `force`: the current week runs even if it is important (the player asked).
+ * Moments are auto-resolved in the auto weeks; the summary goes to career.lastSkip.
+ */
+function fastForward(world: World, content: Content, rng: Rng, toast: string[], force: boolean): void {
+  if (world.phase !== 'plan') return;
+  const speed = seasonSpeed(world) === 'full' ? 'balanced' : seasonSpeed(world);
+  const u = userPlayer(world);
+  const c0 = userClub(world);
+  const posBefore = c0 ? tablePosition(world, c0.id) : 0;
+  const attrBefore = { ...u.attr };
+  const matches: SkipMatch[] = [];
+  const autoEvents: string[] = [];
+  const keep = (ct: Content, ev: { templateId: string; category: string }): boolean => isStopEvent(ct, ev, isMajorEvent);
+  const prevAuto = world.settings.autoMoments;
+  let weeks = 0;
+  let reason = '';
+  let at: SkipSummary['at'] = 'plan';
+  world.settings.autoMoments = true;
+  try {
+    for (let guard = 0; guard < FF_MAX_WEEKS; guard++) {
+      if (world.phase !== 'plan') { reason = phaseStop(world); at = 'weekend'; break; }
+      if (!(force && weeks === 0)) {
+        const imp = importantMatch(world, speed);
+        if (imp) { reason = imp; at = 'plan'; world.career.ffAutoMatches = 0; break; }
+      }
+      const offersBefore = new Set(world.career.offers.map((o) => o.id));
+      const injuredBefore = !!u.injury;
+      const capsBefore = world.career.nationalCaps;
+      const club = userClub(world);
+      const hadFixture = !!(club && fixtureFor(world, club.id, world.season.week));
+      quickWeek(world, content, rng, [], keep);
+      const ph = phaseOf(world);
+      if (ph !== 'postmatch' && ph !== 'weekend') {
+        // a decision is waiting (event), or a negotiation opened mid-week
+        reason = ph === 'event' ? 'יש החלטה שמחכה לך' : phaseStop(world);
+        at = 'event';
+        world.career.ffWeek = world.absWeek; // after the decision, this week's match still runs by itself
+        if (hadFixture) world.career.ffAutoMatches = (world.career.ffAutoMatches ?? 0) + 1;
+        break;
+      }
+      weeks++;
+      const rep = world.lastWeekReport;
+      if (rep?.autoEvents) autoEvents.push(...rep.autoEvents);
+      const live = world.live;
+      if (live && club) {
+        const f = live.fixture;
+        const us = live.isHome ? f.hg : f.ag, them = live.isHome ? f.ag : f.hg;
+        const played = live.started || live.subMinute != null;
+        matches.push({
+          seasonWeek: world.season.week, oppId: live.oppClubId, oppName: world.clubs[live.oppClubId].name, home: live.isHome, us, them,
+          rating: played ? Math.round(live.userRating * 10) / 10 : null, goals: live.userGoals, assists: live.userAssists, ...(live.youth ? { youth: true } : {}),
+        });
+      }
+      if (hadFixture) world.career.ffAutoMatches = (world.career.ffAutoMatches ?? 0) + 1;
+      const newOffer = world.career.offers.find((o) => !offersBefore.has(o.id));
+      if (newOffer) { reason = `הצעה חדשה ${pre('מ', world.clubs[newOffer.fromClubId].name)}`; at = 'weekend'; break; }
+      if (u.injury && !injuredBefore) { reason = `נפצעת: ${u.injury.kind}`; at = 'weekend'; break; }
+      if (capsBefore === 0 && world.career.nationalCaps > 0) { reason = 'זימון ראשון לנבחרת'; at = 'weekend'; break; }
+      advanceWeek(world, content, rng, []);
+    }
+  } finally {
+    world.settings.autoMoments = prevAuto;
+  }
+  if (!weeks) return; // nothing ran
+  const gains = ATTR_KEYS.filter((k: AttrKey) => Math.round(u.attr[k] * 10) - Math.round(attrBefore[k] * 10) >= 1)
+    .map((k) => ({ key: k, before: attrBefore[k], after: u.attr[k] }));
+  const c1 = userClub(world);
+  const posAfter = c1 && phaseOf(world) !== 'offseason' && phaseOf(world) !== 'retired' ? tablePosition(world, c1.id) : (world.career.history[world.career.history.length - 1]?.position ?? 0);
+  world.career.lastSkip = {
+    absWeek: world.absWeek, weeks, matches, posBefore, posAfter: c1?.id === c0?.id ? posAfter : 0, gains, autoEvents: autoEvents.slice(-8),
+    stopReason: reason || 'עצרנו כאן', at,
+  };
+  if (weeks) toast.push(weeks === 1 ? `שבוע אחד רץ אוטומטית. ${reason}` : `${weeks} שבועות רצו אוטומטית. ${reason}`);
+}
+
+/** The phase, read fresh (TypeScript would keep a narrowed value across the calls that change it). */
+const phaseOf = (world: World): GamePhase => world.phase;
+
+function phaseStop(world: World): string {
+  if (world.phase === 'offseason') return 'העונה הסתיימה';
+  if (world.phase === 'retired') return 'הקריירה הסתיימה';
+  if (world.phase === 'negotiation') return 'משא ומתן על חוזה';
+  if (world.phase === 'event') return 'יש החלטה שמחכה לך';
+  return 'עצרנו כאן';
 }
 
 /** Engine-meaningful flags set by event effects (captain, renewal request, army, farewell). */
@@ -243,7 +348,7 @@ function startMatch(world: World, content: Content, rng: Rng, toast: string[]): 
     finishMatch(world, content, rng, toast);
     return;
   }
-  if (world.settings.autoMoments) { simRest(world, rng); finishMatch(world, content, rng, toast); return; }
+  if (world.settings.autoMoments || world.career.ffWeek === world.absWeek) { simRest(world, rng); finishMatch(world, content, rng, toast); return; }
   advanceLive(world, live, rng);
   if (live.finished) finishMatch(world, content, rng, toast);
 }
@@ -285,6 +390,7 @@ function completeWeek(world: World, content: Content, rng: Rng, live: LiveMatch 
 
   // ---- user's match aftermath
   if (live) world.history.flags.first_match_done = 1;
+  if (live && !live.youth) world.career.matchClubId = live.userClubId;
   if (live && live.youth) {
     const f = live.fixture;
     const us = live.isHome ? f.hg : f.ag, them = live.isHome ? f.ag : f.hg;
@@ -380,6 +486,8 @@ function completeWeek(world: World, content: Content, rng: Rng, live: LiveMatch 
 
   // ---- training, injuries, money
   const gains = applyTraining(world, world.career.lastPlan ?? defaultPlan(u), rng);
+  const why = u.injury ? undefined : trainingWhy(world); // before the weekly drift: the week's own conditions
+  weeklyPersistence(world, world.career.lastPlan ?? defaultPlan(u));
   trackAttrProgress(world);
   const inj = rollUserInjury(world, rng, world.career.lastPlan ?? defaultPlan(u), minutes);
   if (inj) notable = true;
@@ -409,6 +517,7 @@ function completeWeek(world: World, content: Content, rng: Rng, live: LiveMatch 
     nearGoals: nearGoals(world), notable,
   };
   if (world.career.autoAnswered?.length) { report.autoEvents = world.career.autoAnswered; world.career.autoAnswered = []; }
+  if (why) report.trainingWhy = why;
   if (!gains.length) report.gainsNote = u.injury ? 'פצוע. השבוע בלי אימונים.' : u.age >= 30 ? 'השבוע בלי שינוי במספרים. שומרים על מה שיש.' : 'השבוע בלי שינוי שרואים במספרים. העבודה מצטברת.';
   world.lastWeekReport = report;
 }
@@ -500,6 +609,7 @@ function openLoops(world: World): string[] {
 
 function advanceWeek(world: World, content: Content, rng: Rng, toast: string[]): void {
   world.live = null;
+  world.career.lastSkip = null;
   world.career.quickFlow = false;
   world.career.prematch = null;
   world.inbox = [];
@@ -619,7 +729,7 @@ function retireUser(world: World, reason: string): void {
 function clubView(world: World, id: number): ClubView {
   const c = world.clubs[id];
   const lg = world.leagues[c.leagueId];
-  return { id: c.id, name: c.name, short: c.short, city: c.city, colors: c.colors, crest: c.crest, reputation: c.reputation, leagueName: lg.name, country: lg.country, stadium: c.stadium };
+  return { id: c.id, name: c.name, short: c.short, city: c.city, colors: c.colors, crest: c.crest, reputation: c.reputation, leagueName: lg.name, country: lg.country, stadium: c.stadium, facilities: clubFacilities(world, id) };
 }
 
 function personView(world: World, id: number | null | undefined): PersonView | null {
@@ -736,6 +846,7 @@ export function buildView(world: World): View {
       id: u.id, name: u.name, age: u.age, pos: u.pos, attr: { ...u.attr }, overall: Math.floor(ovr(u)), potentialRange: potentialRange(world, u),
       form: u.form, fitness: Math.round(u.fitness), morale: Math.round(u.morale), injury: u.injury ? { ...u.injury } : null,
       contract: u.contract ? { ...u.contract, bonuses: u.contract.bonuses.slice() } : null, stats: { ...u.stats }, careerStats: { ...u.careerStats }, shirt: u.shirt ?? 0,
+      persistence: Math.round(persistenceOf(world)),
     },
     club: c ? clubView(world, c.id) : null,
     league: lg ? { id: lg.id, name: lg.name, country: lg.country } : null,
@@ -761,7 +872,8 @@ export function buildView(world: World): View {
       promote: lg.promotesTo != null ? lg.promoteSpots : 0, relegate: lg.relegatesTo != null ? lg.relegateSpots : 0, champion: 1,
       rounds: c ? (world.season.fixtures[lg.id] ?? []).filter((f) => f.home === c.id || f.away === c.id).length : undefined,
     } : undefined,
-    settings: { autoMoments: world.settings.autoMoments },
+    settings: { autoMoments: world.settings.autoMoments, seasonSpeed: seasonSpeed(world) },
+    skip: k.lastSkip && k.lastSkip.absWeek === world.absWeek ? JSON.parse(JSON.stringify(k.lastSkip)) : null,
     careerClubs: careerClubs(world),
     careerStory: careerStory(world),
     ...(world.phase === 'prematch' && k.prematch ? { prematch: { lineup: k.prematch.lineup, reason: k.prematch.reason, subMinute: k.prematch.subMinute } } : {}),

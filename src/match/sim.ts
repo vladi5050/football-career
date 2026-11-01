@@ -512,5 +512,6 @@ export function resultText(kind: MomentKind, success: boolean, reason: string): 
     case 'dribble': return success ? 'עבר אותו!' : 'איבד את הכדור';
     case 'through_ball': return success ? 'מסירת זהב!' : 'נחטף';
     case 'cross': return success ? 'הגבהה מדויקת!' : 'ההגנה הרחיקה';
+    default: return success ? 'הצליח!' : 'לא הלך';
   }
 }

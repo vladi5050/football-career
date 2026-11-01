@@ -10,6 +10,10 @@ export const MOMENT_HE: Record<MomentKind, string> = {
   shot: 'בעיטה', one_on_one: 'אחד על אחד מול השוער', header: 'נגיחה', dribble: 'דריבל מול המגן', through_ball: 'מסירת עומק',
   long_shot: 'בעיטה מרחוק', interception: 'חטיפה', tackle: 'תיקול', block: 'חסימה', clearance: 'הרחקה', save: 'הצלה',
   rush_out: 'יציאה מהשער', penalty: 'פנדל', free_kick: 'בעיטה חופשית', cross: 'הגבהה לרחבה',
+  hold_up: 'משחק גב', press: 'לחץ גבוה', counter: 'מתפרצת', cutback: 'החזרה לאחור', overlap: 'עקיפה באגף',
+  between_lines: 'קבלה בין הקווים', switch_play: 'החלפת אגף', second_ball: 'כדור שני', build_up: 'יציאה מהלחץ',
+  recovery: 'חזרה להגנה', last_man: 'אחרון בהגנה', aerial_duel: 'מאבק אווירי', set_piece_defend: 'הגנה על מצב נייח',
+  distribution: 'הוצאת כדור', claim_cross: 'יציאה להגבהה',
 };
 
 type PlayMoment = (host: HTMLElement, spec: MomentSpec, opts: { reducedMotion?: boolean; asKeeper?: boolean; colors?: { user: [string, string]; opp: [string, string] } }) => Promise<MomentResult>;

@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { PlanSlot, View, WeekPlan } from '../../core/types';
 import { act, busy, view } from '../../app/store';
-import { ATTR_HE, DAYS, OTHER_SLOTS, POS_KEYS, SLOT_INFO, firstName, nearestAttrGoal, trainingSlots, type SlotInfo } from '../i18n';
+import { ATTR_HE, DAYS, OTHER_SLOTS, POS_KEYS, SEASON_SPEEDS, SLOT_INFO, firstName, nearestAttrGoal, persistenceHe, starsHe, trainingSlots, type SlotInfo } from '../i18n';
 import { TopBar } from '../components/TopBar';
 import { Magnet } from '../components/Magnet';
 import { SlotGlyph, IconBolt } from '../components/Icons';
 import { Crest } from '../components/Crest';
 import { Bar, ProgressNearGoal } from '../components/Bars';
+import { SkipCard } from '../components/SkipSummary';
 
 type Plan = (PlanSlot | null)[];
 
@@ -159,6 +160,11 @@ export function WeekScreen() {
 
   const closeWeek = () => full && act({ type: 'setPlan', plan: plan as WeekPlan });
   const quick = () => act({ type: 'quickWeek' });
+  const toNext = () => act({ type: 'quickWeek', untilNext: true });
+  const skip = v.skip && v.skip.at === 'plan' ? v.skip : null;
+  const speed = v.settings?.seasonSpeed ?? 'full';
+  const fac = v.club?.facilities;
+  const pers = v.player.persistence;
 
   return (
     <main class="screen has-nav has-actions week-screen">
@@ -173,6 +179,8 @@ export function WeekScreen() {
           </div>
         </div>
       )}
+
+      {skip && <SkipCard skip={skip} />}
 
       {/* phone: .cols/.col are display:contents (same order as before); tablet+: two columns */}
       <div class="cols week-cols">
@@ -285,13 +293,27 @@ export function WeekScreen() {
           <span class="meter-val num">{Math.round(projected)}</span>
         </div>
         {ng && !inj && <ProgressNearGoal text={ng.text} progress={ng.value} target={ng.target} />}
+        <div class="train-factors" aria-label="מה משפיע על האימון">
+          <span>פוטנציאל: <b class="num">{v.player.potentialRange[0]}-{v.player.potentialRange[1]}</b></span>
+          {fac != null && <span>מתקנים <b class="stars" aria-label={`${fac} כוכבים מתוך 5`}>{starsHe(fac)}</b></span>}
+          {pers != null && <span>התמדה <b>{persistenceHe(pers)}</b></span>}
+        </div>
       </section>
       </div>
       </div>
 
-      <div class="action-bar">
+      <div class="action-bar week-actions">
         <button class="btn btn-ink" type="button" onClick={quick} disabled={busy.value}>
           <IconBolt size={20} /> שבוע מהיר
+        </button>
+        <button
+          class="btn btn-ghost btn-sm ff-btn"
+          type="button"
+          onClick={toNext}
+          disabled={busy.value}
+          title={speed === 'full' ? 'השבועות שאינם חשובים ירוצו לבד, עד המשחק החשוב הבא' : `קצב העונה: ${SEASON_SPEEDS.find((x) => x.id === speed)?.label ?? ''}`}
+        >
+          <IconBolt size={18} /><IconBolt size={18} /> שבוע מהיר עד המשחק הבא
         </button>
         <button class="btn btn-primary grow2" type="button" onClick={closeWeek} disabled={!full || busy.value}>
           {full ? 'סגור את השבוע' : `עוד ${missing} מגנט${missing > 1 ? 'ים' : ''}`}

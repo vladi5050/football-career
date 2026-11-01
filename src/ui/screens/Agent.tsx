@@ -1,7 +1,7 @@
 import { act, busy, view } from '../../app/store';
 import type { PersonView, SquadRole } from '../../core/types';
 import { renewalBlocked } from '../viewExtras';
-import { ROLE_HE, TRAIT_HE, money, moneyShort, relationWord } from '../i18n';
+import { ROLE_HE, TRAIT_HE, money, moneyShort, relationWord, starsHe } from '../i18n';
 import { TopBar } from '../components/TopBar';
 import { Crest } from '../components/Crest';
 import { TapedCard } from '../components/TapedCard';
@@ -72,6 +72,14 @@ export function AgentScreen() {
               <div class="of-main">
                 <div class="of-club">{c?.name ?? 'מועדון'}</div>
                 <div class="muted">{c ? `${c.leagueName} · ${c.country}` : ''}</div>
+                {c?.facilities != null && (
+                  <div class="facilities-line">
+                    מתקני אימון <span class="stars" aria-label={`${c.facilities} כוכבים מתוך 5`}>{starsHe(c.facilities)}</span>
+                    {v.club?.facilities != null && c.facilities !== v.club.facilities && (
+                      <span class={c.facilities > v.club.facilities ? 'up' : 'down'}>{c.facilities > v.club.facilities ? ' · יותר טובים משלך' : ' · פחות טובים משלך'}</span>
+                    )}
+                  </div>
+                )}
               </div>
               <span class={`chip ${weeksLeft <= 1 ? 'chip-red' : 'chip-ink'}`}>{weeksLeft <= 0 ? 'פג היום' : `עוד ${weeksLeft} שב׳`}</span>
             </div>

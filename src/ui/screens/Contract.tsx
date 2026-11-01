@@ -1,7 +1,7 @@
 import { useState } from 'preact/hooks';
 import { act, busy, view } from '../../app/store';
 import type { ClubView, SquadRole } from '../../core/types';
-import { ROLE_HE, money } from '../i18n';
+import { ROLE_HE, money, starsHe } from '../i18n';
 import { Crest } from '../components/Crest';
 import { TapedCard } from '../components/TapedCard';
 import { PatienceBar } from '../components/Bars';
@@ -55,6 +55,11 @@ export function ContractScreen() {
         <div class="nh-main">
           <h1 class="tb-title">{club?.name ?? 'משא ומתן'}</h1>
           <div class="tb-sub">{n.offerId == null ? 'חידוש חוזה' : 'הצעת מעבר'} · משא ומתן</div>
+          {club?.facilities != null && (
+            <div class="tb-sub facilities-line">
+              מתקני אימון <span class="stars" aria-label={`${club.facilities} כוכבים מתוך 5`}>{starsHe(club.facilities)}</span>
+            </div>
+          )}
         </div>
         <div class={`rounds ${final ? 'is-final' : ''}`} aria-label={final ? 'הצעה אחרונה' : `סבב ${Math.min(n.round, 3)} מתוך 3`}>
           {[1, 2, 3].map((r) => (

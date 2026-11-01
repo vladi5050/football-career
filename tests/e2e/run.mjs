@@ -428,8 +428,8 @@ async function startNewCareer(page, { audits = false, name = null, pos = null } 
 }
 
 // "רגע החלטה": full-screen overlay on document.body with 2-4 option cards, a pressure timer, then a stamp and "המשך".
-const GK_KINDS = new Set(['save', 'rush_out', 'penalty']);
-const DEF_KINDS = new Set(['interception', 'tackle', 'block', 'clearance']);
+const GK_KINDS = new Set(['save', 'rush_out', 'penalty', 'claim_cross', 'distribution', 'set_piece_defend']);
+const KEEPER_ONLY = new Set(['save', 'rush_out', 'claim_cross', 'distribution']);
 async function playDecision(page, st, { via = 'click', pick = null, doAudit = false, shotName = null } = {}) {
   const t0 = now();
   const sb = await page.evaluate(() => (document.querySelector('.sb-score')?.textContent ?? '').match(/\d+/g)?.map(Number) ?? []);
@@ -485,7 +485,7 @@ async function playDecision(page, st, { via = 'click', pick = null, doAudit = fa
   if (m && info.score.length === 2 && (Number(m[1]) !== info.score[0] || Number(m[2]) !== info.score[1])) issue('decision overlay score differs from its own stakes line', `${tag}: ${info.score.join(':')} vs "${info.stakes}"`, 'decision', null);
   const pos = st.pos;
   if (pos === 'GK' && !GK_KINDS.has(info.kind)) issue('goalkeeper got an outfield decision moment', `${tag}: ${info.kind} (${info.title})`, 'decision', await shot(page, 'dm-gk-kind'));
-  if (pos && pos !== 'GK' && (info.kind === 'save' || info.kind === 'rush_out')) issue('outfield player got a goalkeeper decision moment', `${tag}: ${pos} ${info.kind}`, 'decision', await shot(page, 'dm-kind'));
+  if (pos && pos !== 'GK' && KEEPER_ONLY.has(info.kind)) issue('outfield player got a goalkeeper decision moment', `${tag}: ${pos} ${info.kind}`, 'decision', await shot(page, 'dm-kind'));
   // pick: by key (1-4) or by tapping a card
   const n = info.cards.length;
   const hintIdx = info.cards.findIndex((c) => c.hint);

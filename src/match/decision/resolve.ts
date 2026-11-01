@@ -52,10 +52,10 @@ export function attrEdge(attrValue: number, attackerSkill: number): number {
 
 const RISK_BASE = [0, 0.04, 0, -0.04];
 /** Per-kind calibration: penalties are converted far more often than open-play chances; keepers get a fair shot. */
-const KIND_BONUS: Partial<Record<MomentSpec['kind'], number>> = { penalty: 0.2, save: 0.07, rush_out: 0.05 };
+const KIND_BONUS: Partial<Record<MomentSpec['kind'], number>> = { penalty: 0.2, save: 0.07, rush_out: 0.05, claim_cross: 0.04, distribution: 0.05 };
 
 /** Goalkeeper moments keep the round-3 calibration (QA: keepers already feel fair). */
-const KEEPER_KINDS: ReadonlySet<MomentSpec['kind']> = new Set(['save', 'rush_out']);
+const KEEPER_KINDS: ReadonlySet<MomentSpec['kind']> = new Set(['save', 'rush_out', 'claim_cross', 'distribution']);
 /**
  * Fit -> chance line [intercept, slope]. Outfield (QA round 4: the right read felt like a coin flip that came up tails):
  * in real careers (difficulty ≈ 0.5-0.55) the best read lands ≈ 60% and the average over all options ≈ 37%.
@@ -90,13 +90,29 @@ export function kindDef(kind: MomentSpec['kind']): KindDef {
   return LIBRARY[kind] ?? LIBRARY.shot;
 }
 
-/** Variant choice: deterministic per spec id, filtered by keeper role for penalties. */
-export function pickVariant(def: KindDef, spec: Pick<MomentSpec, 'id' | 'minute'>, pos?: Position): Variant {
+/**
+ * Variant choice, deterministic per spec id + minute. Filters: keeper role for GK (taker otherwise), then the
+ * variant's `pos` list (a role-true situation for the user's position). `recent` holds `kind/variantId` keys shown
+ * lately (newest last): unseen variants are preferred; if all were seen, the one seen longest ago wins.
+ */
+export function pickVariant(def: KindDef, spec: Pick<MomentSpec, 'id' | 'minute'>, pos?: Position, recent?: readonly string[]): Variant {
   const role = pos === 'GK' ? 'keeper' : 'taker';
-  const list = def.variants.filter((v) => !v.role || v.role === role);
-  const pool = list.length ? list : def.variants;
+  const byRole = def.variants.filter((v) => !v.role || v.role === role);
+  const roled = byRole.length ? byRole : def.variants;
+  const byPos = pos ? roled.filter((v) => !v.pos || v.pos.includes(pos)) : roled;
+  const pool = byPos.length ? byPos : roled;
   const h = Math.abs((spec.id * 2654435761 + spec.minute * 97) | 0);
-  return pool[h % pool.length];
+  if (!recent?.length || pool.length < 2) return pool[h % pool.length];
+  const key = (v: Variant) => `${def.kind}/${v.id}`;
+  const fresh = pool.filter((v) => !recent.includes(key(v)));
+  if (fresh.length) return fresh[h % fresh.length];
+  let best = pool[0];
+  let at = Infinity;
+  for (const v of pool) {
+    const i = recent.lastIndexOf(key(v));
+    if (i < at) { at = i; best = v; }
+  }
+  return best;
 }
 
 export function attrValue(attr: Attributes, key: OptAttr): number {

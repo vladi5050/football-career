@@ -1,7 +1,7 @@
 import { view } from '../../app/store';
 import type { PersonView } from '../../core/types';
 import { vx } from '../viewExtras';
-import { POS_HE, ROLE_HE, TRAIT_HE, avgRating, money, relationWord } from '../i18n';
+import { POS_HE, ROLE_HE, TRAIT_HE, avgRating, money, persistenceHe, relationWord, starsHe } from '../i18n';
 import { TopBar } from '../components/TopBar';
 import { Crest } from '../components/Crest';
 import { ShirtOnHook, patternFor } from '../components/Shirt';
@@ -55,6 +55,11 @@ export function ClubScreen() {
             <div class="muted-wall">
               {club.city} · {club.stadium}
             </div>
+            {club.facilities != null && (
+              <div class="muted-wall facilities-line">
+                מתקני אימון <span class="stars" aria-label={`${club.facilities} כוכבים מתוך 5`}>{starsHe(club.facilities)}</span>
+              </div>
+            )}
             <div class="chips" style={{ marginTop: 8 }}>
               <span class="chip chip-orange">{ROLE_HE[c?.role ?? 'prospect']}</span>
               <span class="chip">{POS_HE[p.pos]}</span>
@@ -92,6 +97,7 @@ export function ClubScreen() {
         )}
         <div class="me-pot muted">
           פוטנציאל לפי הסקאוטים: <b class="num">{p.potentialRange[0]}-{p.potentialRange[1]}</b>
+          {p.persistence != null && <> · התמדה באימון: <b>{persistenceHe(p.persistence)}</b> <span class="num">({p.persistence})</span></>}
         </div>
         <AttrList attr={p.attr} pos={p.pos} />
         {c && (

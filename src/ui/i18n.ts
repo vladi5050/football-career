@@ -125,3 +125,22 @@ export function countHe(n: number, one: string, many: string, fem = false): stri
   if (n === 1) return `${one} ${fem ? 'אחת' : 'אחד'}`;
   return `${n} ${many}`;
 }
+
+/** Training facilities as stars: 4 -> "★★★★☆". */
+export function starsHe(n: number): string {
+  const k = Math.max(0, Math.min(5, Math.round(n)));
+  return '★'.repeat(k) + '☆'.repeat(5 - k);
+}
+
+/** Training persistence (1..100) in words. */
+export function persistenceHe(p: number): string {
+  return p >= 75 ? 'גבוהה מאוד' : p >= 58 ? 'גבוהה' : p >= 40 ? 'בינונית' : p >= 22 ? 'נמוכה' : 'נמוכה מאוד';
+}
+
+export type SeasonSpeedUi = 'full' | 'balanced' | 'key';
+/** Season speed choices (new career + settings). */
+export const SEASON_SPEEDS: { id: SeasonSpeedUi; label: string; sub: string }[] = [
+  { id: 'full', label: 'כל משחק', sub: 'משחקים כל שבת. הכי הרבה רגעים, הכי הרבה זמן' },
+  { id: 'balanced', label: 'משחקים חשובים', sub: 'דרבי, צמודות בטבלה, הצמרת והתחתית וסוף עונה במאבק. שאר השבועות רצים לבד' },
+  { id: 'key', label: 'רק משחקי מפתח', sub: 'דרבי, משחקים מכריעים ויריבות ישירות בסוף העונה. עונה עוברת מהר' },
+];

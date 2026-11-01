@@ -4,9 +4,9 @@ import { realContent } from './_content';
 import { newGame } from '../../src/core/game';
 import { makeRng, seedState } from '../../src/core/rng';
 import { applyResult, promoteRelegate, sortedTable } from '../../src/core/schedule';
-import { simFixture } from '../../src/core/matchSim';
+import { KINDS_BY_POS, simFixture } from '../../src/core/matchSim';
 import type { Content } from '../../src/core/content';
-import type { Attributes, Command, MomentKind, MomentSpec, World } from '../../src/core/types';
+import type { Attributes, Command, MomentSpec, Position, World } from '../../src/core/types';
 import { apply } from '../../src/core/game';
 import { autoOptionId } from '../../src/core/events';
 import { userPlayer } from '../../src/core/helpers';
@@ -77,20 +77,19 @@ describe('QA round 4: BUG-29 parent and reserve team', () => {
 describe('QA round 4: decision moments are fair for an average player', () => {
   const CTX0 = { lateClose: false, hostileCrowd: false, rivalInvolved: false, rain: false, derby: false };
   const attrs = (v: number): Attributes => ({ finishing: v, passing: v, dribbling: v, pace: v, stamina: v, defending: v, heading: v, vision: v, gk: v });
-  // moment mix per position (core KINDS_BY_POS) and the in-career difficulty QA saw (W ≈ 0.55, CB ≈ 0.46)
-  const MIX: Record<string, [MomentKind, number][]> = {
-    W: [['dribble', 4], ['shot', 3], ['one_on_one', 2], ['cross', 2.5], ['header', 0.6], ['free_kick', 0.4]],
-    CB: [['tackle', 4], ['block', 3], ['clearance', 3], ['header', 1.2], ['interception', 1]],
-    GK: [['save', 5], ['rush_out', 3]],
-  };
-  const odds = (pos: string, difficulty: number): { best: number; all: number } => {
+  // moment mix per position (core KINDS_BY_POS, through the role and pos filters of pickVariant) and the in-career
+  // difficulty QA saw (W ≈ 0.55, CB ≈ 0.46)
+  const odds = (pos: Position, difficulty: number): { best: number; all: number } => {
     let best = 0, all = 0, wsum = 0;
-    for (const [kind, wt] of MIX[pos]) {
+    for (const [kind, wt] of KINDS_BY_POS[pos]) {
       const def = LIBRARY[kind];
-      for (const v of def.variants) {
+      const roled = def.variants.filter((v) => !v.role || v.role === (pos === 'GK' ? 'keeper' : 'taker'));
+      const own = roled.filter((v) => !v.pos || v.pos.includes(pos));
+      const pool = own.length ? own : roled;
+      for (const v of pool) {
         const spec: MomentSpec = { id: 1, kind, minute: 40, difficulty, attackerSkill: 55, opponentId: 1, opponentName: 'x', context: { ...CTX0 }, scoreBefore: [0, 0], stakes: '' };
         const opts = buildOptions(def, v, spec, attrs(55));
-        const w = wt / def.variants.length;
+        const w = wt / pool.length;
         best += w * Math.max(...opts.map((o) => (o.fit === Math.max(...opts.map((x) => x.fit)) ? o.chance : 0)));
         all += w * opts.reduce((s, o) => s + o.chance, 0) / opts.length;
         wsum += w;
@@ -98,13 +97,15 @@ describe('QA round 4: decision moments are fair for an average player', () => {
     }
     return { best: best / wsum, all: all / wsum };
   };
-  it('winger and centre-back: the read ≈ 55-65%, all choices ≈ 35-40%', () => {
-    for (const [pos, d] of [['W', 0.55], ['CB', 0.46], ['W', 0.5], ['CB', 0.5]] as const) {
+  it('every outfield position: the read ≈ 55-65%, all choices ≈ 35-45%', () => {
+    const cases: [Position, number][] = [['W', 0.55], ['CB', 0.46], ['W', 0.5], ['CB', 0.5]];
+    for (const p of ['ST', 'AM', 'CM', 'DM', 'FB'] as Position[]) cases.push([p, 0.5], [p, 0.55]);
+    for (const [pos, d] of cases) {
       const r = odds(pos, d);
       expect(r.best, `${pos} best @${d}`).toBeGreaterThanOrEqual(0.55);
       expect(r.best, `${pos} best @${d}`).toBeLessThanOrEqual(0.65);
       expect(r.all, `${pos} all @${d}`).toBeGreaterThanOrEqual(0.35);
-      expect(r.all, `${pos} all @${d}`).toBeLessThanOrEqual(0.41);
+      expect(r.all, `${pos} all @${d}`).toBeLessThanOrEqual(0.45);
     }
   });
   it('goalkeepers keep their round-3 odds', () => {

@@ -1,19 +1,17 @@
-// Scenario library for decision moments: 15 kinds × 3-4 situations × 3-4 genuine football reads.
+// Scenario library for decision moments: 30 kinds, 170+ situations, 3-4 genuine football reads each.
 // Board: viewBox 0 0 100 112, the goal that matters is at the top (posts x 44..56, line y 3.6).
 // In attacking kinds it's their goal, in defending kinds it's ours (the opponent attacks upward).
-// Magnet ids: me (user), gk (keeper on the board), m1..m3 teammates, d1..d3 opponents defending,
-// s1..s2 opponent attackers. Named targets (resolved in board.ts relative to the ball's side):
+// Magnet ids: me (user), gk (keeper on the board), m1..m4 teammates, d1..d4 opponents defending,
+// s1..s4 opponent attackers, w* wall. Named targets (resolved in board.ts relative to the ball's side):
 // far / near / farLow / nearTop / farShort / nearShort / nearWide / farWide / over / GC / up / upL / upR / outL / outR.
+// A variant's `pos` limits a situation to the positions it is true for (a CB's header is not a winger's header).
+// This file holds the original 15 kinds; the position-true kinds of round 6 live in kinds-*.ts.
 import type { MomentKind } from '../../core/types';
-import type { KindDef, Step, Target } from './types';
-
-const B = (to: Target, at = 0, d = 0.5, arc = 0): Step => ({ w: 'ball', to, at, d, arc });
-const M = (w: string, to: Target, at = 0, d = 0.5, pose?: Step['pose']): Step => ({ w, to, at, d, pose });
-
-/** shot that beats the keeper: he dives short */
-const score = (target: string, at = 0, d = 0.45, arc = 0): Step[] => [B(target, at, d, arc), M('gk', target === 'near' || target === 'nearTop' ? 'nearShort' : 'farShort', at + 0.06, 0.45, 'dive')];
-/** keeper gets there */
-const saved = (target: string, at = 0, d = 0.45, arc = 0): Step[] => [B(target, at, d, arc), M('gk', target, at + 0.04, d - 0.02, 'dive'), B({ p: target, dy: 7, dx: 0 }, at + d, 0.45)];
+import type { KindDef } from './types';
+import { B, M, saved, score } from './steps';
+import { ATTACK_KINDS } from './kinds-attack';
+import { MID_KINDS } from './kinds-mid';
+import { DEF_KINDS } from './kinds-def';
 
 const shot: KindDef = {
   kind: 'shot', title: 'בעיטה', stamp: ['גול!', 'הצלה'],
@@ -32,6 +30,12 @@ const shot: KindDef = {
       ok: [M('me', { id: 'me', dx: 7, dy: -2 }, 0, 0.5), B({ id: 'me', dx: 7.6, dy: -3.4 }, 0, 0.5), ...score('far', 0.6)],
       fail: [M('me', { id: 'me', dx: 4, dy: -1 }, 0, 0.35), M('d1', { id: 'me', dx: 4.5, dy: -2.5 }, 0, 0.4, 'slide'), B({ id: 'me', dx: 9, dy: 6 }, 0.4, 0.45)], stamp: ['גול!', 'נחטף'],
       say: ['{name} חתך פנימה, השאיר את הבלם על הדשא וגלגל לרשת!', '{name} ניסה לחתוך פנימה, והבלם הגיע ברגע האחרון.'] },
+    { id: 'roof', label: 'הרם לגג הרשת', icon: 'shot', attr: 'finishing', risk: 2, goal: true,
+      ok: [B({ p: 'GC', dx: 1.5, dy: -0.8 }, 0, 0.3, 3), M('gk', { id: 'gk', dy: -0.5 }, 0.05, 0.3, 'down')], fail: [B('over', 0, 0.4, 5)], stamp: ['גול!', 'מעל המשקוף'],
+      say: ['הכדור נפל ל{name} בשישה, והוא הרים אותו לגג הרשת מעל השוער השרוע!', '{name} מיהר להרים, והכדור טס מעל המשקוף מחמישה מטר. איך?!'] },
+    { id: 'first_time', label: 'בעיטה ראשונה בלי לעצור', icon: 'shot', attr: 'finishing', risk: 2, goal: true,
+      ok: score('near', 0, 0.3), fail: saved('near', 0, 0.3),
+      say: ['{name} לא עצר את הכדור. נגיעה ראשונה, והשוער אפילו לא זז!', '{name} בעט בנגיעה ראשונה, אבל השוער היה במקום הנכון.'] },
   ],
   variants: [
     { id: 'left_channel', note: 'הכדור אצלך בקצה הרחבה משמאל. הבלם יוצא אליך, ה-9 מחכה לקיר, והשוער נצמד לקורה הקרובה.',
@@ -54,6 +58,26 @@ const shot: KindDef = {
         { id: 'd2', team: 'o', x: 60, y: 26, n: 6 }, { id: 'm1', team: 'u', x: 63, y: 31, n: 9 }],
       ball: [49, 22], arrows: [{ from: 'd1', to: { id: 'me', dx: -2 }, kind: 'press' }, { from: 'd2', to: { id: 'me', dx: 2 }, kind: 'press' }],
       fit: { far: 0.85, near: 0.5, one_two: 0.2, cut_in: 0.3 } },
+    { id: 'rebound_six', pos: ['ST'], note: 'השוער הדף את הבעיטה של ה-10 ושוכב על הדשא. הכדור נופל לך בקצה השישה, והבלם רץ לקו.',
+      magnets: [{ id: 'me', team: 'u', x: 54, y: 15 }, { id: 'gk', team: 'o', gk: true, x: 48, y: 7 }, { id: 'd1', team: 'o', x: 45, y: 11, n: 4 },
+        { id: 'd2', team: 'o', x: 61, y: 21, n: 5 }, { id: 'm1', team: 'u', x: 56, y: 31, n: 10 }],
+      ball: [53, 13.5], arrows: [{ from: 'd1', to: [47, 5], kind: 'press' }],
+      fit: { roof: 0.82, far: 0.5, near: 0.3, first_time: 0.4 } },
+    { id: 'near_post_run', pos: ['ST'], note: 'הכנף מגלגל הגבהה נמוכה וחזקה לקורה הקרובה. הקדמת את הבלם, ואין זמן לעצור את הכדור.',
+      magnets: [{ id: 'me', team: 'u', x: 58, y: 12 }, { id: 'gk', team: 'o', gk: true, x: 51, y: 6 }, { id: 'd1', team: 'o', x: 60, y: 17, n: 5 },
+        { id: 'd2', team: 'o', x: 46, y: 14, n: 4 }, { id: 'm1', team: 'u', x: 44, y: 22, n: 10 }, { id: 'm2', team: 'u', x: 84, y: 17, n: 7 }],
+      ball: [59, 13.5], arrows: [{ from: 'm2', to: 'me', kind: 'pass' }, { from: 'd1', to: { id: 'me', dy: 2 }, kind: 'press' }],
+      fit: { first_time: 0.8, near: 0.45, far: 0.35, cut_in: 0.2 }, labels: { first_time: 'נגיעה ראשונה לקרובה' } },
+    { id: 'edge_box_set', pos: ['AM', 'CM'], note: 'ה-9 הניח לך את הכדור אחורה ל-18 מטר. ארבעה גופים בין הכדור לשער, והשוער לא רואה את רגל הבעיטה.',
+      magnets: [{ id: 'me', team: 'u', x: 50, y: 33 }, { id: 'gk', team: 'o', gk: true, x: 51, y: 6 }, { id: 'd1', team: 'o', x: 45, y: 22, n: 4 },
+        { id: 'd2', team: 'o', x: 55, y: 21, n: 5 }, { id: 'd3', team: 'o', x: 50, y: 17, n: 6 }, { id: 'm1', team: 'u', x: 53, y: 25, n: 9 }],
+      ball: [50, 31], arrows: [{ from: 'm1', to: 'me', kind: 'pass' }],
+      fit: { first_time: 0.8, far: 0.5, one_two: 0.3, cut_in: 0.4 }, labels: { first_time: 'נמוכה מיידית דרך הגופים', cut_in: 'צעד הצידה ובעט' } },
+    { id: 'keeper_off_line', pos: ['W', 'ST'], note: 'פרצת באלכסון מימין. השוער יצא שני מטר מהקו כדי לחתוך את ההגבהה, והשאיר רווח בקרובה.',
+      magnets: [{ id: 'me', team: 'u', x: 70, y: 22 }, { id: 'gk', team: 'o', gk: true, x: 53, y: 9 }, { id: 'd1', team: 'o', x: 67, y: 27, n: 2 },
+        { id: 'd2', team: 'o', x: 48, y: 16, n: 5 }, { id: 'm1', team: 'u', x: 44, y: 21, n: 9 }],
+      ball: [68.5, 20.5], arrows: [{ from: 'd1', to: { id: 'me', dy: 2 }, kind: 'press' }, { from: 'm1', to: [47, 12], kind: 'run' }],
+      fit: { near: 0.8, far: 0.45, one_two: 0.3, cut_in: 0.35 }, labels: { near: 'חזק לקרובה, בין השוער לקורה' } },
   ],
 };
 
@@ -73,6 +97,9 @@ const long_shot: KindDef = {
     { id: 'dip', label: 'לוב מעל השוער', icon: 'chip', attr: 'vision', risk: 3, goal: true,
       ok: score('GC', 0, 1.0, 14), fail: [B('over', 0, 1.0, 14)], stamp: ['גול!', 'מעל המשקוף'],
       say: ['{name} ראה את השוער רחוק מהקו ולבב מעליו! גאונות.', '{name} ניסה לוב מחצי מגרש, והכדור עף מעל המשקוף.'] },
+    { id: 'volley', label: 'וולה בלי לחשוב', icon: 'shot', attr: 'finishing', risk: 3, goal: true,
+      ok: score('far', 0, 0.55, 2), fail: [B('farWide', 0, 0.6, 4)], stamp: ['גול!', 'החטאה'],
+      say: ['{name} פגש את הכדור באוויר מ-25 מטר! וולה לתוך הרשת, איזה גול!', '{name} ניסה וולה, והכדור עף לשורה העשרים.'] },
   ],
   variants: [
     { id: 'space_25', note: 'הקשרים שלהם נסוגים ואתה לבד ב-25 מטר. יש לך זמן לסדר את הכדור, והשוער צמוד לקורה הקרובה.',
@@ -90,6 +117,16 @@ const long_shot: KindDef = {
         { id: 'd2', team: 'o', x: 44, y: 22, n: 5 }, { id: 'm1', team: 'u', x: 37, y: 30, n: 9 }],
       ball: [55.5, 39], arrows: [{ from: 'd1', to: { id: 'me', dy: -3 }, kind: 'press' }, { from: 'm1', to: [41, 18], kind: 'run' }],
       fit: { curl: 0.45, drive: 0.25, step: 0.78, dip: 0.15 } },
+    { id: 'half_volley_clear', pos: ['CM', 'DM', 'AM'], note: 'הקרן שלנו הורחקה, והכדור נופל לך בקשת מגובה. אף אחד לא סוגר, ואם תעצור אותו הם יספיקו לחזור.',
+      magnets: [{ id: 'me', team: 'u', x: 48, y: 41 }, { id: 'gk', team: 'o', gk: true, x: 50, y: 6 }, { id: 'd1', team: 'o', x: 53, y: 31, n: 6 },
+        { id: 'd2', team: 'o', x: 44, y: 22, n: 4 }, { id: 'm1', team: 'u', x: 58, y: 24, n: 5 }],
+      ball: [48, 38], arrows: [{ from: 'd1', to: { id: 'me', dy: -3 }, kind: 'press' }],
+      fit: { volley: 0.8, curl: 0.45, drive: 0.35, step: 0.25 } },
+    { id: 'keeper_screened', pos: ['AM', 'CM', 'DM'], note: 'מגן שלהם עומד שישה מטר לפניך, לא יוצא אליך ומסתיר לשוער את הכדור. השוער מציץ מהצד.',
+      magnets: [{ id: 'me', team: 'u', x: 52, y: 43 }, { id: 'gk', team: 'o', gk: true, x: 49, y: 6 }, { id: 'd1', team: 'o', x: 52, y: 34, n: 4 },
+        { id: 'd2', team: 'o', x: 44, y: 23, n: 5 }, { id: 'd3', team: 'o', x: 59, y: 24, n: 3 }, { id: 'm1', team: 'u', x: 39, y: 30, n: 9 }],
+      ball: [52, 41], arrows: [{ from: 'gk', to: [46, 7], kind: 'press' }],
+      fit: { drive: 0.8, curl: 0.45, step: 0.4, dip: 0.15 }, labels: { drive: 'חזק ונמוך ליד הרגל של המגן' } },
   ],
 };
 
@@ -126,6 +163,11 @@ const free_kick: KindDef = {
         { id: 'w3', team: 'o', x: 67, y: 24 }, { id: 'm1', team: 'u', x: 63, y: 35, n: 8 }, { id: 'd3', team: 'o', x: 58, y: 30 }],
       ball: [68, 28], arrows: [{ from: 'm1', to: [60, 32], kind: 'run' }, { from: 'gk', to: [47, 7], kind: 'press' }],
       fit: { over_wall: 0.35, keeper_side: 0.7, under_wall: 0.25, square: 0.62 } },
+    { id: 'long_range_32', pos: ['AM', 'CM', 'ST', 'W'], note: 'בעיטה חופשית מ-32 מטר. חומה של שלושה, השוער עומד באמצע ורואה הכל. ה-10 עומד לידך ומחכה למהלך המאומן.',
+      magnets: [{ id: 'me', team: 'u', x: 50, y: 45 }, { id: 'gk', team: 'o', gk: true, x: 50, y: 6 }, { id: 'w1', team: 'o', x: 46.5, y: 35 }, { id: 'w2', team: 'o', x: 49.8, y: 35 },
+        { id: 'w3', team: 'o', x: 53.1, y: 35 }, { id: 'm1', team: 'u', x: 57, y: 44, n: 10 }, { id: 'd3', team: 'o', x: 61, y: 38 }],
+      ball: [50, 43], arrows: [{ from: 'm1', to: [58, 38], kind: 'run' }],
+      fit: { square: 0.78, over_wall: 0.4, keeper_side: 0.3, under_wall: 0.2 } },
   ],
 };
 
@@ -155,6 +197,9 @@ const penalty: KindDef = {
     { id: 'patient', role: 'taker', note: 'פנדל. השוער עומד בלי לזוז ומחכה לך. הוא מכיר את הפנדלים שלך.',
       magnets: [{ id: 'me', team: 'u', x: 47, y: 27 }, { id: 'gk', team: 'o', gk: true, x: 50, y: 5 }],
       ball: [50, 21], arrows: [], fit: { corner_low: 0.55, top: 0.75, panenka: 0.1, wait: 0.3 } },
+    { id: 'small_keeper', role: 'taker', note: 'פנדל. השוער שלהם נמוך, ובחימום כל הכדורים הגבוהים עברו לו מעל הידיים.',
+      magnets: [{ id: 'me', team: 'u', x: 47, y: 27 }, { id: 'gk', team: 'o', gk: true, x: 50, y: 5 }],
+      ball: [50, 21], arrows: [], fit: { corner_low: 0.5, top: 0.8, panenka: 0.3, wait: 0.4 } },
     // keeper side (the user is the goalkeeper: gk magnet is "me", the taker is s1)
     { id: 'gk_habit', role: 'keeper', note: 'פנדל נגדך. הבועט שלהם בעט שלושה פנדלים העונה, כולם לצד ימין שלך.',
       magnets: [{ id: 'me', team: 'u', gk: true, x: 50, y: 5 }, { id: 's1', team: 'o', x: 53, y: 27, n: 9 }],
@@ -165,6 +210,13 @@ const penalty: KindDef = {
     { id: 'gk_power', role: 'keeper', note: 'פנדל נגדך. הקפטן שלהם בועט בכוח, בדרך כלל באמצע הגובה.',
       magnets: [{ id: 'me', team: 'u', gk: true, x: 50, y: 5 }, { id: 's1', team: 'o', x: 50, y: 28, n: 10 }],
       ball: [50, 21], arrows: [], fit: { dive_habit: 0.4, stay: 0.72, wait_k: 0.45, dive_other: 0.25 } },
+    { id: 'gk_stutter', role: 'keeper', note: 'פנדל נגדך. הבועט הזה עוצר באמצע הריצה ומחכה שתזוז ראשון.',
+      magnets: [{ id: 'me', team: 'u', gk: true, x: 50, y: 5 }, { id: 's1', team: 'o', x: 49, y: 28, n: 8 }],
+      ball: [50, 21], arrows: [], fit: { dive_habit: 0.3, stay: 0.5, wait_k: 0.8, dive_other: 0.25 } },
+    { id: 'gk_open_body', role: 'keeper', note: 'פנדל נגדך. הבועט רץ באלכסון חד, והגוף שלו פתוח לגמרי לפינה השמאלית שלך.',
+      magnets: [{ id: 'me', team: 'u', gk: true, x: 50, y: 5 }, { id: 's1', team: 'o', x: 57, y: 27, n: 11 }],
+      ball: [50, 21], arrows: [{ from: 's1', to: [51, 22], kind: 'press' }], fit: { dive_habit: 0.35, stay: 0.3, wait_k: 0.5, dive_other: 0.78 },
+      labels: { dive_other: 'זנק לפינה שהגוף שלו פתוח אליה' } },
   ],
 };
 // keeper options for penalties (the target is "our" goal at the top; ball goes from the spot up)
@@ -218,6 +270,14 @@ const one_on_one: KindDef = {
       magnets: [{ id: 'me', team: 'u', x: 55, y: 34 }, { id: 'gk', team: 'o', gk: true, x: 52, y: 15 }, { id: 'd1', team: 'o', x: 58, y: 38, n: 3 }],
       ball: [54.5, 32], arrows: [{ from: 'd1', to: { id: 'me', dy: -2 }, kind: 'press' }, { from: 'gk', to: [52, 19], kind: 'press' }],
       fit: { round: 0.3, chip: 0.4, early: 0.82, dummy: 0.35 } },
+    { id: 'wide_angle', pos: ['ST', 'W'], note: 'הבלם דחק אותך לצד שמאל של הרחבה. הזווית נסגרת, והשוער יורד נמוך לכסות את הקרובה.',
+      magnets: [{ id: 'me', team: 'u', x: 36, y: 21 }, { id: 'gk', team: 'o', gk: true, x: 45, y: 8 }, { id: 'd1', team: 'o', x: 38, y: 28, n: 4 }],
+      ball: [37, 19.5], arrows: [{ from: 'd1', to: { id: 'me', dy: 2 }, kind: 'press' }, { from: 'gk', to: [43, 8], kind: 'press' }],
+      fit: { dummy: 0.8, early: 0.35, chip: 0.25, round: 0.45 } },
+    { id: 'keeper_spread', pos: ['ST', 'W', 'AM'], note: 'פרצת לבד, והשוער כבר נשכב מוקדם על הדשא, גדול ופרוש, שלושה מטר ממך.',
+      magnets: [{ id: 'me', team: 'u', x: 50, y: 24 }, { id: 'gk', team: 'o', gk: true, x: 50, y: 17 }, { id: 'd1', team: 'o', x: 58, y: 38, n: 5 }],
+      ball: [50, 22], arrows: [{ from: 'd1', to: { id: 'me', dx: 3, dy: 3 }, kind: 'press' }],
+      fit: { round: 0.8, chip: 0.45, early: 0.25, dummy: 0.35 } },
   ],
 };
 
@@ -240,6 +300,10 @@ const header: KindDef = {
       ok: [B({ id: 'me', dy: -0.5 }, 0, 0.6, 6), M('me', { id: 'me', dx: 1.5, dy: -1 }, 0.55, 0.25), ...score('farLow', 0.85, 0.35)],
       fail: [B({ id: 'me', dy: -0.5 }, 0, 0.6, 6), M('d1', 'me', 0.45, 0.3, 'slide'), B({ id: 'me', dx: -6, dy: 8 }, 0.75, 0.4)], stamp: ['גול!', 'נחטף'],
       say: ['{name} הוריד בחזה בתוך הרחבה ובעט מיד לרשת. איזה ביטחון!', '{name} רצה להוריד בחזה, והבלם כבר היה עליו.'] },
+    { id: 'dive', label: 'נגיחה בשכיבה', icon: 'head', attr: 'heading', risk: 3, goal: true,
+      ok: [B('me', 0, 0.4, 2), M('me', { id: 'me', dy: -2 }, 0.3, 0.25, 'slide'), ...score('farLow', 0.5, 0.3)],
+      fail: [B('me', 0, 0.4, 2), M('me', { id: 'me', dy: -2 }, 0.3, 0.25, 'slide'), ...saved('farLow', 0.5, 0.3)],
+      say: ['{name} זרק את עצמו לכדור הנמוך ונגח בשכיבה לרשת! אמיץ.', '{name} נזרק לכדור, אבל הנגיחה בשכיבה הגיעה לידיים של השוער.'] },
   ],
   variants: [
     { id: 'back_post', note: 'הגבהה מימין לקורה הרחוקה. אתה לבד, הבלם שלך נרדם, השוער תקוע בקרובה.',
@@ -257,6 +321,16 @@ const header: KindDef = {
         { id: 'd2', team: 'o', x: 54, y: 19, n: 4 }, { id: 'm2', team: 'u', x: 82, y: 30, n: 2 }, { id: 'm1', team: 'u', x: 40, y: 13, n: 9 }],
       ball: [82, 28], arrows: [{ from: 'm2', to: { id: 'me' }, kind: 'pass', bend: -8 }, { from: 'gk', to: [50, 14], kind: 'press' }],
       fit: { down_far: 0.78, flick: 0.3, power: 0.45, chest: 0.2 } },
+    { id: 'set_piece_run', pos: ['CB', 'ST', 'DM'], note: 'קרן מימין. הבלם שלהם שומר אזורית ומחכה במקום. אתה מגיע בריצה מאחור לנקודת הפנדל, והשוער נשאר על הקו.',
+      magnets: [{ id: 'me', team: 'u', x: 50, y: 26 }, { id: 'gk', team: 'o', gk: true, x: 50, y: 6 }, { id: 'd1', team: 'o', x: 49, y: 19, n: 5 },
+        { id: 'd2', team: 'o', x: 57, y: 15, n: 6 }, { id: 'm2', team: 'u', x: 99, y: 4, n: 10 }, { id: 'm1', team: 'u', x: 42, y: 12, n: 9 }],
+      ball: [99, 4], arrows: [{ from: 'm2', to: [50, 19], kind: 'pass', bend: -8 }, { from: 'me', to: [50, 19], kind: 'run' }],
+      fit: { power: 0.8, down_far: 0.5, flick: 0.25, chest: 0.15 } },
+    { id: 'low_cross_dive', pos: ['ST', 'W'], note: 'הגבהה נמוכה וחזקה בגובה הברכיים, עשרה מטר מהשער. הבלם מושיט רגל, ואין זמן לחכות שהכדור ירד.',
+      magnets: [{ id: 'me', team: 'u', x: 52, y: 14 }, { id: 'gk', team: 'o', gk: true, x: 50, y: 6 }, { id: 'd1', team: 'o', x: 56, y: 17, n: 5 },
+        { id: 'm2', team: 'u', x: 82, y: 17, n: 7 }, { id: 'm1', team: 'u', x: 43, y: 19, n: 9 }],
+      ball: [82, 17], arrows: [{ from: 'm2', to: { id: 'me' }, kind: 'pass', bend: -3 }],
+      fit: { dive: 0.8, power: 0.45, chest: 0.3, flick: 0.35 } },
   ],
 };
 
@@ -280,6 +354,14 @@ const dribble: KindDef = {
       ok: [M('me', { id: 'me', dy: 2 }, 0, 0.6), M('d1', { id: 'me', dy: -1.5 }, 0, 0.6), M('m1', { id: 'me', dx: -5, dy: 2 }, 0.3, 0.6), B({ id: 'me', dx: -4, dy: 2.5 }, 0.9, 0.3)],
       fail: [M('d1', 'me', 0, 0.45, 'slide'), B({ id: 'me', dx: 6, dy: 5 }, 0.35, 0.45)], stamp: ['הכדור נשמר', 'נחטף'],
       say: ['{name} גב למגן, מחזיק, מוריד את השעון. חכם מאוד.', '{name} ניסה להחזיק, אבל המגן עבר דרכו.'] },
+    { id: 'nutmeg', label: 'בין הרגליים שלו', icon: 'dribble', attr: 'dribbling', risk: 3,
+      ok: [B({ id: 'd1', dy: -4 }, 0, 0.4), M('me', { id: 'd1', dx: 2, dy: -6 }, 0.05, 0.6), B({ id: 'd1', dx: 2, dy: -7.2 }, 0.45, 0.3)],
+      fail: [B({ id: 'd1', dy: 0.5 }, 0, 0.3), M('d1', { id: 'd1', dy: 0.5 }, 0.05, 0.3, 'slide'), B({ id: 'd1', dx: -5, dy: 6 }, 0.35, 0.45)],
+      say: ['{name} שם לו את הכדור בין הרגליים ויצא מהצד השני! השפלה.', '{name} ניסה שפגט, והמגן סגר את הרגליים בזמן.'] },
+    { id: 'stop_go', label: 'עצור במקום ופרוץ שוב', icon: 'run', attr: 'pace', risk: 2,
+      ok: [M('me', { id: 'me', dy: -1 }, 0, 0.3), M('d1', { id: 'd1', dy: 3 }, 0.1, 0.35), M('me', { id: 'd1', dx: 5, dy: -7 }, 0.4, 0.55), B({ id: 'd1', dx: 5, dy: -8.2 }, 0.4, 0.55)],
+      fail: [M('me', { id: 'me', dy: -1 }, 0, 0.3), M('d1', { id: 'me', dy: -2 }, 0.1, 0.4, 'slide'), B({ id: 'me', dx: 5, dy: 4 }, 0.45, 0.4)],
+      say: ['{name} עצר במקום, המגן המשיך לרוץ, ו{name} פרץ שוב. נגמר הסיפור.', '{name} עצר, אבל המגן לא נפל בפח ונכנס לכדור.'] },
   ],
   variants: [
     { id: 'square_fb', note: 'אתה בכנף ימין מול המגן שלהם. הוא עומד ישר מולך, כבד וקצת איטי.',
@@ -297,6 +379,21 @@ const dribble: KindDef = {
         { id: 'm1', team: 'u', x: 62, y: 66, n: 8 }, { id: 'gk', team: 'o', gk: true, x: 50, y: 6 }],
       ball: [75, 58], arrows: [{ from: 'd1', to: { id: 'me', dy: -2 }, kind: 'press' }, { from: 'd2', to: { id: 'me', dx: -2 }, kind: 'press' }],
       fit: { outside: 0.25, inside: 0.2, layoff: 0.78, shield: 0.55 } },
+    { id: 'open_legs', pos: ['W', 'AM', 'ST'], note: 'המגן שלהם עומד רחב, הרגליים פתוחות, ונוטה קדימה. מאחוריו שטח עד הרחבה.',
+      magnets: [{ id: 'me', team: 'u', x: 70, y: 51 }, { id: 'd1', team: 'o', x: 70, y: 43, n: 3 }, { id: 'd2', team: 'o', x: 56, y: 34, n: 5 },
+        { id: 'm1', team: 'u', x: 58, y: 55, n: 8 }, { id: 'gk', team: 'o', gk: true, x: 50, y: 6 }],
+      ball: [69.5, 49], arrows: [{ from: 'd1', to: { id: 'me', dy: -3 }, kind: 'press' }],
+      fit: { nutmeg: 0.8, outside: 0.45, inside: 0.4, layoff: 0.35 } },
+    { id: 'slow_cb', pos: ['ST'], note: 'קיבלת כדור בחצי שלהם מול הבלם השמאלי שלהם. הוא חזק באוויר אבל איטי, ומאחוריו כל הצד פתוח.',
+      magnets: [{ id: 'me', team: 'u', x: 54, y: 53 }, { id: 'd1', team: 'o', x: 52, y: 44, n: 4 }, { id: 'd2', team: 'o', x: 38, y: 40, n: 5 },
+        { id: 'm1', team: 'u', x: 68, y: 58, n: 11 }, { id: 'gk', team: 'o', gk: true, x: 50, y: 6 }],
+      ball: [54, 51], arrows: [{ from: 'd1', to: { id: 'me', dy: -3 }, kind: 'press' }],
+      fit: { outside: 0.8, inside: 0.4, layoff: 0.45, shield: 0.25 }, labels: { outside: 'דחוף לצד ורוץ', layoff: 'קיר עם {m1} וברח' } },
+    { id: 'fast_fb_stopgo', pos: ['W', 'FB'], note: 'המגן שלהם מהיר כמוך ורץ איתך צמוד לאורך הקו. כל פעם שאתה מאיץ, גם הוא מאיץ.',
+      magnets: [{ id: 'me', team: 'u', x: 80, y: 49 }, { id: 'd1', team: 'o', x: 78, y: 45, n: 2 }, { id: 'd2', team: 'o', x: 60, y: 33, n: 5 },
+        { id: 'm1', team: 'u', x: 66, y: 58, n: 8 }, { id: 'gk', team: 'o', gk: true, x: 50, y: 6 }],
+      ball: [80.5, 47], arrows: [{ from: 'd1', to: [79, 38], kind: 'press' }],
+      fit: { stop_go: 0.8, outside: 0.3, inside: 0.45, layoff: 0.4 } },
   ],
 };
 
@@ -319,6 +416,10 @@ const through_ball: KindDef = {
       ok: [M('me', { id: 'me', dy: -12 }, 0, 0.8), B({ id: 'me', dy: -13.5 }, 0, 0.8), M('d2', { id: 'd2', dy: 2 }, 0.2, 0.5)],
       fail: [M('me', { id: 'me', dy: -6 }, 0, 0.45), M('d2', { id: 'me', dy: -7 }, 0.1, 0.4, 'slide'), B({ id: 'me', dx: 6, dy: 0 }, 0.5, 0.4)], stamp: ['פרץ קדימה', 'נחטף'],
       say: ['אף אחד לא יוצא ל{name}, אז הוא נכנס בעצמו עמוק לחצי שלהם.', '{name} התקדם, והקשר האחורי שלהם קטף לו את הכדור.'] },
+    { id: 'chip_over', label: 'כדור מוגבה מעל הקו ל{m1}', icon: 'chip', attr: 'vision', risk: 3,
+      ok: [M('m1', { id: 'm1', dy: -14 }, 0, 0.85), B({ id: 'm1', dy: -13 }, 0.05, 0.8, 7)],
+      fail: [M('m1', { id: 'm1', dy: -10 }, 0, 0.7), B({ id: 'gk', dy: 2 }, 0.05, 0.8, 7), M('gk', { id: 'gk', dy: 2 }, 0.45, 0.35, 'jump')],
+      say: ['{name} ליטף כדור מעל ההגנה, וה-9 קולט אותו בריצה לבד מול השוער!', 'הכדור המוגבה של {name} נפל ישר לידיים של השוער.'] },
   ],
   variants: [
     { id: 'high_line', note: 'הקו האחורי שלהם גבוה, כמעט בחצי. ה-9 שלך מתחיל ריצה באלכסון.',
@@ -336,6 +437,21 @@ const through_ball: KindDef = {
         { id: 'd1', team: 'o', x: 35, y: 50, n: 3 }, { id: 'd2', team: 'o', x: 45, y: 52, n: 5 }, { id: 'd3', team: 'o', x: 63, y: 46, n: 2 }, { id: 'gk', team: 'o', gk: true, x: 50, y: 10 }],
       ball: [35, 68], arrows: [{ from: 'm2', to: [77, 38], kind: 'run' }, { from: 'd1', to: { id: 'me', dy: -2 }, kind: 'press' }],
       fit: { behind: 0.35, curl_far: 0.8, feet: 0.35, carry: 0.3 } },
+    { id: 'chip_over_line', pos: ['AM', 'CM'], note: 'הם עומדים בקו גבוה וצפוף, אין רווח בין הרגליים. ה-9 שלך מתחיל ריצה מעל הכתף של הבלם.',
+      magnets: [{ id: 'me', team: 'u', x: 50, y: 71 }, { id: 'm1', team: 'u', x: 47, y: 55, n: 9 }, { id: 'm2', team: 'u', x: 76, y: 59, n: 11 },
+        { id: 'd1', team: 'o', x: 42, y: 51, n: 4 }, { id: 'd2', team: 'o', x: 52, y: 51, n: 5 }, { id: 'd3', team: 'o', x: 62, y: 51, n: 2 }, { id: 'gk', team: 'o', gk: true, x: 50, y: 14 }],
+      ball: [50, 69], arrows: [{ from: 'm1', to: [47, 38], kind: 'run', bend: 2 }],
+      fit: { chip_over: 0.8, behind: 0.4, feet: 0.35, carry: 0.3 } },
+    { id: 'between_cb_fb', pos: ['AM', 'CM', 'DM'], note: 'המגן הימני שלהם יצא ללחוץ על הכנף שלך, ונפתח חור בינו לבין הבלם. ה-9 כבר ראה אותו.',
+      magnets: [{ id: 'me', team: 'u', x: 46, y: 70 }, { id: 'm1', team: 'u', x: 50, y: 54, n: 9 }, { id: 'm2', team: 'u', x: 24, y: 54, n: 11 },
+        { id: 'd1', team: 'o', x: 28, y: 49, n: 2 }, { id: 'd2', team: 'o', x: 46, y: 50, n: 5 }, { id: 'd3', team: 'o', x: 61, y: 51, n: 4 }, { id: 'gk', team: 'o', gk: true, x: 50, y: 12 }],
+      ball: [46.5, 68], arrows: [{ from: 'm1', to: [38, 40], kind: 'run', bend: -3 }, { from: 'd1', to: { id: 'm2', dy: -2 }, kind: 'press' }],
+      fit: { behind: 0.8, curl_far: 0.4, feet: 0.3, carry: 0.35 }, labels: { behind: 'לחור בין הבלם למגן ל{m1}' } },
+    { id: 'press_trap', pos: ['CM', 'DM'], note: 'שניים רצים אליך מאחור. ה-9 בא לקראתך ומבקש לרגל, וכל כדור ארוך עכשיו ייחטף.',
+      magnets: [{ id: 'me', team: 'u', x: 50, y: 77 }, { id: 'm1', team: 'u', x: 50, y: 63, n: 9 }, { id: 'm2', team: 'u', x: 77, y: 64, n: 11 },
+        { id: 'd1', team: 'o', x: 50, y: 58, n: 5 }, { id: 'd2', team: 'o', x: 43, y: 82, n: 8 }, { id: 'd3', team: 'o', x: 57, y: 83, n: 10 }, { id: 'gk', team: 'o', gk: true, x: 50, y: 14 }],
+      ball: [50, 75], arrows: [{ from: 'd2', to: { id: 'me', dx: -1.5, dy: 1.5 }, kind: 'press' }, { from: 'd3', to: { id: 'me', dx: 1.5, dy: 1.5 }, kind: 'press' }, { from: 'm1', to: [50, 67], kind: 'run' }],
+      fit: { feet: 0.8, behind: 0.3, curl_far: 0.35, carry: 0.25 } },
   ],
 };
 
@@ -358,6 +474,10 @@ const cross: KindDef = {
       ok: [M('me', { id: 'me', dx: -9, dy: -4 }, 0, 0.6), B({ id: 'me', dx: -9.5, dy: -5 }, 0, 0.6), ...score('far', 0.7, 0.4)],
       fail: [M('me', { id: 'me', dx: -5, dy: -2 }, 0, 0.4), M('d1', { id: 'me', dx: -5, dy: -3 }, 0.05, 0.4, 'slide'), B('outR', 0.5, 0.5)], stamp: ['מסירת מפתח', 'נחטף'],
       say: ['{name} ויתר על ההגבהה, חדר לרחבה ובעט בעצמו!', '{name} ניסה לחדור, והבלם הוציא את הכדור לאוט.'] },
+    { id: 'low_driven', label: 'נמוך וחזק לשישה', icon: 'cross', attr: 'passing', risk: 2,
+      ok: [B({ id: 'm1', dy: -3 }, 0, 0.35), M('m1', { id: 'm1', dy: -3 }, 0, 0.35), B('near', 0.4, 0.25)],
+      fail: [M('gk', { id: 'm1', dy: -3 }, 0.05, 0.3, 'dive'), B({ id: 'm1', dy: -3 }, 0, 0.35)],
+      say: ['{name} שלח כדור נמוך ורצחני לשישה, וה-9 רק שם את הרגל!', 'הכדור הנמוך של {name} נאסף על ידי השוער שזינק לרגליים.'] },
   ],
   variants: [
     { id: 'byline', note: 'הגעת עד קו הסיום מימין. ה-9 רץ לקרובה, ה-11 מגיע לרחוקה, ה-8 עומד ב-16.',
@@ -375,6 +495,16 @@ const cross: KindDef = {
         { id: 'm3', team: 'u', x: 62, y: 42, n: 8 }, { id: 'd1', team: 'o', x: 80, y: 20, n: 2 }, { id: 'd2', team: 'o', x: 48, y: 15, n: 5 }],
       ball: [81, 24], arrows: [{ from: 'd1', to: { id: 'me', dy: -2 }, kind: 'press' }],
       fit: { near_post: 0.35, far_post: 0.25, cutback: 0.4, drive_in: 0.78 } },
+    { id: 'low_driven_six', pos: ['W', 'FB'], note: 'אתה בפינת הרחבה מימין. ה-9 מתפרץ לשישה בין הבלם לשוער, והשוער תקוע על הקו.',
+      magnets: [{ id: 'me', team: 'u', x: 80, y: 23 }, { id: 'gk', team: 'o', gk: true, x: 52, y: 5 }, { id: 'm1', team: 'u', x: 58, y: 14, n: 9 }, { id: 'm2', team: 'u', x: 36, y: 21, n: 11 },
+        { id: 'm3', team: 'u', x: 60, y: 33, n: 8 }, { id: 'd1', team: 'o', x: 62, y: 16, n: 5 }, { id: 'd2', team: 'o', x: 47, y: 19, n: 4 }],
+      ball: [79, 21.5], arrows: [{ from: 'm1', to: [54, 10], kind: 'run' }],
+      fit: { low_driven: 0.8, far_post: 0.4, cutback: 0.45, near_post: 0.35 } },
+    { id: 'deep_wide', pos: ['FB', 'W'], note: 'קיבלת בכנף, 35 מטר מהשער. ה-9 תוקף את הקורה הקרובה מול בלם נמוך, והרחוקה עמוסה בשחקנים שלהם.',
+      magnets: [{ id: 'me', team: 'u', x: 86, y: 43 }, { id: 'gk', team: 'o', gk: true, x: 52, y: 6 }, { id: 'm1', team: 'u', x: 58, y: 19, n: 9 }, { id: 'm2', team: 'u', x: 42, y: 17, n: 11 },
+        { id: 'm3', team: 'u', x: 64, y: 47, n: 8 }, { id: 'd1', team: 'o', x: 60, y: 15, n: 2 }, { id: 'd2', team: 'o', x: 44, y: 12, n: 5 }, { id: 'd3', team: 'o', x: 38, y: 18, n: 4 }],
+      ball: [85, 41], arrows: [{ from: 'm1', to: [57, 11], kind: 'run' }],
+      fit: { near_post: 0.8, far_post: 0.35, cutback: 0.3, drive_in: 0.4 } },
   ],
 };
 
@@ -416,6 +546,16 @@ const interception: KindDef = {
         { id: 's3', team: 'o', x: 68, y: 48, n: 11 }, { id: 'm1', team: 'u', x: 60, y: 34, n: 5 }, { id: 'gk', team: 'u', gk: true, x: 50, y: 6 }],
       ball: [50, 56], arrows: [{ from: 's2', to: [36, 30], kind: 'press' }, { from: 's3', to: [66, 32], kind: 'press' }],
       fit: { step_in: 0.2, lane: 0.5, press: 0.35, drop: 0.78 } },
+    { id: 'striker_drops', pos: ['CB', 'DM'], note: 'החלוץ שלהם יורד לקראת הכדור עם הגב אליך. המסירה אליו איטית, ואתה צמוד מאחוריו.',
+      magnets: [{ id: 'me', team: 'u', x: 50, y: 31 }, { id: 's1', team: 'o', x: 47, y: 60, n: 6 }, { id: 's2', team: 'o', x: 50, y: 39, n: 9 },
+        { id: 'm1', team: 'u', x: 63, y: 29, n: 5 }, { id: 'gk', team: 'u', gk: true, x: 50, y: 6 }],
+      ball: [47.5, 58], arrows: [{ from: 's1', to: 's2', kind: 'pass' }, { from: 's2', to: [50, 45], kind: 'run' }],
+      fit: { step_in: 0.8, lane: 0.4, press: 0.3, drop: 0.35 } },
+    { id: 'switch_to_winger', pos: ['FB', 'CB'], note: 'הקשר שלהם מסתובב להחליף אגף לכנף שלהם. הכדור יהיה ארוך וגבוה, ואתה עשרה מטר מהכנף.',
+      magnets: [{ id: 'me', team: 'u', x: 78, y: 41 }, { id: 's1', team: 'o', x: 36, y: 59, n: 8 }, { id: 's2', team: 'o', x: 86, y: 53, n: 7 },
+        { id: 'm1', team: 'u', x: 60, y: 30, n: 5 }, { id: 'gk', team: 'u', gk: true, x: 50, y: 6 }],
+      ball: [37, 57], arrows: [{ from: 's1', to: 's2', kind: 'pass', bend: -6 }],
+      fit: { step_in: 0.8, lane: 0.35, press: 0.25, drop: 0.45 }, labels: { step_in: 'צא קדימה וקח את הכדור באוויר' } },
   ],
 };
 
@@ -439,6 +579,10 @@ const tackle: KindDef = {
       ok: [M('s1', { id: 's1', dy: -7 }, 0, 0.6), B({ id: 's1', dy: -8.5 }, 0, 0.6), M('me', { id: 's1', dx: 1.5, dy: -7 }, 0, 0.6), B({ id: 's1', dx: 8, dy: -6 }, 0.65, 0.4), M('s1', { id: 's1', dx: -2, dy: -7 }, 0.6, 0.3, 'down')],
       fail: [M('s1', { id: 's1', dy: -10 }, 0, 0.7), B({ id: 's1', dy: -11.5 }, 0, 0.7), M('me', { id: 's1', dx: 3, dy: -5 }, 0, 0.7)],
       say: ['{name} רץ צמוד, כתף בכתף, ולקח את הכדור ממנו. כוח!', 'החלוץ מהיר מדי, {name} לא הצליח להגיע לכתף.'] },
+    { id: 'poke', label: 'בהונה לכדור מאחור', icon: 'tackle', attr: 'defending', risk: 2,
+      ok: [M('me', { id: 's1', dy: -1.5 }, 0, 0.35), B({ id: 's1', dx: -5, dy: 5 }, 0.3, 0.45)],
+      fail: [M('me', { id: 's1', dy: -1 }, 0, 0.35, 'slide'), M('s1', { id: 's1', dy: 1 }, 0.3, 0.2, 'down')], stamp: ['תיקול נקי!', 'עבירה'],
+      say: ['{name} הגיע מאחור ושלח בהונה לכדור בלי לגעת ברגל. נקי!', '{name} נכנס מאחור ותפס רגל במקום כדור. שריקה.'] },
   ],
   variants: [
     { id: 'in_box', note: 'החלוץ שלהם נכנס איתך לרחבה. כל מגע לא נקי פה זה פנדל.',
@@ -453,6 +597,14 @@ const tackle: KindDef = {
       magnets: [{ id: 'me', team: 'u', x: 46, y: 42 }, { id: 's1', team: 'o', x: 50, y: 40, n: 11 }, { id: 'gk', team: 'u', gk: true, x: 50, y: 8 }],
       ball: [50, 37], arrows: [{ from: 's1', to: [50, 24], kind: 'press' }],
       fit: { slide: 0.45, jockey: 0.2, stand: 0.25, shoulder: 0.78 } },
+    { id: 'wing_1v1', pos: ['FB'], note: 'הכנף המהיר שלהם עומד מולך בקו, מנפנף ברגליים ומחכה שתיכנס. הבלם שלך רחוק.',
+      magnets: [{ id: 'me', team: 'u', x: 78, y: 35 }, { id: 's1', team: 'o', x: 78, y: 47, n: 11 }, { id: 'gk', team: 'u', gk: true, x: 50, y: 6 }, { id: 'm1', team: 'u', x: 56, y: 24, n: 5 }],
+      ball: [77.5, 45], arrows: [{ from: 's1', to: [78, 39], kind: 'press' }],
+      fit: { jockey: 0.8, slide: 0.25, stand: 0.45, shoulder: 0.35 } },
+    { id: 'from_behind', pos: ['DM', 'CM'], note: 'החלוץ שלהם ירד לקבל עם הגב לשער. אתה צמוד מאחוריו, והכדור נגע לו רחוק מהרגל.',
+      magnets: [{ id: 'me', team: 'u', x: 50, y: 41 }, { id: 's1', team: 'o', x: 50, y: 47, n: 9 }, { id: 'gk', team: 'u', gk: true, x: 50, y: 6 }, { id: 'm1', team: 'u', x: 59, y: 34, n: 5 }],
+      ball: [50.5, 50], arrows: [],
+      fit: { poke: 0.8, slide: 0.3, stand: 0.45, jockey: 0.35 } },
   ],
 };
 
@@ -486,6 +638,11 @@ const block: KindDef = {
     { id: 'close_range', note: 'כדור חוזר נופל לחלוץ שלהם מ-10 מטר. אין זמן לחשוב, רק להיזרק.',
       magnets: [{ id: 'me', team: 'u', x: 52, y: 15 }, { id: 's1', team: 'o', x: 54, y: 20, n: 9 }, { id: 'gk', team: 'u', gk: true, x: 50, y: 5 }],
       ball: [54, 18.5], arrows: [], fit: { throw: 0.8, angle: 0.4, pressure: 0.5, hold_line: 0.15 } },
+    { id: 'cross_block', pos: ['FB', 'W'], note: 'הכנף שלהם בקו הסיום ומכין הגבהה. ברחבה שלושה שלהם מול שניים שלנו.',
+      magnets: [{ id: 'me', team: 'u', x: 76, y: 15 }, { id: 's1', team: 'o', x: 82, y: 11, n: 7 }, { id: 'gk', team: 'u', gk: true, x: 52, y: 5 }, { id: 'm1', team: 'u', x: 53, y: 15, n: 5 },
+        { id: 's2', team: 'o', x: 49, y: 17, n: 9 }, { id: 's3', team: 'o', x: 40, y: 19, n: 11 }],
+      ball: [81, 10], arrows: [{ from: 's2', to: [52, 11], kind: 'run' }],
+      fit: { pressure: 0.8, throw: 0.4, angle: 0.45, hold_line: 0.2 }, labels: { pressure: 'צא וחסום את ההגבהה' } },
   ],
 };
 
@@ -509,6 +666,10 @@ const clearance: KindDef = {
       fail: [B('me', 0, 0.45, 4), M('s1', 'me', 0.35, 0.3, 'slide'), B({ id: 'me', dx: -2, dy: -4 }, 0.6, 0.3), B('GC', 0.95, 0.35)], stamp: ['יציאה נקייה!', 'איבוד ברחבה'],
       ctx: { protect: -0.2 },
       say: ['{name} עצר את הכדור ברחבה ופתח מתפרצת. ביטחון של בלם גדול.', '{name} ניסה לשחק ברחבה, החלוץ לקח לו והכדור בשער.'] },
+    { id: 'to_corner', label: 'שלח לקרן', icon: 'clear', attr: 'defending', risk: 1, bold: false,
+      ok: [B('me', 0, 0.35), B([30, 1], 0.4, 0.4)],
+      fail: [B('me', 0, 0.35), B({ id: 's1' }, 0.4, 0.3), B('far', 0.75, 0.3), M('gk', 'farShort', 0.77, 0.3, 'dive')],
+      say: ['{name} לא התעסק: רגל אחת וקרן. הסכנה נגמרה.', '{name} ניסה לשלוח לקרן, אבל הכדור פגע בו ונשאר לחלוץ.'] },
   ],
   variants: [
     { id: 'high_ball', note: 'הגבהה גבוהה נופלת לך ליד נקודת הפנדל. החלוץ שלהם דוחף אותך מאחור.',
@@ -524,6 +685,11 @@ const clearance: KindDef = {
       magnets: [{ id: 'me', team: 'u', x: 56, y: 27 }, { id: 's1', team: 'o', x: 62, y: 36, n: 9 }, { id: 's2', team: 'o', x: 30, y: 30, n: 7 }, { id: 'gk', team: 'u', gk: true, x: 50, y: 6 },
         { id: 'm1', team: 'u', x: 50, y: 44, n: 6 }],
       ball: [72, 40], arrows: [{ from: 's1', to: { id: 'me', dy: 2 }, kind: 'press' }], fit: { hoof: 0.45, touch: 0.3, head_away: 0.4, control: 0.75 } },
+    { id: 'low_cross_six', pos: ['CB', 'FB'], note: 'כדור נמוך וחזק חוצה את השישה. החלוץ שלהם מגיע מאחוריך לרחוקה, ואין זמן לשלוט.',
+      magnets: [{ id: 'me', team: 'u', x: 55, y: 10 }, { id: 's1', team: 'o', x: 44, y: 12, n: 9 }, { id: 's2', team: 'o', x: 84, y: 15, n: 7 }, { id: 'gk', team: 'u', gk: true, x: 50, y: 5 },
+        { id: 'm1', team: 'u', x: 61, y: 23, n: 4 }],
+      ball: [84, 15], arrows: [{ from: 's2', to: 'me', kind: 'pass' }, { from: 's1', to: [44, 8], kind: 'run' }],
+      fit: { to_corner: 0.8, hoof: 0.35, head_away: 0.25, control: 0.1 } },
   ],
 };
 
@@ -546,6 +712,18 @@ const save: KindDef = {
       ok: [B('nearShort', 0.1, 0.35), M('me', 'nearShort', 0.1, 0.33, 'dive'), B('outL', 0.45, 0.5)],
       fail: [B('nearShort', 0.1, 0.35), M('me', 'nearShort', 0.1, 0.33, 'dive'), B({ p: 'nearShort', dy: 6 }, 0.45, 0.3), M('s2', { p: 'nearShort', dy: 6 }, 0.4, 0.35), B('GC', 0.8, 0.3)], stamp: ['הצלה!', 'ריבאונד'],
       say: ['{name} הדף בחוכמה הרחק לצד, אף אחד לא הגיע לריבאונד.', '{name} הדף, אבל ישר לרגל של החלוץ השני.'] },
+    { id: 'tip_over', label: 'הקפץ מעל המשקוף', icon: 'glove', attr: 'gk', risk: 2, concede: true,
+      ok: [B({ p: 'GC', dx: 3, dy: -0.4 }, 0.1, 0.55, 4), M('me', { p: 'GC', dx: 3 }, 0.2, 0.4, 'jump'), B([53, -4], 0.65, 0.35, 2)],
+      fail: [B({ p: 'GC', dx: 3, dy: -0.4 }, 0.1, 0.55, 4), M('me', { id: 'me', dx: 1 }, 0.2, 0.4, 'jump'), B({ p: 'GC', dx: 4, dy: -1.6 }, 0.6, 0.2)],
+      say: ['{name} נמתח עד הסוף והקפיץ את הכדור מעל המשקוף בקצות האצבעות!', '{name} קפץ, אבל הכדור צלל מתחת למשקוף.'] },
+    { id: 'feet_save', label: 'הצלה ברגל בקרובה', icon: 'shield', attr: 'gk', risk: 1, concede: true,
+      ok: [B('nearShort', 0.1, 0.3), M('me', 'nearShort', 0.1, 0.25, 'slide'), B({ p: 'nearShort', dx: 4, dy: 7 }, 0.4, 0.4)],
+      fail: [M('me', 'nearShort', 0.1, 0.28, 'slide'), B('near', 0.12, 0.3)],
+      say: ['{name} סגר את הקרובה עם הרגל, והכדור עף לקרן.', '{name} ירד לרגל, והכדור עבר לו מתחת לגוף.'] },
+    { id: 'stay_big', label: 'הישאר עומד והגב', icon: 'shield', attr: 'gk', risk: 1, concede: true,
+      ok: [B({ p: 'GC', dx: 2, dy: 1.5 }, 0.1, 0.3), M('me', { p: 'GC', dx: 2, dy: 1.5 }, 0.12, 0.25, 'jump'), B({ p: 'GC', dx: 6, dy: 9 }, 0.4, 0.4)],
+      fail: [M('me', { id: 'me', dx: -2 }, 0.05, 0.3, 'dive'), B({ p: 'GC', dx: 2 }, 0.1, 0.3)],
+      say: ['{name} לא זז עד הרגע האחרון, והנגיחה מחמישה מטר פגעה לו בחזה.', '{name} זז ראשון, והנגיחה נכנסה לצד שהוא עזב.'] },
   ],
   variants: [
     { id: 'far_corner_shooter', note: 'החלוץ שלהם חותך פנימה מימין. הוא תמיד מסובב לפינה הרחוקה.',
@@ -558,6 +736,22 @@ const save: KindDef = {
       magnets: [{ id: 'me', team: 'u', gk: true, x: 50, y: 5 }, { id: 's1', team: 'o', x: 46, y: 22, n: 8 }, { id: 's2', team: 'o', x: 41, y: 13, n: 9 }, { id: 's3', team: 'o', x: 58, y: 14, n: 11 },
         { id: 'm1', team: 'u', x: 50, y: 16, n: 4 }],
       ball: [46, 20], arrows: [{ from: 's2', to: [44, 9], kind: 'run' }], fit: { set: 0.55, dive_far: 0.3, narrow: 0.25, parry: 0.78 } },
+    { id: 'dipping_long', note: 'בעיטה מרחוק עם סיבוב חזק. הכדור צולל לכיוון החיבורים, מעל הראש שלך.',
+      magnets: [{ id: 'me', team: 'u', gk: true, x: 50, y: 6 }, { id: 's1', team: 'o', x: 54, y: 41, n: 8 }, { id: 's2', team: 'o', x: 42, y: 21, n: 9 }, { id: 'm1', team: 'u', x: 52, y: 27, n: 6 }],
+      ball: [54, 39], arrows: [{ from: 's1', to: [53, 3], kind: 'press', bend: 3 }],
+      fit: { tip_over: 0.8, set: 0.4, dive_far: 0.35, parry: 0.45 } },
+    { id: 'deflection', note: 'בעיטה חזקה מ-20 מטר, והבלם שלך עומד בדיוק בדרך שלה. הכדור יכול לשנות כיוון ברגע האחרון.',
+      magnets: [{ id: 'me', team: 'u', gk: true, x: 50, y: 6 }, { id: 's1', team: 'o', x: 44, y: 27, n: 10 }, { id: 'm1', team: 'u', x: 47, y: 18, n: 4 }, { id: 's2', team: 'o', x: 60, y: 18, n: 9 }],
+      ball: [44, 25], arrows: [{ from: 's1', to: 'm1', kind: 'press' }],
+      fit: { set: 0.8, dive_far: 0.3, narrow: 0.25, parry: 0.45 }, labels: { set: 'הישאר על הרגליים עד הסוף' } },
+    { id: 'near_post_low', note: 'הכנף שלהם חדר לקצה השישה מימין וממהר לבעוט נמוך לקרובה מזווית צרה. ה-9 שלהם עוד רחוק.',
+      magnets: [{ id: 'me', team: 'u', gk: true, x: 54, y: 6 }, { id: 's1', team: 'o', x: 68, y: 13, n: 7 }, { id: 's2', team: 'o', x: 42, y: 26, n: 9 }, { id: 'm1', team: 'u', x: 62, y: 20, n: 2 }],
+      ball: [67, 12], arrows: [{ from: 's1', to: 'near', kind: 'press' }],
+      fit: { feet_save: 0.8, set: 0.4, dive_far: 0.25, parry: 0.35 } },
+    { id: 'close_header', note: 'קרן, והבלם שלהם עלה מעל כולם חמישה מטר ממך. אין זמן לזנק, רק להגיב.',
+      magnets: [{ id: 'me', team: 'u', gk: true, x: 50, y: 5 }, { id: 's1', team: 'o', x: 52, y: 12, n: 5 }, { id: 's2', team: 'o', x: 44, y: 10, n: 9 }, { id: 'm1', team: 'u', x: 57, y: 10, n: 4 }],
+      ball: [52, 10.5], arrows: [],
+      fit: { stay_big: 0.8, dive_far: 0.3, parry: 0.45, narrow: 0.2 } },
   ],
 };
 
@@ -580,6 +774,10 @@ const rush_out: KindDef = {
       ok: [M('me', { id: 's1', dy: -3 }, 0, 0.4, 'slide'), B({ id: 's1', dy: -3.5 }, 0.3, 0.15), B({ id: 's1', dx: 7, dy: 5 }, 0.45, 0.45)],
       fail: [M('me', { id: 's1', dy: -3 }, 0, 0.4, 'slide'), B('GC', 0.35, 0.65, 8)], stamp: ['יציאה מושלמת!', 'לוב מעליך'],
       say: ['{name} ירד נמוך בזמן ונעל את הבעיטה. ביצוע של ספר.', '{name} ירד מוקדם, והחלוץ הרים מעליו.'] },
+    { id: 'clear_out', label: 'צא מהרחבה והרחק ברגל', icon: 'clear', attr: 'pace', risk: 2, concede: true,
+      ok: [M('me', { p: 'ballPt', dy: -1 }, 0, 0.45), B('upR', 0.45, 0.6, 6)],
+      fail: [M('me', { p: 'ballPt', dy: -1 }, 0, 0.45, 'slide'), M('s1', { p: 'ballPt', dx: -4, dy: -4 }, 0.25, 0.4), B({ p: 'ballPt', dx: -4, dy: -5 }, 0.3, 0.4), B('GC', 0.8, 0.5, 6)], stamp: ['הרחקה!', 'לוב מעליך'],
+      say: ['{name} יצא עד 25 מטר כמו ליברו ושלח את הכדור ליציע. קור רוח.', '{name} יצא מהרחבה, החלוץ הקדים אותו בנגיעה, והכדור מתגלגל לשער ריק.'] },
   ],
   variants: [
     { id: 'heavy_touch', note: 'החלוץ שלהם פרץ, אבל הנגיעה האחרונה שלו ארוכה. הכדור באמצע בינך לבינו.',
@@ -591,9 +789,18 @@ const rush_out: KindDef = {
     { id: 'close_in', note: 'החלוץ כבר בתוך הרחבה, עשרה מטר ממך, מכין את הבעיטה.',
       magnets: [{ id: 'me', team: 'u', gk: true, x: 50, y: 6 }, { id: 's1', team: 'o', x: 56, y: 18, n: 11 }],
       ball: [55.5, 16.5], arrows: [], fit: { rush: 0.3, spread: 0.78, stay: 0.35, block_down: 0.55 } },
+    { id: 'sweeper_race', note: 'כדור ארוך מעל הבלמים שלך. החלוץ שלהם רץ אליו מהחצי, והכדור ייעצר בערך 25 מטר מהשער, מחוץ לרחבה.',
+      magnets: [{ id: 'me', team: 'u', gk: true, x: 50, y: 7 }, { id: 's1', team: 'o', x: 54, y: 53, n: 9 }, { id: 'm1', team: 'u', x: 44, y: 45, n: 5 }],
+      ball: [52, 35], arrows: [{ from: 's1', to: [52, 38], kind: 'press' }, { from: 'm1', to: [48, 40], kind: 'run' }],
+      fit: { clear_out: 0.8, rush: 0.4, stay: 0.3, spread: 0.25 } },
+    { id: 'angle_wide', note: 'החלוץ שלהם מוביל לבד מצד שמאל של הרחבה, בזווית צרה. רק הקרובה פתוחה לו.',
+      magnets: [{ id: 'me', team: 'u', gk: true, x: 46, y: 6 }, { id: 's1', team: 'o', x: 30, y: 21, n: 11 }, { id: 'm1', team: 'u', x: 40, y: 31, n: 4 }],
+      ball: [31, 19.5], arrows: [{ from: 's1', to: [36, 13], kind: 'press' }],
+      fit: { stay: 0.78, rush: 0.3, spread: 0.45, block_down: 0.4 }, labels: { stay: 'סגור את הקורה הקרובה' } },
   ],
 };
 
 export const LIBRARY: Record<MomentKind, KindDef> = {
   shot, long_shot, free_kick, penalty, one_on_one, header, dribble, through_ball, cross, interception, tackle, block, clearance, save, rush_out,
+  ...ATTACK_KINDS, ...MID_KINDS, ...DEF_KINDS,
 };
