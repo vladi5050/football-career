@@ -3,6 +3,7 @@
 // Club:   name|city|colors|rep|rival|stadium|short   (all but name/city optional)
 // colors: tokens joined by '-', e.g. r-w, or hex '#123456-#FFFFFF'
 import fs from 'fs';
+import { LEAGUE_REGION, CLUB_REGION, PARENT, SHORT } from './extra.mjs';
 const C = {
   r: '#C8102E', w: '#FFFFFF', k: '#000000', b: '#034694', n: '#0A1F44', s: '#6CABDD', y: '#FDE100', g: '#00843D',
   m: '#7A263A', o: '#F47920', p: '#5B2C83', gr: '#8A8D8F', gd: '#C9A13B', t: '#00A19C', rb: '#1B458F', mr: '#800000',
@@ -37,7 +38,7 @@ for (const f of files) {
       const list = (x) => (x === '-' ? null : x.includes(',') ? x.split(',') : x);
       const [hi, lo] = rep.split('-').map(Number);
       cur = { key, name, countryCode: cc, country, tier: +tier, promotesTo: list(up), relegatesTo: list(down), promoteSpots: +ps, relegateSpots: +rs,
-        ...(region ? { region } : {}), strength: +strength, wageFactor: +wf, simLevel: sim, clubs: [], _hi: hi, _lo: lo, _pairs: new Set() };
+        ...(LEAGUE_REGION[key] ? { region: LEAGUE_REGION[key] } : {}), strength: +strength, wageFactor: +wf, simLevel: sim, clubs: [], _hi: hi, _lo: lo, _pairs: new Set() };
       out.push(cur);
       shift += 5;
       continue;
@@ -51,7 +52,10 @@ for (const f of files) {
     cur._pairs.add(p2.join('/'));
     const c = { name, short: short || shortOf(name), city, colors: p2, reputation: rep ? +rep : 0, stadium: stadium || `אצטדיון ${city}` };
     if (rival) c.rival = rival;
-    if (cur.region) c.region = cur.region;
+    const reg = CLUB_REGION[name] ?? LEAGUE_REGION[cur.key];
+    if (reg) c.region = reg;
+    if (PARENT[name]) { c.reserve = true; c.parent = PARENT[name]; }
+    if (SHORT[name]) c.short = SHORT[name];
     cur.clubs.push(c);
   }
 }

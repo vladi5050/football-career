@@ -2,8 +2,9 @@ import { describe, expect, it } from 'vitest';
 import type { Attributes, ContextMods, MomentKind, MomentSpec } from '../../src/core/types';
 import { LIBRARY } from '../../src/match/decision/scenarios';
 import {
-  attrNorm, buildOptions, contextFit, gameState, hintOption, kindDef, pickVariant, resolveDecision, successChance,
+  attrEdge, attrNorm, buildOptions, contextFit, gameState, hintOption, hintProbability, kindDef, lessonLine, pickVariant, resolveDecision, successChance,
 } from '../../src/match/decision/resolve';
+import { LESSONS } from '../../src/match/decision/lessons';
 import type { Step, Target, Variant } from '../../src/match/decision/types';
 
 const CTX0: ContextMods = { lateClose: false, hostileCrowd: false, rivalInvolved: false, rain: false, derby: false };
@@ -100,9 +101,14 @@ describe('resolver: fits, attributes, context', () => {
     expect(best.chance - worst.chance).toBeGreaterThan(0.15);
   });
 
-  it('attribute value and difficulty move the chance', () => {
-    const s = spec();
-    expect(successChance(0.6, 85, 2, s)).toBeGreaterThan(successChance(0.6, 45, 2, s) + 0.15);
+  it('attributes count relative to the player\'s own level; difficulty carries the absolute gap', () => {
+    const s = spec({ attackerSkill: 40 });
+    // an option on the player's strength beats one on his weakness
+    expect(successChance(0.6, 60, 2, s)).toBeGreaterThan(successChance(0.6, 25, 2, s) + 0.15);
+    expect(attrEdge(40, 40)).toBe(0);
+    expect(attrEdge(90, 40)).toBe(1);
+    // a youngster (40 at 40) and a star (85 at 85) face the same odds at the same difficulty
+    expect(successChance(0.8, 40, 2, spec({ attackerSkill: 40 }))).toBeCloseTo(successChance(0.8, 85, 2, spec({ attackerSkill: 85 })), 6);
     expect(successChance(0.6, 70, 2, { ...s, difficulty: 0.9 })).toBeLessThan(successChance(0.6, 70, 2, { ...s, difficulty: 0.1 }));
     expect(attrNorm(30)).toBe(0);
     expect(attrNorm(90)).toBe(1);
@@ -110,13 +116,38 @@ describe('resolver: fits, attributes, context', () => {
     expect(successChance(0.5, 60, 1, s)).toBeGreaterThan(successChance(0.5, 60, 3, s));
     // always some hope, never a sure thing
     expect(successChance(0, 1, 3, { ...s, difficulty: 1 })).toBeGreaterThanOrEqual(0.05);
-    expect(successChance(1, 99, 1, { ...s, difficulty: 0 })).toBeLessThanOrEqual(0.93);
+    expect(successChance(1, 99, 1, { ...s, difficulty: 0 })).toBeLessThanOrEqual(0.9);
   });
 
-  it('a pressure context lowers the chance', () => {
-    const calm = spec();
-    const hot = spec({ context: { ...CTX0, hostileCrowd: true, rivalInvolved: true, lateClose: true } });
-    expect(successChance(0.6, 70, 2, hot)).toBeLessThan(successChance(0.6, 70, 2, calm));
+  it('calibration for a youngster (attributes ≈ his level, difficulty 0.5)', () => {
+    const young = attrs(40);
+    const best: number[] = [], worst: number[] = [], all: number[] = [], saves: number[] = [];
+    for (const k of KINDS) {
+      if (k === 'penalty') continue;
+      for (const vv of LIBRARY[k].variants) {
+        const opts = buildOptions(LIBRARY[k], vv, spec({ kind: k, attackerSkill: 40 }), young);
+        const sorted = [...opts].sort((x, y) => y.fit - x.fit);
+        best.push(sorted[0].chance);
+        worst.push(sorted[sorted.length - 1].chance);
+        all.push(...opts.map((o) => o.chance));
+        if (k === 'save' || k === 'rush_out') saves.push(sorted[0].chance);
+      }
+    }
+    const avg = (xs: number[]) => xs.reduce((x, y) => x + y, 0) / xs.length;
+    expect(avg(best)).toBeGreaterThanOrEqual(0.45);
+    expect(avg(best)).toBeLessThanOrEqual(0.55);
+    expect(avg(worst)).toBeGreaterThanOrEqual(0.15);
+    expect(avg(worst)).toBeLessThanOrEqual(0.25);
+    expect(avg(all)).toBeGreaterThan(0.28); // rotating / random picks
+    expect(avg(all)).toBeLessThan(0.4);
+    expect(avg(saves)).toBeGreaterThanOrEqual(0.5);
+    expect(avg(saves)).toBeLessThanOrEqual(0.6);
+    // penalties: takers convert most good reads; a keeper reading the taker saves about half
+    const taker = LIBRARY.penalty.variants.filter((x) => x.role === 'taker').map((x) => Math.max(...buildOptions(LIBRARY.penalty, x, spec({ kind: 'penalty', attackerSkill: 40 }), young).map((o) => o.chance)));
+    const keeper = LIBRARY.penalty.variants.filter((x) => x.role === 'keeper').map((x) => Math.max(...buildOptions(LIBRARY.penalty, x, spec({ kind: 'penalty', attackerSkill: 40 }), young).map((o) => o.chance)));
+    expect(avg(taker)).toBeGreaterThan(0.6);
+    expect(avg(keeper)).toBeGreaterThan(0.4);
+    expect(avg(keeper)).toBeLessThan(0.6);
   });
 
   it('late with a lead favours keeping the ball; chasing favours the bold read', () => {
@@ -151,15 +182,16 @@ describe('resolver: fits, attributes, context', () => {
       let ok = 0;
       const N = 4000;
       for (let i = 0; i < N; i++) {
-        const opts = buildOptions(LIBRARY.shot, v, spec(), attrs(a));
+        const opts = buildOptions(LIBRARY.shot, v, spec({ attackerSkill: 50 }), attrs(a));
         const o = opts.reduce((x, y) => ((pickBest ? y.fit > x.fit : y.fit < x.fit) ? y : x));
         if (resolveDecision(LIBRARY.shot, o, rnd()).success) ok++;
       }
       return ok / N;
     };
-    const good = run(82, true), bad = run(42, false);
-    expect(good).toBeGreaterThan(0.6);
-    expect(bad).toBeLessThan(0.3);
+    // the right read on his strength vs. the wrong read on his weakness (relative to his level, 50)
+    const good = run(70, true), bad = run(30, false);
+    expect(good).toBeGreaterThan(0.55);
+    expect(bad).toBeLessThan(0.2);
   });
 });
 
@@ -189,14 +221,37 @@ describe('resolver: outcome, timeout, vision hint', () => {
     for (const x of opts) expect(t.quality).toBeLessThan(resolveDecision(def, x, 0.999).quality);
   });
 
-  it('high vision reveals the best read, low vision does not, middle sometimes', () => {
+  it('vision hints: 40 → about half the moments, 70+ always, weak vision rarely', () => {
     const best = opts.reduce((a, b) => (b.fit > a.fit ? b : a)).id;
+    expect(hintProbability(40)).toBeCloseTo(0.5, 6);
+    expect(hintProbability(70)).toBe(1);
+    expect(hintProbability(10)).toBe(0.15);
     expect(hintOption(opts, attrs(60, { vision: 80 }), 'ST', 0.99)).toBe(best);
-    expect(hintOption(opts, attrs(60, { vision: 40 }), 'ST', 0)).toBeNull();
-    expect(hintOption(opts, attrs(60, { vision: 63 }), 'ST', 0.1)).toBe(best);
-    expect(hintOption(opts, attrs(60, { vision: 63 }), 'ST', 0.9)).toBeNull();
+    expect(hintOption(opts, attrs(60, { vision: 40 }), 'ST', 0.45)).toBe(best);
+    expect(hintOption(opts, attrs(60, { vision: 40 }), 'ST', 0.55)).toBeNull();
     // keepers read the game with their goalkeeping
-    expect(hintOption(opts, attrs(60, { vision: 30, gk: 85 }), 'GK', 0.99)).toBe(best);
+    expect(hintOption(opts, attrs(60, { vision: 20, gk: 85 }), 'GK', 0.99)).toBe(best);
+    let seen = 0;
+    for (let i = 0; i < 1000; i++) if (hintOption(opts, attrs(40), 'ST', i / 1000)) seen++;
+    expect(seen).toBeGreaterThan(450);
+    expect(seen).toBeLessThan(550);
+  });
+
+  it('"מה היה נכון" after a poor read or a timeout, reassurance after a good read that failed', () => {
+    const vv = def.variants[0];
+    const sorted = [...opts].sort((a, b) => b.fit - a.fit);
+    const bad = lessonLine('shot', vv, opts, sorted[sorted.length - 1], false)!;
+    expect(bad.kind).toBe('lesson');
+    expect(bad.text).toContain('מה היה נכון');
+    expect(bad.text).toContain(sorted[0].label);
+    expect(lessonLine('shot', vv, opts, sorted[sorted.length - 1], true)!.kind).toBe('lesson'); // lucky, still a lesson
+    expect(lessonLine('shot', vv, opts, null, false)!.kind).toBe('lesson');
+    expect(lessonLine('shot', vv, opts, sorted[0], false)!.kind).toBe('good');
+    expect(lessonLine('shot', vv, opts, sorted[0], true)).toBeNull();
+  });
+
+  it('every situation has a lesson', () => {
+    for (const k of KINDS) for (const vv of LIBRARY[k].variants) expect(LESSONS[`${k}/${vv.id}`], `${k}/${vv.id}`).toBeTruthy();
   });
 
   it('kindDef falls back for unknown kinds and pickVariant is deterministic', () => {

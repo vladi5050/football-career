@@ -52,8 +52,13 @@ for (const l of leagues) {
   if (!Number.isInteger(l.promoteSpots) || !Number.isInteger(l.relegateSpots)) err(w, 'spots must be integers');
   if (!Array.isArray(l.clubs) || l.clubs.length < 8) err(w, 'needs >= 8 clubs');
   const pairs = new Set<string>();
+  const shorts = new Map<string, string>();
   for (const c of l.clubs ?? []) {
     const cw = `${w} club ${c.name}`;
+    if (c.short) {
+      if (shorts.has(c.short)) err(cw, `short name "${c.short}" also used by ${shorts.get(c.short)} in this league`);
+      shorts.set(c.short, c.name);
+    }
     for (const f of ['name', 'short', 'city', 'stadium'] as const) if (typeof c[f] !== 'string' || !c[f]) err(cw, `missing ${f}`);
     for (const f of ['name', 'short', 'city', 'stadium'] as const) if (LATIN.test(c[f] ?? '')) err(cw, `${f} must be Hebrew`);
     if (clubNames.has(c.name)) err(cw, 'duplicate club name');
@@ -99,7 +104,31 @@ for (const l of leagues) {
     if (up !== l.relegateSpots) err(w, `relegates ${l.relegateSpots} but its lower groups promote ${up}`);
     if (l.relegateSpots > l.clubs.length / 3) warn(w, 'relegates more than a third of the league');
   }
+  // regions: a level with several groups needs a region on every group and on every club above and in the groups
+  const groupKeys = downs.length > 1 ? downs : [];
+  const groupRegions = new Set(groupKeys.map((k) => byKey.get(k)?.region).filter((x): x is string => !!x));
+  for (const k of groupKeys) {
+    const g = byKey.get(k);
+    if (g && !g.region) err(`league ${k}`, 'regional group needs a region');
+  }
+  const inGroup = ups.length > 0 && ups.some((k) => links(byKey.get(k)?.relegatesTo ?? null).length > 1);
   for (const c of l.clubs ?? []) {
+    if (groupKeys.length) {
+      if (!c.region) err(`club ${c.name}`, `needs a region (league ${l.key} relegates into several groups)`);
+      else if (!groupRegions.has(c.region)) err(`club ${c.name}`, `region "${c.region}" matches none of ${groupKeys.join(', ')}`);
+    }
+    if (inGroup && c.region !== l.region) err(`club ${c.name}`, `region must be "${l.region}" like its group ${l.key}`);
+    if (c.reserve !== undefined && typeof c.reserve !== 'boolean') err(`club ${c.name}`, 'reserve must be boolean');
+    if (c.reserve && !c.parent) err(`club ${c.name}`, 'reserve team needs a parent');
+    if (c.parent !== undefined) {
+      if (!c.reserve) err(`club ${c.name}`, 'parent set but reserve is not true');
+      if (!clubNames.has(c.parent)) err(`club ${c.name}`, `parent "${c.parent}" does not exist`);
+      if (c.parent === c.name) err(`club ${c.name}`, 'parent is itself');
+      else {
+        const pl = byKey.get(clubNames.get(c.parent) ?? '');
+        if (pl && (pl.countryCode !== l.countryCode || pl.tier >= l.tier)) err(`club ${c.name}`, 'parent must be in a higher league of the same country');
+      }
+    }
     if (c.rival !== undefined) {
       if (!clubNames.has(c.rival)) err(`club ${c.name}`, `rival "${c.rival}" does not exist`);
       if (c.rival === c.name) err(`club ${c.name}`, 'rival is itself');

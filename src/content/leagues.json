@@ -204,7 +204,8 @@
      ],
      "reputation": 58,
      "stadium": "המושבה",
-     "rival": "הפועל פתח תקווה"
+     "rival": "הפועל פתח תקווה",
+     "region": "south"
     },
     {
      "name": "הפועל חדרה",
@@ -215,7 +216,8 @@
       "#FFFFFF"
      ],
      "reputation": 52,
-     "stadium": "אצטדיון חדרה"
+     "stadium": "אצטדיון חדרה",
+     "region": "north"
     },
     {
      "name": "בני יהודה",
@@ -226,7 +228,8 @@
       "#000000"
      ],
      "reputation": 52,
-     "stadium": "שכונת התקווה"
+     "stadium": "שכונת התקווה",
+     "region": "south"
     },
     {
      "name": "הפועל כפר סבא",
@@ -237,7 +240,8 @@
       "#FFFFFF"
      ],
      "reputation": 48,
-     "stadium": "אצטדיון כפר סבא"
+     "stadium": "אצטדיון כפר סבא",
+     "region": "north"
     },
     {
      "name": "הפועל ראשון לציון",
@@ -248,7 +252,8 @@
       "#034694"
      ],
      "reputation": 48,
-     "stadium": "הברפלד"
+     "stadium": "הברפלד",
+     "region": "south"
     },
     {
      "name": "הפועל רמת גן",
@@ -259,7 +264,8 @@
       "#FFFFFF"
      ],
      "reputation": 46,
-     "stadium": "אצטדיון וינטר"
+     "stadium": "אצטדיון וינטר",
+     "region": "south"
     },
     {
      "name": "מכבי הרצליה",
@@ -270,7 +276,8 @@
       "#034694"
      ],
      "reputation": 45,
-     "stadium": "אצטדיון הרצליה"
+     "stadium": "אצטדיון הרצליה",
+     "region": "south"
     },
     {
      "name": "הפועל עפולה",
@@ -281,7 +288,8 @@
       "#FFFFFF"
      ],
      "reputation": 44,
-     "stadium": "אצטדיון עפולה"
+     "stadium": "אצטדיון עפולה",
+     "region": "north"
     },
     {
      "name": "הפועל נוף הגליל",
@@ -292,7 +300,8 @@
       "#034694"
      ],
      "reputation": 44,
-     "stadium": "גרין"
+     "stadium": "גרין",
+     "region": "north"
     },
     {
      "name": "הפועל אום אל פחם",
@@ -303,7 +312,8 @@
       "#FFFFFF"
      ],
      "reputation": 42,
-     "stadium": "אצטדיון אום אל פחם"
+     "stadium": "אצטדיון אום אל פחם",
+     "region": "north"
     },
     {
      "name": "הפועל כפר שלם",
@@ -314,7 +324,8 @@
       "#FDE100"
      ],
      "reputation": 40,
-     "stadium": "אצטדיון כפר שלם"
+     "stadium": "אצטדיון כפר שלם",
+     "region": "south"
     },
     {
      "name": "מכבי יפו",
@@ -325,7 +336,8 @@
       "#FFFFFF"
      ],
      "reputation": 40,
-     "stadium": "אצטדיון יפו"
+     "stadium": "אצטדיון יפו",
+     "region": "south"
     },
     {
      "name": "הפועל רעננה",
@@ -336,7 +348,8 @@
       "#000000"
      ],
      "reputation": 40,
-     "stadium": "אצטדיון רעננה"
+     "stadium": "אצטדיון רעננה",
+     "region": "north"
     },
     {
      "name": "הפועל עכו",
@@ -347,7 +360,8 @@
       "#FFFFFF"
      ],
      "reputation": 39,
-     "stadium": "אצטדיון עכו"
+     "stadium": "אצטדיון עכו",
+     "region": "north"
     },
     {
      "name": "עירוני מודיעין",
@@ -358,7 +372,8 @@
       "#034694"
      ],
      "reputation": 38,
-     "stadium": "אצטדיון מודיעין"
+     "stadium": "אצטדיון מודיעין",
+     "region": "south"
     },
     {
      "name": "הפועל כפר קאסם",
@@ -369,7 +384,8 @@
       "#000000"
      ],
      "reputation": 36,
-     "stadium": "אצטדיון כפר קאסם"
+     "stadium": "אצטדיון כפר קאסם",
+     "region": "south"
     }
    ]
   },
@@ -386,7 +402,7 @@
    ],
    "promoteSpots": 1,
    "relegateSpots": 2,
-   "region": "צפון",
+   "region": "north",
    "strength": 30,
    "wageFactor": 0.12,
    "simLevel": "result",
@@ -401,7 +417,7 @@
      ],
      "reputation": 40,
      "stadium": "אצטדיון נצרת",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל טירה",
@@ -413,7 +429,7 @@
      ],
      "reputation": 39,
      "stadium": "אצטדיון טירה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "מ.ס. טמרה",
@@ -425,7 +441,7 @@
      ],
      "reputation": 38,
      "stadium": "אצטדיון טמרה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל באקה אל גרבייה",
@@ -437,7 +453,7 @@
      ],
      "reputation": 37,
      "stadium": "אצטדיון באקה אל גרבייה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל כפר כנא",
@@ -449,7 +465,7 @@
      ],
      "reputation": 36,
      "stadium": "אצטדיון כפר כנא",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל בית שאן",
@@ -461,7 +477,7 @@
      ],
      "reputation": 35,
      "stadium": "אצטדיון בית שאן",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל מגדל העמק",
@@ -473,7 +489,7 @@
      ],
      "reputation": 34,
      "stadium": "אצטדיון מגדל העמק",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "עירוני נשר",
@@ -485,7 +501,7 @@
      ],
      "reputation": 33,
      "stadium": "אצטדיון נשר",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל קריית אתא",
@@ -497,7 +513,7 @@
      ],
      "reputation": 31,
      "stadium": "אצטדיון קריית אתא",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "בית״ר נהריה",
@@ -509,7 +525,7 @@
      ],
      "reputation": 30,
      "stadium": "אצטדיון נהריה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "מכבי נווה שאנן",
@@ -521,7 +537,7 @@
      ],
      "reputation": 29,
      "stadium": "אצטדיון חיפה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל עראבה",
@@ -533,7 +549,7 @@
      ],
      "reputation": 28,
      "stadium": "אצטדיון עראבה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל שפרעם",
@@ -545,7 +561,7 @@
      ],
      "reputation": 27,
      "stadium": "אצטדיון שפרעם",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל ג׳דיידה מכר",
@@ -557,7 +573,7 @@
      ],
      "reputation": 26,
      "stadium": "אצטדיון ג׳דיידה מכר",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "מכבי קריית ים",
@@ -569,7 +585,7 @@
      ],
      "reputation": 25,
      "stadium": "אצטדיון קריית ים",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל עילוט",
@@ -581,7 +597,7 @@
      ],
      "reputation": 24,
      "stadium": "אצטדיון עילוט",
-     "region": "צפון"
+     "region": "north"
     }
    ]
   },
@@ -598,7 +614,7 @@
    ],
    "promoteSpots": 1,
    "relegateSpots": 2,
-   "region": "דרום",
+   "region": "south",
    "strength": 30,
    "wageFactor": 0.12,
    "simLevel": "result",
@@ -613,7 +629,7 @@
      ],
      "reputation": 40,
      "stadium": "אצטדיון אשקלון",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "הפועל מרמורק",
@@ -625,7 +641,7 @@
      ],
      "reputation": 39,
      "stadium": "אצטדיון רחובות",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "מכבי שעריים",
@@ -637,7 +653,7 @@
      ],
      "reputation": 38,
      "stadium": "אצטדיון רחובות",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "מ.ס. דימונה",
@@ -649,7 +665,7 @@
      ],
      "reputation": 37,
      "stadium": "אצטדיון דימונה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "סקציה נס ציונה",
@@ -661,7 +677,7 @@
      ],
      "reputation": 36,
      "stadium": "אצטדיון נס ציונה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "עירוני קריית גת",
@@ -673,7 +689,7 @@
      ],
      "reputation": 35,
      "stadium": "אצטדיון קריית גת",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "הפועל אופקים",
@@ -685,7 +701,7 @@
      ],
      "reputation": 34,
      "stadium": "אצטדיון אופקים",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "מ.ס. ירושלים",
@@ -697,7 +713,7 @@
      ],
      "reputation": 33,
      "stadium": "אצטדיון ירושלים",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "בית״ר תל אביב בת ים",
@@ -709,7 +725,7 @@
      ],
      "reputation": 31,
      "stadium": "אצטדיון בת ים",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "הפועל לוד",
@@ -721,7 +737,7 @@
      ],
      "reputation": 30,
      "stadium": "אצטדיון לוד",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "הפועל רמלה",
@@ -733,7 +749,7 @@
      ],
      "reputation": 29,
      "stadium": "אצטדיון רמלה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "הפועל הוד השרון",
@@ -745,7 +761,7 @@
      ],
      "reputation": 28,
      "stadium": "אצטדיון הוד השרון",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "מכבי קריית מלאכי",
@@ -757,7 +773,7 @@
      ],
      "reputation": 27,
      "stadium": "אצטדיון קריית מלאכי",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "הפועל אילת",
@@ -769,7 +785,7 @@
      ],
      "reputation": 26,
      "stadium": "אצטדיון אילת",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "הפועל ירוחם",
@@ -781,7 +797,7 @@
      ],
      "reputation": 25,
      "stadium": "אצטדיון ירוחם",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "מ.ס. שדרות",
@@ -793,7 +809,7 @@
      ],
      "reputation": 24,
      "stadium": "אצטדיון שדרות",
-     "region": "דרום"
+     "region": "south"
     }
    ]
   },
@@ -807,7 +823,7 @@
    "relegatesTo": null,
    "promoteSpots": 1,
    "relegateSpots": 0,
-   "region": "צפון",
+   "region": "north",
    "strength": 22,
    "wageFactor": 0.05,
    "simLevel": "result",
@@ -822,7 +838,7 @@
      ],
      "reputation": 28,
      "stadium": "אצטדיון צפת",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "מכבי מעלות",
@@ -834,7 +850,7 @@
      ],
      "reputation": 27,
      "stadium": "אצטדיון מעלות תרשיחא",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל כרמיאל",
@@ -846,7 +862,7 @@
      ],
      "reputation": 26,
      "stadium": "אצטדיון כרמיאל",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "בית״ר קריית שמונה",
@@ -858,7 +874,7 @@
      ],
      "reputation": 26,
      "stadium": "אצטדיון קריית שמונה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל מג׳ד אל כרום",
@@ -870,7 +886,7 @@
      ],
      "reputation": 25,
      "stadium": "אצטדיון מג׳ד אל כרום",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל בענה",
@@ -882,7 +898,7 @@
      ],
      "reputation": 24,
      "stadium": "אצטדיון בענה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "מכבי כפר יאסיף",
@@ -894,7 +910,7 @@
      ],
      "reputation": 23,
      "stadium": "אצטדיון כפר יאסיף",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל ירכא",
@@ -906,7 +922,7 @@
      ],
      "reputation": 22,
      "stadium": "אצטדיון ירכא",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "מכבי אבו סנאן",
@@ -918,7 +934,7 @@
      ],
      "reputation": 22,
      "stadium": "אצטדיון אבו סנאן",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל חורפיש",
@@ -930,7 +946,7 @@
      ],
      "reputation": 21,
      "stadium": "אצטדיון חורפיש",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "בני ג׳וליס",
@@ -942,7 +958,7 @@
      ],
      "reputation": 20,
      "stadium": "אצטדיון ג׳וליס",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל מגאר",
@@ -954,7 +970,7 @@
      ],
      "reputation": 19,
      "stadium": "אצטדיון מגאר",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "מכבי ראמה",
@@ -966,7 +982,7 @@
      ],
      "reputation": 18,
      "stadium": "אצטדיון ראמה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל דיר חנא",
@@ -978,7 +994,7 @@
      ],
      "reputation": 18,
      "stadium": "אצטדיון דיר חנא",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "עירוני חצור",
@@ -990,7 +1006,7 @@
      ],
      "reputation": 17,
      "stadium": "אצטדיון חצור הגלילית",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל קצרין",
@@ -1002,7 +1018,7 @@
      ],
      "reputation": 16,
      "stadium": "אצטדיון קצרין",
-     "region": "צפון"
+     "region": "north"
     }
    ]
   },
@@ -1016,7 +1032,7 @@
    "relegatesTo": null,
    "promoteSpots": 1,
    "relegateSpots": 0,
-   "region": "צפון",
+   "region": "north",
    "strength": 22,
    "wageFactor": 0.05,
    "simLevel": "result",
@@ -1031,7 +1047,7 @@
      ],
      "reputation": 28,
      "stadium": "אצטדיון יקנעם",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "מכבי עתלית",
@@ -1043,11 +1059,11 @@
      ],
      "reputation": 27,
      "stadium": "אצטדיון עתלית",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל קריית טבעון",
-     "short": "קריית",
+     "short": "טבעון",
      "city": "קריית טבעון",
      "colors": [
       "#800000",
@@ -1055,7 +1071,7 @@
      ],
      "reputation": 26,
      "stadium": "אצטדיון קריית טבעון",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "בית״ר חיפה",
@@ -1067,11 +1083,11 @@
      ],
      "reputation": 26,
      "stadium": "אצטדיון חיפה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל קריית ביאליק",
-     "short": "קריית",
+     "short": "ביאליק",
      "city": "קריית ביאליק",
      "colors": [
       "#FFFFFF",
@@ -1079,11 +1095,11 @@
      ],
      "reputation": 25,
      "stadium": "אצטדיון קריית ביאליק",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "מכבי קריית מוצקין",
-     "short": "קריית",
+     "short": "מוצקין",
      "city": "קריית מוצקין",
      "colors": [
       "#FFFFFF",
@@ -1091,7 +1107,7 @@
      ],
      "reputation": 24,
      "stadium": "אצטדיון קריית מוצקין",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל טירת כרמל",
@@ -1103,7 +1119,7 @@
      ],
      "reputation": 23,
      "stadium": "אצטדיון טירת כרמל",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "עירוני זכרון יעקב",
@@ -1115,7 +1131,7 @@
      ],
      "reputation": 22,
      "stadium": "אצטדיון זכרון יעקב",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל פרדס חנה כרכור",
@@ -1127,7 +1143,7 @@
      ],
      "reputation": 22,
      "stadium": "אצטדיון פרדס חנה כרכור",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "מכבי אור עקיבא",
@@ -1139,7 +1155,7 @@
      ],
      "reputation": 21,
      "stadium": "אצטדיון אור עקיבא",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל ג׳סר א זרקא",
@@ -1151,7 +1167,7 @@
      ],
      "reputation": 20,
      "stadium": "אצטדיון ג׳סר א זרקא",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל עין מאהל",
@@ -1163,7 +1179,7 @@
      ],
      "reputation": 19,
      "stadium": "אצטדיון עין מאהל",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "מכבי יפיע",
@@ -1175,7 +1191,7 @@
      ],
      "reputation": 18,
      "stadium": "אצטדיון יפיע",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל דבוריה",
@@ -1187,7 +1203,7 @@
      ],
      "reputation": 18,
      "stadium": "אצטדיון דבוריה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "הפועל עמק חפר",
@@ -1199,7 +1215,7 @@
      ],
      "reputation": 17,
      "stadium": "אצטדיון עמק חפר",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "מ.ס. בנימינה",
@@ -1211,7 +1227,7 @@
      ],
      "reputation": 16,
      "stadium": "אצטדיון בנימינה",
-     "region": "צפון"
+     "region": "north"
     }
    ]
   },
@@ -1225,7 +1241,7 @@
    "relegatesTo": null,
    "promoteSpots": 1,
    "relegateSpots": 0,
-   "region": "דרום",
+   "region": "south",
    "strength": 22,
    "wageFactor": 0.05,
    "simLevel": "result",
@@ -1240,7 +1256,7 @@
      ],
      "reputation": 28,
      "stadium": "אצטדיון אור יהודה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "מכבי קריית אונו",
@@ -1252,7 +1268,7 @@
      ],
      "reputation": 27,
      "stadium": "אצטדיון קריית אונו",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "הפועל יהוד",
@@ -1264,7 +1280,7 @@
      ],
      "reputation": 26,
      "stadium": "אצטדיון יהוד",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "בית״ר פתח תקווה",
@@ -1276,7 +1292,7 @@
      ],
      "reputation": 26,
      "stadium": "אצטדיון פתח תקווה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "הפועל ראש העין",
@@ -1288,7 +1304,7 @@
      ],
      "reputation": 25,
      "stadium": "אצטדיון ראש העין",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "מכבי שוהם",
@@ -1300,7 +1316,7 @@
      ],
      "reputation": 24,
      "stadium": "אצטדיון שוהם",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "עירוני אלעד",
@@ -1312,7 +1328,7 @@
      ],
      "reputation": 23,
      "stadium": "אצטדיון אלעד",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "הפועל כפר יונה",
@@ -1324,7 +1340,7 @@
      ],
      "reputation": 22,
      "stadium": "אצטדיון כפר יונה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "הפועל טייבה",
@@ -1336,7 +1352,7 @@
      ],
      "reputation": 22,
      "stadium": "אצטדיון טייבה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "מכבי קלנסווה",
@@ -1348,7 +1364,7 @@
      ],
      "reputation": 21,
      "stadium": "אצטדיון קלנסווה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "הפועל ג׳לג׳וליה",
@@ -1360,7 +1376,7 @@
      ],
      "reputation": 20,
      "stadium": "אצטדיון ג׳לג׳וליה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "בית״ר רמת השרון",
@@ -1372,7 +1388,7 @@
      ],
      "reputation": 19,
      "stadium": "אצטדיון רמת השרון",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "הפועל גבעת שמואל",
@@ -1384,7 +1400,7 @@
      ],
      "reputation": 18,
      "stadium": "אצטדיון גבעת שמואל",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "מכבי חולון",
@@ -1396,7 +1412,7 @@
      ],
      "reputation": 18,
      "stadium": "אצטדיון חולון",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "הפועל אזור",
@@ -1408,7 +1424,7 @@
      ],
      "reputation": 17,
      "stadium": "אצטדיון אזור",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "עירוני בני ברק",
@@ -1420,7 +1436,7 @@
      ],
      "reputation": 16,
      "stadium": "אצטדיון בני ברק",
-     "region": "דרום"
+     "region": "south"
     }
    ]
   },
@@ -1434,7 +1450,7 @@
    "relegatesTo": null,
    "promoteSpots": 1,
    "relegateSpots": 0,
-   "region": "דרום",
+   "region": "south",
    "strength": 22,
    "wageFactor": 0.05,
    "simLevel": "result",
@@ -1449,7 +1465,7 @@
      ],
      "reputation": 28,
      "stadium": "אצטדיון יבנה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "מכבי גדרה",
@@ -1461,7 +1477,7 @@
      ],
      "reputation": 27,
      "stadium": "אצטדיון גדרה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "הפועל גן יבנה",
@@ -1473,7 +1489,7 @@
      ],
      "reputation": 26,
      "stadium": "אצטדיון גן יבנה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "בית״ר אשדוד",
@@ -1485,7 +1501,7 @@
      ],
      "reputation": 26,
      "stadium": "אצטדיון אשדוד",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "הפועל קריית עקרון",
@@ -1497,7 +1513,7 @@
      ],
      "reputation": 25,
      "stadium": "אצטדיון קריית עקרון",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "מכבי באר שבע",
@@ -1509,7 +1525,7 @@
      ],
      "reputation": 24,
      "stadium": "אצטדיון באר שבע",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "הפועל נתיבות",
@@ -1521,7 +1537,7 @@
      ],
      "reputation": 23,
      "stadium": "אצטדיון נתיבות",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "עירוני ערד",
@@ -1533,7 +1549,7 @@
      ],
      "reputation": 22,
      "stadium": "אצטדיון ערד",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "הפועל רהט",
@@ -1545,7 +1561,7 @@
      ],
      "reputation": 22,
      "stadium": "אצטדיון רהט",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "מכבי מצפה רמון",
@@ -1557,7 +1573,7 @@
      ],
      "reputation": 21,
      "stadium": "אצטדיון מצפה רמון",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "הפועל בית שמש",
@@ -1569,7 +1585,7 @@
      ],
      "reputation": 20,
      "stadium": "אצטדיון בית שמש",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "בית״ר מבשרת ציון",
@@ -1581,7 +1597,7 @@
      ],
      "reputation": 19,
      "stadium": "אצטדיון מבשרת ציון",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "הפועל מעלה אדומים",
@@ -1593,7 +1609,7 @@
      ],
      "reputation": 18,
      "stadium": "אצטדיון מעלה אדומים",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "מכבי ירוחם",
@@ -1605,7 +1621,7 @@
      ],
      "reputation": 18,
      "stadium": "אצטדיון ירוחם",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "הפועל באר יעקב",
@@ -1617,7 +1633,7 @@
      ],
      "reputation": 17,
      "stadium": "אצטדיון באר יעקב",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "עירוני מזכרת בתיה",
@@ -1629,7 +1645,7 @@
      ],
      "reputation": 16,
      "stadium": "אצטדיון מזכרת בתיה",
-     "region": "דרום"
+     "region": "south"
     }
    ]
   },
@@ -3281,7 +3297,8 @@
       "#034694"
      ],
      "reputation": 66,
-     "stadium": "גראן קנריה"
+     "stadium": "גראן קנריה",
+     "region": "south"
     },
     {
      "name": "לגאנס",
@@ -3292,7 +3309,8 @@
       "#FFFFFF"
      ],
      "reputation": 60,
-     "stadium": "בוטרק"
+     "stadium": "בוטרק",
+     "region": "north"
     },
     {
      "name": "ריאל ויאדוליד",
@@ -3303,7 +3321,8 @@
       "#FFFFFF"
      ],
      "reputation": 62,
-     "stadium": "חוסה סוריה"
+     "stadium": "חוסה סוריה",
+     "region": "north"
     },
     {
      "name": "אלמריה",
@@ -3314,7 +3333,8 @@
       "#FFFFFF"
      ],
      "reputation": 62,
-     "stadium": "אצטדיון הים התיכון"
+     "stadium": "אצטדיון הים התיכון",
+     "region": "south"
     },
     {
      "name": "ראסינג סנטנדר",
@@ -3325,7 +3345,8 @@
       "#FFFFFF"
      ],
      "reputation": 60,
-     "stadium": "אל סרדינרו"
+     "stadium": "אל סרדינרו",
+     "region": "north"
     },
     {
      "name": "גרנדה",
@@ -3336,7 +3357,8 @@
       "#FFFFFF"
      ],
      "reputation": 60,
-     "stadium": "נואבו לוס קרמנס"
+     "stadium": "נואבו לוס קרמנס",
+     "region": "south"
     },
     {
      "name": "הואסקה",
@@ -3347,7 +3369,8 @@
       "#0A1F44"
      ],
      "reputation": 52,
-     "stadium": "אל אלקוראס"
+     "stadium": "אל אלקוראס",
+     "region": "north"
     },
     {
      "name": "קאדיס",
@@ -3358,7 +3381,8 @@
       "#034694"
      ],
      "reputation": 58,
-     "stadium": "נואבו מיראנדייה"
+     "stadium": "נואבו מיראנדייה",
+     "region": "south"
     },
     {
      "name": "ספורטינג חיחון",
@@ -3370,7 +3394,8 @@
      ],
      "reputation": 60,
      "stadium": "אל מולינון",
-     "rival": "ריאל אוביידו"
+     "rival": "ריאל אוביידו",
+     "region": "north"
     },
     {
      "name": "קורדובה",
@@ -3381,7 +3406,8 @@
       "#FFFFFF"
      ],
      "reputation": 56,
-     "stadium": "אל ארקנחל"
+     "stadium": "אל ארקנחל",
+     "region": "south"
     },
     {
      "name": "אלבסטה",
@@ -3392,7 +3418,8 @@
       "#000000"
      ],
      "reputation": 52,
-     "stadium": "קרלוס בלמונטה"
+     "stadium": "קרלוס בלמונטה",
+     "region": "south"
     },
     {
      "name": "בורגוס",
@@ -3403,7 +3430,8 @@
       "#000000"
      ],
      "reputation": 50,
-     "stadium": "אל פלנטיו"
+     "stadium": "אל פלנטיו",
+     "region": "north"
     },
     {
      "name": "קסטיון",
@@ -3414,7 +3442,8 @@
       "#FFFFFF"
      ],
      "reputation": 52,
-     "stadium": "קסטליה"
+     "stadium": "קסטליה",
+     "region": "south"
     },
     {
      "name": "דפורטיבו לה קורוניה",
@@ -3425,7 +3454,8 @@
       "#FFFFFF"
      ],
      "reputation": 62,
-     "stadium": "ריאסור"
+     "stadium": "ריאסור",
+     "region": "north"
     },
     {
      "name": "מלאגה",
@@ -3436,7 +3466,8 @@
       "#FFFFFF"
      ],
      "reputation": 60,
-     "stadium": "לה רוסלדה"
+     "stadium": "לה רוסלדה",
+     "region": "south"
     },
     {
      "name": "מירנדס",
@@ -3447,7 +3478,8 @@
       "#000000"
      ],
      "reputation": 50,
-     "stadium": "אנדובה"
+     "stadium": "אנדובה",
+     "region": "north"
     },
     {
      "name": "אייבר",
@@ -3458,7 +3490,8 @@
       "#034694"
      ],
      "reputation": 52,
-     "stadium": "איפורואה"
+     "stadium": "איפורואה",
+     "region": "north"
     },
     {
      "name": "ריאל סרגוסה",
@@ -3469,7 +3502,8 @@
       "#034694"
      ],
      "reputation": 60,
-     "stadium": "לה רומרדה"
+     "stadium": "לה רומרדה",
+     "region": "north"
     },
     {
      "name": "אנדורה",
@@ -3480,7 +3514,8 @@
       "#FDE100"
      ],
      "reputation": 50,
-     "stadium": "אסטדי נסיונל"
+     "stadium": "אסטדי נסיונל",
+     "region": "north"
     },
     {
      "name": "קולטורל לאונסה",
@@ -3491,7 +3526,8 @@
       "#C8102E"
      ],
      "reputation": 48,
-     "stadium": "ריינו דה לאון"
+     "stadium": "ריינו דה לאון",
+     "region": "north"
     },
     {
      "name": "סאוטה",
@@ -3502,7 +3538,8 @@
       "#000000"
      ],
      "reputation": 46,
-     "stadium": "אלפונסו מוראל"
+     "stadium": "אלפונסו מוראל",
+     "region": "south"
     },
     {
      "name": "ריאל סוסיאדד ב׳",
@@ -3513,7 +3550,10 @@
       "#FDE100"
      ],
      "reputation": 46,
-     "stadium": "סובייטה"
+     "stadium": "סובייטה",
+     "region": "north",
+     "reserve": true,
+     "parent": "ריאל סוסיאדד"
     }
    ]
   },
@@ -3527,7 +3567,7 @@
    "relegatesTo": null,
    "promoteSpots": 2,
    "relegateSpots": 0,
-   "region": "צפון",
+   "region": "north",
    "strength": 50,
    "wageFactor": 0.3,
    "simLevel": "result",
@@ -3542,7 +3582,7 @@
      ],
      "reputation": 52,
      "stadium": "אצטדיון סנטה קרוס דה טנריפה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "ראסינג פרול",
@@ -3554,7 +3594,7 @@
      ],
      "reputation": 51,
      "stadium": "אצטדיון פרול",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "פונפרדינה",
@@ -3566,7 +3606,7 @@
      ],
      "reputation": 50,
      "stadium": "אצטדיון פונפרדה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "סלטה ב׳",
@@ -3578,7 +3618,9 @@
      ],
      "reputation": 49,
      "stadium": "אצטדיון ויגו",
-     "region": "צפון"
+     "region": "north",
+     "reserve": true,
+     "parent": "סלטה ויגו"
     },
     {
      "name": "אורנסה",
@@ -3590,7 +3632,7 @@
      ],
      "reputation": 48,
      "stadium": "אצטדיון אורנסה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "ארנטיירו",
@@ -3602,7 +3644,7 @@
      ],
      "reputation": 47,
      "stadium": "אצטדיון קרבאיינו",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "לוגו",
@@ -3614,7 +3656,7 @@
      ],
      "reputation": 46,
      "stadium": "אצטדיון לוגו",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "סמורה",
@@ -3626,7 +3668,7 @@
      ],
      "reputation": 45,
      "stadium": "אצטדיון סמורה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "ברקאלדו",
@@ -3638,7 +3680,7 @@
      ],
      "reputation": 44,
      "stadium": "אצטדיון ברקאלדו",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "ריאל אבילס",
@@ -3650,7 +3692,7 @@
      ],
      "reputation": 43,
      "stadium": "אצטדיון אבילס",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "אוססונה ב׳",
@@ -3662,7 +3704,9 @@
      ],
      "reputation": 43,
      "stadium": "אצטדיון פמפלונה",
-     "region": "צפון"
+     "region": "north",
+     "reserve": true,
+     "parent": "אוססונה"
     },
     {
      "name": "מרידה",
@@ -3674,7 +3718,7 @@
      ],
      "reputation": 42,
      "stadium": "אצטדיון מרידה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "אוניוניסטאס סלמנקה",
@@ -3686,7 +3730,7 @@
      ],
      "reputation": 41,
      "stadium": "אצטדיון סלמנקה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "בילבאו אתלטיק",
@@ -3698,7 +3742,9 @@
      ],
      "reputation": 40,
      "stadium": "אצטדיון בילבאו",
-     "region": "צפון"
+     "region": "north",
+     "reserve": true,
+     "parent": "אתלטיק בילבאו"
     },
     {
      "name": "קסרניו",
@@ -3710,7 +3756,7 @@
      ],
      "reputation": 39,
      "stadium": "אצטדיון קסרס",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "פונטבדרה",
@@ -3722,7 +3768,7 @@
      ],
      "reputation": 38,
      "stadium": "אצטדיון פונטבדרה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "גוודלחרה",
@@ -3734,7 +3780,7 @@
      ],
      "reputation": 37,
      "stadium": "אצטדיון גוודלחרה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "ריאל מדריד קסטייה",
@@ -3746,7 +3792,9 @@
      ],
      "reputation": 36,
      "stadium": "אצטדיון מדריד",
-     "region": "צפון"
+     "region": "north",
+     "reserve": true,
+     "parent": "ריאל מדריד"
     },
     {
      "name": "טלאוורה",
@@ -3758,7 +3806,7 @@
      ],
      "reputation": 35,
      "stadium": "אצטדיון טלאוורה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "ארנאס גצ׳ו",
@@ -3770,7 +3818,7 @@
      ],
      "reputation": 34,
      "stadium": "אצטדיון גצ׳ו",
-     "region": "צפון"
+     "region": "north"
     }
    ]
   },
@@ -3784,7 +3832,7 @@
    "relegatesTo": null,
    "promoteSpots": 2,
    "relegateSpots": 0,
-   "region": "דרום",
+   "region": "south",
    "strength": 50,
    "wageFactor": 0.3,
    "simLevel": "result",
@@ -3799,7 +3847,7 @@
      ],
      "reputation": 52,
      "stadium": "אצטדיון קרטחנה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "חימנסטיק טרגונה",
@@ -3811,7 +3859,7 @@
      ],
      "reputation": 51,
      "stadium": "אצטדיון טרגונה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "אלקורקון",
@@ -3823,7 +3871,7 @@
      ],
      "reputation": 50,
      "stadium": "אצטדיון אלקורקון",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "ריאל מורסיה",
@@ -3835,7 +3883,7 @@
      ],
      "reputation": 49,
      "stadium": "אצטדיון מורסיה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "הרקולס",
@@ -3847,7 +3895,7 @@
      ],
      "reputation": 48,
      "stadium": "אצטדיון אליקנטה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "איביסה",
@@ -3859,7 +3907,7 @@
      ],
      "reputation": 47,
      "stadium": "אצטדיון איביסה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "אלדנסה",
@@ -3871,7 +3919,7 @@
      ],
      "reputation": 46,
      "stadium": "אצטדיון אלדה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "אלחסירס",
@@ -3883,7 +3931,7 @@
      ],
      "reputation": 45,
      "stadium": "אצטדיון אלחסירס",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "אנטקרה",
@@ -3895,7 +3943,7 @@
      ],
      "reputation": 44,
      "stadium": "אצטדיון אנטקרה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "סביליה אתלטיקו",
@@ -3907,7 +3955,9 @@
      ],
      "reputation": 43,
      "stadium": "אצטדיון סביליה",
-     "region": "דרום"
+     "region": "south",
+     "reserve": true,
+     "parent": "סביליה"
     },
     {
      "name": "בטיס דפורטיבו",
@@ -3919,7 +3969,9 @@
      ],
      "reputation": 43,
      "stadium": "אצטדיון סביליה",
-     "region": "דרום"
+     "region": "south",
+     "reserve": true,
+     "parent": "ריאל בטיס"
     },
     {
      "name": "אתלטיקו מדרילניו",
@@ -3931,7 +3983,9 @@
      ],
      "reputation": 42,
      "stadium": "אצטדיון מדריד",
-     "region": "דרום"
+     "region": "south",
+     "reserve": true,
+     "parent": "אתלטיקו מדריד"
     },
     {
      "name": "ויאריאל ב׳",
@@ -3943,7 +3997,9 @@
      ],
      "reputation": 41,
      "stadium": "אצטדיון ויאריאל",
-     "region": "דרום"
+     "region": "south",
+     "reserve": true,
+     "parent": "ויאריאל"
     },
     {
      "name": "מרבאיה",
@@ -3955,7 +4011,7 @@
      ],
      "reputation": 40,
      "stadium": "אצטדיון מרבאיה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "טרואל",
@@ -3967,7 +4023,7 @@
      ],
      "reputation": 39,
      "stadium": "אצטדיון טרואל",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "סבדל",
@@ -3979,7 +4035,7 @@
      ],
      "reputation": 38,
      "stadium": "אצטדיון סבדל",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "חובנטוד טורמולינוס",
@@ -3991,7 +4047,7 @@
      ],
      "reputation": 37,
      "stadium": "אצטדיון טורמולינוס",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "אלקויאנו",
@@ -4003,7 +4059,7 @@
      ],
      "reputation": 36,
      "stadium": "אצטדיון אלקוי",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "אירופה",
@@ -4015,7 +4071,7 @@
      ],
      "reputation": 35,
      "stadium": "אצטדיון ברצלונה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "טרסונה",
@@ -4027,7 +4083,7 @@
      ],
      "reputation": 34,
      "stadium": "אצטדיון טרסונה",
-     "region": "דרום"
+     "region": "south"
     }
    ]
   },
@@ -4300,7 +4356,8 @@
       "#FFFFFF"
      ],
      "reputation": 60,
-     "stadium": "קרלו קסטלני"
+     "stadium": "קרלו קסטלני",
+     "region": "center"
     },
     {
      "name": "ונציה",
@@ -4311,7 +4368,8 @@
       "#F47920"
      ],
      "reputation": 58,
-     "stadium": "פייר לואיג׳י פנציה"
+     "stadium": "פייר לואיג׳י פנציה",
+     "region": "north"
     },
     {
      "name": "מונצה",
@@ -4322,7 +4380,8 @@
       "#FFFFFF"
      ],
      "reputation": 58,
-     "stadium": "יו-פאואר"
+     "stadium": "יו-פאואר",
+     "region": "north"
     },
     {
      "name": "פלרמו",
@@ -4333,7 +4392,8 @@
       "#000000"
      ],
      "reputation": 60,
-     "stadium": "רנצו ברברה"
+     "stadium": "רנצו ברברה",
+     "region": "south"
     },
     {
      "name": "בארי",
@@ -4344,7 +4404,8 @@
       "#FFFFFF"
      ],
      "reputation": 56,
-     "stadium": "סן ניקולה"
+     "stadium": "סן ניקולה",
+     "region": "south"
     },
     {
      "name": "סמפדוריה",
@@ -4356,7 +4417,8 @@
      ],
      "reputation": 60,
      "stadium": "לואיג׳י פראריס",
-     "rival": "ג׳נואה"
+     "rival": "ג׳נואה",
+     "region": "north"
     },
     {
      "name": "ספציה",
@@ -4367,7 +4429,8 @@
       "#000000"
      ],
      "reputation": 54,
-     "stadium": "אלברטו פיקו"
+     "stadium": "אלברטו פיקו",
+     "region": "north"
     },
     {
      "name": "מודנה",
@@ -4378,7 +4441,8 @@
       "#034694"
      ],
      "reputation": 52,
-     "stadium": "אלברטו בראליה"
+     "stadium": "אלברטו בראליה",
+     "region": "north"
     },
     {
      "name": "צ׳זנה",
@@ -4389,7 +4453,8 @@
       "#000000"
      ],
      "reputation": 50,
-     "stadium": "דינו מנוצי"
+     "stadium": "דינו מנוצי",
+     "region": "center"
     },
     {
      "name": "קטנזרו",
@@ -4400,7 +4465,8 @@
       "#C8102E"
      ],
      "reputation": 50,
-     "stadium": "ניקולה צ׳רביליה"
+     "stadium": "ניקולה צ׳רביליה",
+     "region": "south"
     },
     {
      "name": "יובה סטביה",
@@ -4411,7 +4477,8 @@
       "#034694"
      ],
      "reputation": 48,
-     "stadium": "רומאנו מנוטי"
+     "stadium": "רומאנו מנוטי",
+     "region": "south"
     },
     {
      "name": "קררזה",
@@ -4422,7 +4489,8 @@
       "#034694"
      ],
      "reputation": 46,
-     "stadium": "דיי מרמי"
+     "stadium": "דיי מרמי",
+     "region": "center"
     },
     {
      "name": "זודטירול",
@@ -4433,7 +4501,8 @@
       "#C8102E"
      ],
      "reputation": 46,
-     "stadium": "דרוזו"
+     "stadium": "דרוזו",
+     "region": "north"
     },
     {
      "name": "מנטובה",
@@ -4444,7 +4513,8 @@
       "#FFFFFF"
      ],
      "reputation": 46,
-     "stadium": "דניליו מרטלי"
+     "stadium": "דניליו מרטלי",
+     "region": "north"
     },
     {
      "name": "רג׳יאנה",
@@ -4455,7 +4525,8 @@
       "#FFFFFF"
      ],
      "reputation": 48,
-     "stadium": "מאפיי ארנה"
+     "stadium": "מאפיי ארנה",
+     "region": "north"
     },
     {
      "name": "פרוזינונה",
@@ -4466,7 +4537,8 @@
       "#034694"
      ],
      "reputation": 52,
-     "stadium": "בנטו סטירפה"
+     "stadium": "בנטו סטירפה",
+     "region": "center"
     },
     {
      "name": "פסקרה",
@@ -4477,7 +4549,8 @@
       "#4FA3E0"
      ],
      "reputation": 50,
-     "stadium": "אדריאטיקו"
+     "stadium": "אדריאטיקו",
+     "region": "center"
     },
     {
      "name": "פדובה",
@@ -4488,7 +4561,8 @@
       "#C8102E"
      ],
      "reputation": 50,
-     "stadium": "אאוגנאו"
+     "stadium": "אאוגנאו",
+     "region": "north"
     },
     {
      "name": "וירטוס אנטלה",
@@ -4499,7 +4573,8 @@
       "#034694"
      ],
      "reputation": 44,
-     "stadium": "קומונלה"
+     "stadium": "קומונלה",
+     "region": "north"
     },
     {
      "name": "אבלינו",
@@ -4510,7 +4585,8 @@
       "#FFFFFF"
      ],
      "reputation": 48,
-     "stadium": "פרטנו לומבארדי"
+     "stadium": "פרטנו לומבארדי",
+     "region": "south"
     }
    ]
   },
@@ -4524,7 +4600,7 @@
    "relegatesTo": null,
    "promoteSpots": 1,
    "relegateSpots": 0,
-   "region": "צפון",
+   "region": "north",
    "strength": 48,
    "wageFactor": 0.3,
    "simLevel": "result",
@@ -4539,7 +4615,7 @@
      ],
      "reputation": 50,
      "stadium": "אצטדיון ויצ׳נצה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "לקו",
@@ -4551,7 +4627,7 @@
      ],
      "reputation": 49,
      "stadium": "אצטדיון לקו",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "טרנטו",
@@ -4563,7 +4639,7 @@
      ],
      "reputation": 48,
      "stadium": "אצטדיון טרנטו",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "ארזיניאנו",
@@ -4575,7 +4651,7 @@
      ],
      "reputation": 47,
      "stadium": "אצטדיון ארזיניאנו",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "אלציונה מילאנו",
@@ -4587,7 +4663,7 @@
      ],
      "reputation": 47,
      "stadium": "אצטדיון מילאנו",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "פרו ורצ׳לי",
@@ -4599,7 +4675,7 @@
      ],
      "reputation": 46,
      "stadium": "אצטדיון ורצ׳לי",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "נוברה",
@@ -4611,7 +4687,7 @@
      ],
      "reputation": 45,
      "stadium": "אצטדיון נוברה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "לומזאנה",
@@ -4623,7 +4699,7 @@
      ],
      "reputation": 44,
      "stadium": "אצטדיון לומזאנה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "רנאטה",
@@ -4635,7 +4711,7 @@
      ],
      "reputation": 43,
      "stadium": "אצטדיון רנאטה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "ג׳אנה ארמיניו",
@@ -4647,7 +4723,7 @@
      ],
      "reputation": 42,
      "stadium": "אצטדיון גורגונזולה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "אוניון ברשה",
@@ -4659,7 +4735,7 @@
      ],
      "reputation": 42,
      "stadium": "אצטדיון ברשה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "אלבינולפה",
@@ -4671,7 +4747,7 @@
      ],
      "reputation": 41,
      "stadium": "אצטדיון ברגמו",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "טריאסטינה",
@@ -4683,7 +4759,7 @@
      ],
      "reputation": 40,
      "stadium": "אצטדיון טריאסטה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "פרגולטזה",
@@ -4695,7 +4771,7 @@
      ],
      "reputation": 39,
      "stadium": "אצטדיון קרמה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "פרו פטריה",
@@ -4707,7 +4783,7 @@
      ],
      "reputation": 38,
      "stadium": "אצטדיון בוסטו ארסיציו",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "אינטר מתחת ל-23",
@@ -4719,7 +4795,9 @@
      ],
      "reputation": 37,
      "stadium": "אצטדיון מילאנו",
-     "region": "צפון"
+     "region": "north",
+     "reserve": true,
+     "parent": "אינטר"
     },
     {
      "name": "וירטוס ורונה",
@@ -4731,7 +4809,7 @@
      ],
      "reputation": 37,
      "stadium": "אצטדיון ורונה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "צ׳יטדלה",
@@ -4743,7 +4821,7 @@
      ],
      "reputation": 36,
      "stadium": "אצטדיון צ׳יטדלה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "דולומיטי בלונזי",
@@ -4755,7 +4833,7 @@
      ],
      "reputation": 35,
      "stadium": "אצטדיון בלונו",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "אוספיטלטו",
@@ -4767,7 +4845,7 @@
      ],
      "reputation": 34,
      "stadium": "אצטדיון אוספיטלטו",
-     "region": "צפון"
+     "region": "north"
     }
    ]
   },
@@ -4781,7 +4859,7 @@
    "relegatesTo": null,
    "promoteSpots": 1,
    "relegateSpots": 0,
-   "region": "מרכז",
+   "region": "center",
    "strength": 48,
    "wageFactor": 0.3,
    "simLevel": "result",
@@ -4796,7 +4874,7 @@
      ],
      "reputation": 50,
      "stadium": "אצטדיון ארצו",
-     "region": "מרכז"
+     "region": "center"
     },
     {
      "name": "אסקולי",
@@ -4808,7 +4886,7 @@
      ],
      "reputation": 49,
      "stadium": "אצטדיון אסקולי פיצ׳נו",
-     "region": "מרכז"
+     "region": "center"
     },
     {
      "name": "טרנאנה",
@@ -4820,7 +4898,7 @@
      ],
      "reputation": 48,
      "stadium": "אצטדיון טרני",
-     "region": "מרכז"
+     "region": "center"
     },
     {
      "name": "קמפובאסו",
@@ -4832,7 +4910,7 @@
      ],
      "reputation": 47,
      "stadium": "אצטדיון קמפובאסו",
-     "region": "מרכז"
+     "region": "center"
     },
     {
      "name": "פיאנזה",
@@ -4844,7 +4922,7 @@
      ],
      "reputation": 47,
      "stadium": "אצטדיון פיאנצה",
-     "region": "מרכז"
+     "region": "center"
     },
     {
      "name": "פרוג׳ה",
@@ -4856,7 +4934,7 @@
      ],
      "reputation": 46,
      "stadium": "אצטדיון פרוג׳ה",
-     "region": "מרכז"
+     "region": "center"
     },
     {
      "name": "פינטו",
@@ -4868,7 +4946,7 @@
      ],
      "reputation": 45,
      "stadium": "אצטדיון פינטו",
-     "region": "מרכז"
+     "region": "center"
     },
     {
      "name": "גוביו",
@@ -4880,7 +4958,7 @@
      ],
      "reputation": 44,
      "stadium": "אצטדיון גוביו",
-     "region": "מרכז"
+     "region": "center"
     },
     {
      "name": "קרפי",
@@ -4892,7 +4970,7 @@
      ],
      "reputation": 43,
      "stadium": "אצטדיון קרפי",
-     "region": "מרכז"
+     "region": "center"
     },
     {
      "name": "יובנטוס נקסט ג׳ן",
@@ -4904,7 +4982,9 @@
      ],
      "reputation": 42,
      "stadium": "אצטדיון טורינו",
-     "region": "מרכז"
+     "region": "center",
+     "reserve": true,
+     "parent": "יובנטוס"
     },
     {
      "name": "פונטדרה",
@@ -4916,7 +4996,7 @@
      ],
      "reputation": 42,
      "stadium": "אצטדיון פונטדרה",
-     "region": "מרכז"
+     "region": "center"
     },
     {
      "name": "סמבנדטזה",
@@ -4928,7 +5008,7 @@
      ],
      "reputation": 41,
      "stadium": "אצטדיון סן בנדטו דל טרונטו",
-     "region": "מרכז"
+     "region": "center"
     },
     {
      "name": "פורלי",
@@ -4940,7 +5020,7 @@
      ],
      "reputation": 40,
      "stadium": "אצטדיון פורלי",
-     "region": "מרכז"
+     "region": "center"
     },
     {
      "name": "רימיני",
@@ -4952,7 +5032,7 @@
      ],
      "reputation": 39,
      "stadium": "אצטדיון רימיני",
-     "region": "מרכז"
+     "region": "center"
     },
     {
      "name": "ברה",
@@ -4964,7 +5044,7 @@
      ],
      "reputation": 38,
      "stadium": "אצטדיון ברה",
-     "region": "מרכז"
+     "region": "center"
     },
     {
      "name": "גווידוניה מונטצ׳ליו",
@@ -4976,7 +5056,7 @@
      ],
      "reputation": 37,
      "stadium": "אצטדיון גווידוניה",
-     "region": "מרכז"
+     "region": "center"
     },
     {
      "name": "ויס פזרו",
@@ -4988,7 +5068,7 @@
      ],
      "reputation": 37,
      "stadium": "אצטדיון פזרו",
-     "region": "מרכז"
+     "region": "center"
     },
     {
      "name": "ליבורנו",
@@ -5000,7 +5080,7 @@
      ],
      "reputation": 36,
      "stadium": "אצטדיון ליבורנו",
-     "region": "מרכז"
+     "region": "center"
     },
     {
      "name": "טורס",
@@ -5012,7 +5092,7 @@
      ],
      "reputation": 35,
      "stadium": "אצטדיון ססארי",
-     "region": "מרכז"
+     "region": "center"
     },
     {
      "name": "רוונה",
@@ -5024,7 +5104,7 @@
      ],
      "reputation": 34,
      "stadium": "אצטדיון רוונה",
-     "region": "מרכז"
+     "region": "center"
     }
    ]
   },
@@ -5038,7 +5118,7 @@
    "relegatesTo": null,
    "promoteSpots": 1,
    "relegateSpots": 0,
-   "region": "דרום",
+   "region": "south",
    "strength": 48,
    "wageFactor": 0.3,
    "simLevel": "result",
@@ -5053,7 +5133,7 @@
      ],
      "reputation": 52,
      "stadium": "אצטדיון סלרנו",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "בנבנטו",
@@ -5065,7 +5145,7 @@
      ],
      "reputation": 51,
      "stadium": "אצטדיון בנבנטו",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "קטניה",
@@ -5077,7 +5157,7 @@
      ],
      "reputation": 50,
      "stadium": "אצטדיון קטניה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "קרוטונה",
@@ -5089,7 +5169,7 @@
      ],
      "reputation": 49,
      "stadium": "אצטדיון קרוטונה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "מונופולי",
@@ -5101,7 +5181,7 @@
      ],
      "reputation": 48,
      "stadium": "אצטדיון מונופולי",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "פוטנצה",
@@ -5113,7 +5193,7 @@
      ],
      "reputation": 47,
      "stadium": "אצטדיון פוטנצה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "קבזה",
@@ -5125,7 +5205,7 @@
      ],
      "reputation": 46,
      "stadium": "אצטדיון קאווה דה טירני",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "קזרטנה",
@@ -5137,7 +5217,7 @@
      ],
      "reputation": 45,
      "stadium": "אצטדיון קזרטה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "ג׳וליאנו",
@@ -5149,7 +5229,7 @@
      ],
      "reputation": 44,
      "stadium": "אצטדיון ג׳וליאנו",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "לטינה",
@@ -5161,7 +5241,7 @@
      ],
      "reputation": 43,
      "stadium": "אצטדיון לטינה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "פיצ׳רנו",
@@ -5173,7 +5253,7 @@
      ],
      "reputation": 43,
      "stadium": "אצטדיון פיצ׳רנו",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "סורנטו",
@@ -5185,7 +5265,7 @@
      ],
      "reputation": 42,
      "stadium": "אצטדיון סורנטו",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "אאודאצ׳ה צ׳ריניולה",
@@ -5197,7 +5277,7 @@
      ],
      "reputation": 41,
      "stadium": "אצטדיון צ׳ריניולה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "פוג׳ה",
@@ -5209,7 +5289,7 @@
      ],
      "reputation": 40,
      "stadium": "אצטדיון פוג׳ה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "טרפאני",
@@ -5221,7 +5301,7 @@
      ],
      "reputation": 39,
      "stadium": "אצטדיון טרפאני",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "סירקוזה",
@@ -5233,7 +5313,7 @@
      ],
      "reputation": 38,
      "stadium": "אצטדיון סירקוזה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "אטאלנטה מתחת ל-23",
@@ -5245,7 +5325,9 @@
      ],
      "reputation": 37,
      "stadium": "אצטדיון ברגמו",
-     "region": "דרום"
+     "region": "south",
+     "reserve": true,
+     "parent": "אטאלנטה"
     },
     {
      "name": "טים אלטמורה",
@@ -5257,7 +5339,7 @@
      ],
      "reputation": 36,
      "stadium": "אצטדיון אלטמורה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "קוזנצה",
@@ -5269,7 +5351,7 @@
      ],
      "reputation": 35,
      "stadium": "אצטדיון קוזנצה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "קזרנו",
@@ -5281,7 +5363,7 @@
      ],
      "reputation": 34,
      "stadium": "אצטדיון קזרנו",
-     "region": "דרום"
+     "region": "south"
     }
    ]
   },
@@ -5902,7 +5984,9 @@
       "#C8102E"
      ],
      "reputation": 42,
-     "stadium": "אצטדיון שטוטגרט"
+     "stadium": "אצטדיון שטוטגרט",
+     "reserve": true,
+     "parent": "שטוטגרט"
     },
     {
      "name": "הופנהיים ב׳",
@@ -5913,7 +5997,9 @@
       "#FFFFFF"
      ],
      "reputation": 41,
-     "stadium": "אצטדיון זינסהיים"
+     "stadium": "אצטדיון זינסהיים",
+     "reserve": true,
+     "parent": "הופנהיים"
     },
     {
      "name": "אוסנבריק",
@@ -6989,47 +7075,55 @@
     },
     {
      "name": "יונג אייאקס",
-     "short": "יונג",
+     "short": "אייאקס ב׳",
      "city": "אמסטרדם",
      "colors": [
       "#FFFFFF",
       "#C8102E"
      ],
      "reputation": 40,
-     "stadium": "אצטדיון אמסטרדם"
+     "stadium": "אצטדיון אמסטרדם",
+     "reserve": true,
+     "parent": "אייאקס"
     },
     {
      "name": "יונג פ.ס.וו.",
-     "short": "יונג",
+     "short": "פ.ס.וו. ב׳",
      "city": "איינדהובן",
      "colors": [
       "#9B3D5B",
       "#FFFFFF"
      ],
      "reputation": 39,
-     "stadium": "אצטדיון איינדהובן"
+     "stadium": "אצטדיון איינדהובן",
+     "reserve": true,
+     "parent": "פ.ס.וו. איינדהובן"
     },
     {
      "name": "יונג א.ז.",
-     "short": "יונג א.ז.",
+     "short": "א.ז. ב׳",
      "city": "אלקמאר",
      "colors": [
       "#BF1937",
       "#000000"
      ],
      "reputation": 38,
-     "stadium": "אצטדיון אלקמאר"
+     "stadium": "אצטדיון אלקמאר",
+     "reserve": true,
+     "parent": "א.ז. אלקמאר"
     },
     {
      "name": "יונג אוטרכט",
-     "short": "יונג",
+     "short": "אוטרכט ב׳",
      "city": "אוטרכט",
      "colors": [
       "#924664",
       "#FFFFFF"
      ],
      "reputation": 37,
-     "stadium": "אצטדיון אוטרכט"
+     "stadium": "אצטדיון אוטרכט",
+     "reserve": true,
+     "parent": "אוטרכט"
     },
     {
      "name": "אף.סי. איינדהובן",
@@ -7374,7 +7468,9 @@
       "#FFFFFF"
      ],
      "reputation": 42,
-     "stadium": "אצטדיון פורטו"
+     "stadium": "אצטדיון פורטו",
+     "reserve": true,
+     "parent": "פורטו"
     },
     {
      "name": "בנפיקה ב׳",
@@ -7385,7 +7481,9 @@
       "#FFFFFF"
      ],
      "reputation": 42,
-     "stadium": "אצטדיון ליסבון"
+     "stadium": "אצטדיון ליסבון",
+     "reserve": true,
+     "parent": "בנפיקה"
     },
     {
      "name": "מריטימו",
@@ -7473,7 +7571,9 @@
       "#FFFFFF"
      ],
      "reputation": 34,
-     "stadium": "אצטדיון ליסבון"
+     "stadium": "אצטדיון ליסבון",
+     "reserve": true,
+     "parent": "ספורטינג ליסבון"
     }
    ]
   },
@@ -7807,7 +7907,9 @@
       "#000000"
      ],
      "reputation": 39,
-     "stadium": "אצטדיון ברוז׳"
+     "stadium": "אצטדיון ברוז׳",
+     "reserve": true,
+     "parent": "קלאב ברוז׳"
     },
     {
      "name": "יונג גנק",
@@ -7818,7 +7920,9 @@
       "#FFFFFF"
      ],
      "reputation": 38,
-     "stadium": "אצטדיון גנק"
+     "stadium": "אצטדיון גנק",
+     "reserve": true,
+     "parent": "גנק"
     },
     {
      "name": "אנדרלכט פיוצ׳רס",
@@ -7829,7 +7933,9 @@
       "#FFFFFF"
      ],
      "reputation": 37,
-     "stadium": "אצטדיון בריסל"
+     "stadium": "אצטדיון בריסל",
+     "reserve": true,
+     "parent": "אנדרלכט"
     },
     {
      "name": "אולימפיק שרלרואה",
@@ -7862,7 +7968,9 @@
       "#FFFFFF"
      ],
      "reputation": 34,
-     "stadium": "אצטדיון גנט"
+     "stadium": "אצטדיון גנט",
+     "reserve": true,
+     "parent": "גנט"
     }
    ]
   },
@@ -7952,7 +8060,7 @@
     },
     {
      "name": "דנדי יונייטד",
-     "short": "דנדי",
+     "short": "דנדי יונ׳",
      "city": "דנדי",
      "colors": [
       "#F47920",
@@ -8752,7 +8860,8 @@
      ],
      "reputation": 84,
      "stadium": "קראיסקאקיס",
-     "rival": "פנאתינייקוס"
+     "rival": "פנאתינייקוס",
+     "region": "south"
     },
     {
      "name": "פאוק",
@@ -8764,7 +8873,8 @@
      ],
      "reputation": 78,
      "stadium": "טומבה",
-     "rival": "אריס סלוניקי"
+     "rival": "אריס סלוניקי",
+     "region": "north"
     },
     {
      "name": "א.א.ק. אתונה",
@@ -8776,7 +8886,8 @@
      ],
      "reputation": 78,
      "stadium": "אופ״א ארנה",
-     "rival": "פנאתינייקוס"
+     "rival": "פנאתינייקוס",
+     "region": "south"
     },
     {
      "name": "פנאתינייקוס",
@@ -8788,7 +8899,8 @@
      ],
      "reputation": 80,
      "stadium": "אפוסטולוס ניקולאידיס",
-     "rival": "אולימפיאקוס"
+     "rival": "אולימפיאקוס",
+     "region": "south"
     },
     {
      "name": "אריס סלוניקי",
@@ -8800,7 +8912,8 @@
      ],
      "reputation": 62,
      "stadium": "קלאנתיס ויקלידיס",
-     "rival": "פאוק"
+     "rival": "פאוק",
+     "region": "north"
     },
     {
      "name": "אופ״י כרתים",
@@ -8811,7 +8924,8 @@
       "#FFFFFF"
      ],
      "reputation": 54,
-     "stadium": "תאודורוס ויארדינוס"
+     "stadium": "תאודורוס ויארדינוס",
+     "region": "south"
     },
     {
      "name": "אסטראס טריפוליס",
@@ -8822,7 +8936,8 @@
       "#034694"
      ],
      "reputation": 50,
-     "stadium": "תאודורוס קולוקוטרוניס"
+     "stadium": "תאודורוס קולוקוטרוניס",
+     "region": "south"
     },
     {
      "name": "אטרומיטוס",
@@ -8833,7 +8948,8 @@
       "#FFFFFF"
      ],
      "reputation": 50,
-     "stadium": "פריסטרי"
+     "stadium": "פריסטרי",
+     "region": "south"
     },
     {
      "name": "פנאיטוליקוס",
@@ -8844,7 +8960,8 @@
       "#034694"
      ],
      "reputation": 46,
-     "stadium": "פנאיטוליקו"
+     "stadium": "פנאיטוליקו",
+     "region": "south"
     },
     {
      "name": "וולוס",
@@ -8855,7 +8972,8 @@
       "#FFFFFF"
      ],
      "reputation": 46,
-     "stadium": "פנתסאליקו"
+     "stadium": "פנתסאליקו",
+     "region": "north"
     },
     {
      "name": "פנסראיקוס",
@@ -8866,7 +8984,8 @@
       "#FFFFFF"
      ],
      "reputation": 44,
-     "stadium": "מוניציפל סרס"
+     "stadium": "מוניציפל סרס",
+     "region": "north"
     },
     {
      "name": "לבדיאקוס",
@@ -8877,7 +8996,8 @@
       "#FFFFFF"
      ],
      "reputation": 44,
-     "stadium": "לבדיה"
+     "stadium": "לבדיה",
+     "region": "south"
     },
     {
      "name": "קיפיסיה",
@@ -8888,7 +9008,8 @@
       "#FFFFFF"
      ],
      "reputation": 42,
-     "stadium": "זירינייו"
+     "stadium": "זירינייו",
+     "region": "south"
     },
     {
      "name": "א.א.ל. לריסה",
@@ -8899,7 +9020,8 @@
       "#034694"
      ],
      "reputation": 46,
-     "stadium": "א.א.ל. ארנה"
+     "stadium": "א.א.ל. ארנה",
+     "region": "north"
     }
    ]
   },
@@ -8913,7 +9035,7 @@
    "relegatesTo": null,
    "promoteSpots": 1,
    "relegateSpots": 0,
-   "region": "צפון",
+   "region": "north",
    "strength": 40,
    "wageFactor": 0.2,
    "simLevel": "result",
@@ -8928,7 +9050,7 @@
      ],
      "reputation": 40,
      "stadium": "אצטדיון לאמיה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "איראקליס",
@@ -8940,7 +9062,7 @@
      ],
      "reputation": 39,
      "stadium": "אצטדיון סלוניקי",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "ניקי וולוס",
@@ -8952,7 +9074,7 @@
      ],
      "reputation": 37,
      "stadium": "אצטדיון וולוס",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "קוואלה",
@@ -8964,7 +9086,7 @@
      ],
      "reputation": 36,
      "stadium": "אצטדיון קוואלה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "מקדוניקוס",
@@ -8976,7 +9098,7 @@
      ],
      "reputation": 35,
      "stadium": "אצטדיון סלוניקי",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "פאוק ב׳",
@@ -8988,7 +9110,9 @@
      ],
      "reputation": 33,
      "stadium": "אצטדיון סלוניקי",
-     "region": "צפון"
+     "region": "north",
+     "reserve": true,
+     "parent": "פאוק"
     },
     {
      "name": "אנגניסי קרדיצה",
@@ -9000,7 +9124,7 @@
      ],
      "reputation": 32,
      "stadium": "אצטדיון קרדיצה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "קמפניאקוס",
@@ -9012,7 +9136,7 @@
      ],
      "reputation": 31,
      "stadium": "אצטדיון כלסטרה",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "קוזאני",
@@ -9024,7 +9148,7 @@
      ],
      "reputation": 29,
      "stadium": "אצטדיון קוזאני",
-     "region": "צפון"
+     "region": "north"
     },
     {
      "name": "תספרוטוס",
@@ -9036,7 +9160,7 @@
      ],
      "reputation": 28,
      "stadium": "אצטדיון הגומניצה",
-     "region": "צפון"
+     "region": "north"
     }
    ]
   },
@@ -9050,7 +9174,7 @@
    "relegatesTo": null,
    "promoteSpots": 1,
    "relegateSpots": 0,
-   "region": "דרום",
+   "region": "south",
    "strength": 40,
    "wageFactor": 0.2,
    "simLevel": "result",
@@ -9065,7 +9189,7 @@
      ],
      "reputation": 40,
      "stadium": "אצטדיון קליתאה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "קלמטה",
@@ -9077,7 +9201,7 @@
      ],
      "reputation": 39,
      "stadium": "אצטדיון קלמטה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "פנאכאיקי",
@@ -9089,7 +9213,7 @@
      ],
      "reputation": 37,
      "stadium": "אצטדיון פטרס",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "כאניה",
@@ -9101,7 +9225,7 @@
      ],
      "reputation": 36,
      "stadium": "אצטדיון כאניה",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "איליופולי",
@@ -9113,7 +9237,7 @@
      ],
      "reputation": 35,
      "stadium": "אצטדיון איליופולי",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "מרקו",
@@ -9125,7 +9249,7 @@
      ],
      "reputation": 33,
      "stadium": "אצטדיון מרקופולו",
-     "region": "דרום"
+     "region": "south"
     },
     {
      "name": "אסטראס טריפוליס ב׳",
@@ -9137,7 +9261,9 @@
      ],
      "reputation": 32,
      "stadium": "אצטדיון טריפולי",
-     "region": "דרום"
+     "region": "south",
+     "reserve": true,
+     "parent": "אסטראס טריפוליס"
     },
     {
      "name": "א.א.ק. ב׳",
@@ -9149,7 +9275,9 @@
      ],
      "reputation": 31,
      "stadium": "אצטדיון אתונה",
-     "region": "דרום"
+     "region": "south",
+     "reserve": true,
+     "parent": "א.א.ק. אתונה"
     },
     {
      "name": "פנאתינייקוס ב׳",
@@ -9161,7 +9289,9 @@
      ],
      "reputation": 29,
      "stadium": "אצטדיון אתונה",
-     "region": "דרום"
+     "region": "south",
+     "reserve": true,
+     "parent": "פנאתינייקוס"
     },
     {
      "name": "אגליאו",
@@ -9173,7 +9303,7 @@
      ],
      "reputation": 28,
      "stadium": "אצטדיון אגליאו",
-     "region": "דרום"
+     "region": "south"
     }
    ]
   },
@@ -9297,7 +9427,7 @@
     },
     {
      "name": "אומוניה ארדיפו",
-     "short": "אומוניה",
+     "short": "ארדיפו",
      "city": "ארדיפו",
      "colors": [
       "#1B6958",
@@ -9776,7 +9906,9 @@
       "#FFFFFF"
      ],
      "reputation": 37,
-     "stadium": "אצטדיון זלצבורג"
+     "stadium": "אצטדיון זלצבורג",
+     "reserve": true,
+     "parent": "רד בול זלצבורג"
     },
     {
      "name": "סנקט פולטן",
@@ -9791,7 +9923,7 @@
     },
     {
      "name": "אוסטריה לוסטנאו",
-     "short": "אוסטריה",
+     "short": "לוסטנאו",
      "city": "לוסטנאו",
      "colors": [
       "#00843D",
@@ -9820,7 +9952,9 @@
       "#FFFFFF"
      ],
      "reputation": 34,
-     "stadium": "אצטדיון וינה"
+     "stadium": "אצטדיון וינה",
+     "reserve": true,
+     "parent": "אוסטריה וינה"
     },
     {
      "name": "ראפיד ב׳",
@@ -9831,7 +9965,9 @@
       "#FFFFFF"
      ],
      "reputation": 33,
-     "stadium": "אצטדיון וינה"
+     "stadium": "אצטדיון וינה",
+     "reserve": true,
+     "parent": "ראפיד וינה"
     },
     {
      "name": "שטורם ב׳",
@@ -9842,11 +9978,13 @@
       "#FFFFFF"
      ],
      "reputation": 32,
-     "stadium": "אצטדיון גראץ"
+     "stadium": "אצטדיון גראץ",
+     "reserve": true,
+     "parent": "שטורם גראץ"
     },
     {
      "name": "אוסטריה זלצבורג",
-     "short": "אוסטריה",
+     "short": "א. זלצבורג",
      "city": "זלצבורג",
      "colors": [
       "#88488F",
@@ -9868,7 +10006,7 @@
     },
     {
      "name": "אוסטריה קלאגנפורט",
-     "short": "אוסטריה",
+     "short": "קלאגנפורט",
      "city": "קלאגנפורט",
      "colors": [
       "#915186",
@@ -10177,7 +10315,7 @@
    "relegatesTo": null,
    "promoteSpots": 0,
    "relegateSpots": 0,
-   "region": "מזרח",
+   "region": "east",
    "strength": 62,
    "wageFactor": 3.5,
    "simLevel": "medium",
@@ -10193,7 +10331,7 @@
      "reputation": 74,
      "stadium": "צ׳ייס סטדיום",
      "rival": "אורלנדו סיטי",
-     "region": "מזרח"
+     "region": "east"
     },
     {
      "name": "אטלנטה יונייטד",
@@ -10205,7 +10343,7 @@
      ],
      "reputation": 62,
      "stadium": "מרצדס-בנץ סטדיום",
-     "region": "מזרח"
+     "region": "east"
     },
     {
      "name": "שארלוט",
@@ -10217,7 +10355,7 @@
      ],
      "reputation": 56,
      "stadium": "בנק אוף אמריקה סטדיום",
-     "region": "מזרח"
+     "region": "east"
     },
     {
      "name": "שיקגו פייר",
@@ -10229,7 +10367,7 @@
      ],
      "reputation": 54,
      "stadium": "סולג׳ר פילד",
-     "region": "מזרח"
+     "region": "east"
     },
     {
      "name": "סינסינטי",
@@ -10242,7 +10380,7 @@
      "reputation": 62,
      "stadium": "טי.קיו.אל. סטדיום",
      "rival": "קולומבוס קרו",
-     "region": "מזרח"
+     "region": "east"
     },
     {
      "name": "קולומבוס קרו",
@@ -10255,7 +10393,7 @@
      "reputation": 62,
      "stadium": "לואר.קום פילד",
      "rival": "סינסינטי",
-     "region": "מזרח"
+     "region": "east"
     },
     {
      "name": "די.סי. יונייטד",
@@ -10267,7 +10405,7 @@
      ],
      "reputation": 52,
      "stadium": "אאודי פילד",
-     "region": "מזרח"
+     "region": "east"
     },
     {
      "name": "מונטריאול",
@@ -10280,7 +10418,7 @@
      "reputation": 52,
      "stadium": "סטאד סאפוטו",
      "rival": "טורונטו",
-     "region": "מזרח"
+     "region": "east"
     },
     {
      "name": "נאשוויל",
@@ -10292,7 +10430,7 @@
      ],
      "reputation": 58,
      "stadium": "ג׳אודיס פארק",
-     "region": "מזרח"
+     "region": "east"
     },
     {
      "name": "ניו אינגלנד רבולושן",
@@ -10304,7 +10442,7 @@
      ],
      "reputation": 54,
      "stadium": "ג׳ילט סטדיום",
-     "region": "מזרח"
+     "region": "east"
     },
     {
      "name": "ניו יורק סיטי",
@@ -10317,7 +10455,7 @@
      "reputation": 60,
      "stadium": "יאנקי סטדיום",
      "rival": "ניו יורק רד בולס",
-     "region": "מזרח"
+     "region": "east"
     },
     {
      "name": "ניו יורק רד בולס",
@@ -10330,7 +10468,7 @@
      "reputation": 58,
      "stadium": "רד בול ארנה",
      "rival": "ניו יורק סיטי",
-     "region": "מזרח"
+     "region": "east"
     },
     {
      "name": "אורלנדו סיטי",
@@ -10343,7 +10481,7 @@
      "reputation": 58,
      "stadium": "אינטר אנד קו",
      "rival": "אינטר מיאמי",
-     "region": "מזרח"
+     "region": "east"
     },
     {
      "name": "פילדלפיה יוניון",
@@ -10355,7 +10493,7 @@
      ],
      "reputation": 60,
      "stadium": "סובארו פארק",
-     "region": "מזרח"
+     "region": "east"
     },
     {
      "name": "טורונטו",
@@ -10368,7 +10506,7 @@
      "reputation": 54,
      "stadium": "בי.אם.או. פילד",
      "rival": "מונטריאול",
-     "region": "מזרח"
+     "region": "east"
     }
    ]
   },
@@ -10382,7 +10520,7 @@
    "relegatesTo": null,
    "promoteSpots": 0,
    "relegateSpots": 0,
-   "region": "מערב",
+   "region": "west",
    "strength": 62,
    "wageFactor": 3.5,
    "simLevel": "medium",
@@ -10398,7 +10536,7 @@
      "reputation": 66,
      "stadium": "דיגניטי הלת׳ פארק",
      "rival": "לוס אנג׳לס אף.סי.",
-     "region": "מערב"
+     "region": "west"
     },
     {
      "name": "לוס אנג׳לס אף.סי.",
@@ -10411,7 +10549,7 @@
      "reputation": 68,
      "stadium": "בי.אם.או. סטדיום",
      "rival": "לוס אנג׳לס גלאקסי",
-     "region": "מערב"
+     "region": "west"
     },
     {
      "name": "אוסטין",
@@ -10423,7 +10561,7 @@
      ],
      "reputation": 54,
      "stadium": "קיו2 סטדיום",
-     "region": "מערב"
+     "region": "west"
     },
     {
      "name": "קולורדו ראפידס",
@@ -10435,7 +10573,7 @@
      ],
      "reputation": 52,
      "stadium": "דיקס ספורטינג גודס פארק",
-     "region": "מערב"
+     "region": "west"
     },
     {
      "name": "דאלאס",
@@ -10448,7 +10586,7 @@
      "reputation": 54,
      "stadium": "טויוטה סטדיום",
      "rival": "יוסטון דינמו",
-     "region": "מערב"
+     "region": "west"
     },
     {
      "name": "יוסטון דינמו",
@@ -10461,7 +10599,7 @@
      "reputation": 52,
      "stadium": "של אנרג׳י סטדיום",
      "rival": "דאלאס",
-     "region": "מערב"
+     "region": "west"
     },
     {
      "name": "מינסוטה יונייטד",
@@ -10473,7 +10611,7 @@
      ],
      "reputation": 56,
      "stadium": "אליאנץ פילד",
-     "region": "מערב"
+     "region": "west"
     },
     {
      "name": "פורטלנד טימברס",
@@ -10486,7 +10624,7 @@
      "reputation": 58,
      "stadium": "פרובידנס פארק",
      "rival": "סיאטל סאונדרס",
-     "region": "מערב"
+     "region": "west"
     },
     {
      "name": "ריאל סולט לייק",
@@ -10498,7 +10636,7 @@
      ],
      "reputation": 54,
      "stadium": "אמריקה פירסט פילד",
-     "region": "מערב"
+     "region": "west"
     },
     {
      "name": "סן דייגו",
@@ -10510,7 +10648,7 @@
      ],
      "reputation": 56,
      "stadium": "סנאפדרגון סטדיום",
-     "region": "מערב"
+     "region": "west"
     },
     {
      "name": "סן חוזה ארת׳קווייקס",
@@ -10522,7 +10660,7 @@
      ],
      "reputation": 50,
      "stadium": "פייפאל פארק",
-     "region": "מערב"
+     "region": "west"
     },
     {
      "name": "סיאטל סאונדרס",
@@ -10535,7 +10673,7 @@
      "reputation": 64,
      "stadium": "לומן פילד",
      "rival": "פורטלנד טימברס",
-     "region": "מערב"
+     "region": "west"
     },
     {
      "name": "ספורטינג קנזס סיטי",
@@ -10547,7 +10685,7 @@
      ],
      "reputation": 54,
      "stadium": "צ׳ילדרן׳ס מרסי פארק",
-     "region": "מערב"
+     "region": "west"
     },
     {
      "name": "סנט לואיס סיטי",
@@ -10559,7 +10697,7 @@
      ],
      "reputation": 52,
      "stadium": "אנרייזר פארק",
-     "region": "מערב"
+     "region": "west"
     },
     {
      "name": "ונקובר וייטקפס",
@@ -10571,7 +10709,7 @@
      ],
      "reputation": 58,
      "stadium": "בי.סי. פלייס",
-     "region": "מערב"
+     "region": "west"
     }
    ]
   },
@@ -12018,7 +12156,7 @@
     },
     {
      "name": "ראדניצ׳קי ניש",
-     "short": "ראדניצ׳קי",
+     "short": "ראד׳ ניש",
      "city": "ניש",
      "colors": [
       "#C8102E",
@@ -12062,7 +12200,7 @@
     },
     {
      "name": "ראדניצ׳קי 1923",
-     "short": "ראדניצ׳קי",
+     "short": "ראד׳ 1923",
      "city": "קרגויבאץ",
      "colors": [
       "#AD2B49",
@@ -13048,7 +13186,6 @@
    "relegatesTo": null,
    "promoteSpots": 0,
    "relegateSpots": 0,
-   "region": "בית א׳",
    "strength": 66,
    "wageFactor": 1.5,
    "simLevel": "medium",
@@ -13063,8 +13200,7 @@
      ],
      "reputation": 86,
      "stadium": "מונומנטל",
-     "rival": "בוקה ג׳וניורס",
-     "region": "בית א׳"
+     "rival": "בוקה ג׳וניורס"
     },
     {
      "name": "בוקה ג׳וניורס",
@@ -13076,8 +13212,7 @@
      ],
      "reputation": 86,
      "stadium": "לה בומבונרה",
-     "rival": "ריבר פלייט",
-     "region": "בית א׳"
+     "rival": "ריבר פלייט"
     },
     {
      "name": "ראסינג",
@@ -13089,8 +13224,7 @@
      ],
      "reputation": 76,
      "stadium": "אל סילינדרו",
-     "rival": "אינדפנדיינטה",
-     "region": "בית א׳"
+     "rival": "אינדפנדיינטה"
     },
     {
      "name": "אינדפנדיינטה",
@@ -13102,8 +13236,7 @@
      ],
      "reputation": 72,
      "stadium": "ליברטדורס דה אמריקה",
-     "rival": "ראסינג",
-     "region": "בית א׳"
+     "rival": "ראסינג"
     },
     {
      "name": "סן לורנסו",
@@ -13115,8 +13248,7 @@
      ],
      "reputation": 68,
      "stadium": "נואבו גאסומטרו",
-     "rival": "הוראקאן",
-     "region": "בית א׳"
+     "rival": "הוראקאן"
     },
     {
      "name": "הוראקאן",
@@ -13128,8 +13260,7 @@
      ],
      "reputation": 60,
      "stadium": "טומאס דוקו",
-     "rival": "סן לורנסו",
-     "region": "בית א׳"
+     "rival": "סן לורנסו"
     },
     {
      "name": "רוסאריו סנטרל",
@@ -13141,8 +13272,7 @@
      ],
      "reputation": 66,
      "stadium": "ז׳יגנטה דה ארויטו",
-     "rival": "ניואלס אולד בויז",
-     "region": "בית א׳"
+     "rival": "ניואלס אולד בויז"
     },
     {
      "name": "ניואלס אולד בויז",
@@ -13154,8 +13284,7 @@
      ],
      "reputation": 62,
      "stadium": "מרסלו ביילסה",
-     "rival": "רוסאריו סנטרל",
-     "region": "בית א׳"
+     "rival": "רוסאריו סנטרל"
     },
     {
      "name": "פלטנסה",
@@ -13166,8 +13295,7 @@
       "#6B3E26"
      ],
      "reputation": 54,
-     "stadium": "סיודאד דה ויסנטה לופס",
-     "region": "בית א׳"
+     "stadium": "סיודאד דה ויסנטה לופס"
     },
     {
      "name": "טיגרה",
@@ -13178,8 +13306,7 @@
       "#C8102E"
      ],
      "reputation": 54,
-     "stadium": "חוסה דליה בוסקה",
-     "region": "בית א׳"
+     "stadium": "חוסה דליה בוסקה"
     },
     {
      "name": "באנפילד",
@@ -13191,8 +13318,7 @@
      ],
      "reputation": 52,
      "stadium": "פלוראנסיו סולה",
-     "rival": "לאנוס",
-     "region": "בית א׳"
+     "rival": "לאנוס"
     },
     {
      "name": "לאנוס",
@@ -13204,8 +13330,7 @@
      ],
      "reputation": 62,
      "stadium": "לה פורטלסה",
-     "rival": "באנפילד",
-     "region": "בית א׳"
+     "rival": "באנפילד"
     },
     {
      "name": "בראקאס סנטרל",
@@ -13216,8 +13341,7 @@
       "#FFFFFF"
      ],
      "reputation": 50,
-     "stadium": "קלאודיו צ׳יקי טאפיה",
-     "region": "בית א׳"
+     "stadium": "קלאודיו צ׳יקי טאפיה"
     },
     {
      "name": "דפורטיבו ריאסטרה",
@@ -13228,8 +13352,7 @@
       "#FFFFFF"
      ],
      "reputation": 46,
-     "stadium": "גילרמו לאסה",
-     "region": "בית א׳"
+     "stadium": "גילרמו לאסה"
     },
     {
      "name": "ארחנטינוס ג׳וניורס",
@@ -13240,8 +13363,7 @@
       "#FFFFFF"
      ],
      "reputation": 60,
-     "stadium": "דייגו ארמנדו מראדונה ב׳",
-     "region": "בית א׳"
+     "stadium": "דייגו ארמנדו מראדונה ב׳"
     }
    ]
   },
@@ -13255,7 +13377,6 @@
    "relegatesTo": null,
    "promoteSpots": 0,
    "relegateSpots": 0,
-   "region": "בית ב׳",
    "strength": 66,
    "wageFactor": 1.5,
    "simLevel": "medium",
@@ -13270,8 +13391,7 @@
      ],
      "reputation": 72,
      "stadium": "אסטדיו אוניקו",
-     "rival": "חימנסיה לה פלטה",
-     "region": "בית ב׳"
+     "rival": "חימנסיה לה פלטה"
     },
     {
      "name": "חימנסיה לה פלטה",
@@ -13283,8 +13403,7 @@
      ],
      "reputation": 58,
      "stadium": "חואן כרמלו סרייו",
-     "rival": "אסטודיאנטס",
-     "region": "בית ב׳"
+     "rival": "אסטודיאנטס"
     },
     {
      "name": "טאיירס",
@@ -13296,8 +13415,7 @@
      ],
      "reputation": 66,
      "stadium": "מריו אלברטו קמפס",
-     "rival": "בלגרנו",
-     "region": "בית ב׳"
+     "rival": "בלגרנו"
     },
     {
      "name": "בלגרנו",
@@ -13309,8 +13427,7 @@
      ],
      "reputation": 58,
      "stadium": "חוליו ססאר וילגרה",
-     "rival": "טאיירס",
-     "region": "בית ב׳"
+     "rival": "טאיירס"
     },
     {
      "name": "אינסטיטוטו",
@@ -13321,8 +13438,7 @@
       "#FFFFFF"
      ],
      "reputation": 50,
-     "stadium": "חואן דומינגו פרון",
-     "region": "בית ב׳"
+     "stadium": "חואן דומינגו פרון"
     },
     {
      "name": "ולס סרספילד",
@@ -13333,8 +13449,7 @@
       "#034694"
      ],
      "reputation": 66,
-     "stadium": "חוסה אמלפיטני",
-     "region": "בית ב׳"
+     "stadium": "חוסה אמלפיטני"
     },
     {
      "name": "גודוי קרוס",
@@ -13346,8 +13461,7 @@
      ],
      "reputation": 54,
      "stadium": "מלוינאס ארחנטינאס",
-     "rival": "אינדפנדיינטה ריבדביה",
-     "region": "בית ב׳"
+     "rival": "אינדפנדיינטה ריבדביה"
     },
     {
      "name": "אינדפנדיינטה ריבדביה",
@@ -13359,8 +13473,7 @@
      ],
      "reputation": 48,
      "stadium": "באוטיסטה גרגוריו",
-     "rival": "גודוי קרוס",
-     "region": "בית ב׳"
+     "rival": "גודוי קרוס"
     },
     {
      "name": "דפנסה אי חוסטיסיה",
@@ -13371,8 +13484,7 @@
       "#FDE100"
      ],
      "reputation": 54,
-     "stadium": "נורברטו טומגיו",
-     "region": "בית ב׳"
+     "stadium": "נורברטו טומגיו"
     },
     {
      "name": "אוניון סנטה פה",
@@ -13383,8 +13495,7 @@
       "#FFFFFF"
      ],
      "reputation": 52,
-     "stadium": "15 באפריל",
-     "region": "בית ב׳"
+     "stadium": "15 באפריל"
     },
     {
      "name": "אתלטיקו טוקומן",
@@ -13395,8 +13506,7 @@
       "#FFFFFF"
      ],
      "reputation": 52,
-     "stadium": "מונומנטל חוסה פיירו",
-     "region": "בית ב׳"
+     "stadium": "מונומנטל חוסה פיירו"
     },
     {
      "name": "סנטרל קורדובה",
@@ -13407,8 +13517,7 @@
       "#FFFFFF"
      ],
      "reputation": 46,
-     "stadium": "אליאנסה",
-     "region": "בית ב׳"
+     "stadium": "אליאנסה"
     },
     {
      "name": "סרמיינטו",
@@ -13419,8 +13528,7 @@
       "#FFFFFF"
      ],
      "reputation": 46,
-     "stadium": "אליירו",
-     "region": "בית ב׳"
+     "stadium": "אליירו"
     },
     {
      "name": "אלדוסיבי",
@@ -13431,8 +13539,7 @@
       "#00843D"
      ],
      "reputation": 46,
-     "stadium": "חוסה מריה מינלה",
-     "region": "בית ב׳"
+     "stadium": "חוסה מריה מינלה"
     },
     {
      "name": "סן מרטין סן חואן",
@@ -13443,8 +13550,7 @@
       "#000000"
      ],
      "reputation": 44,
-     "stadium": "איחינו ארנה",
-     "region": "בית ב׳"
+     "stadium": "איחינו ארנה"
     }
    ]
   }

@@ -177,6 +177,7 @@ const result = await playDecisionMoment(host, spec, {
 | `resolve.ts` | the pure resolver (unit tested) |
 | `board.ts` | the SVG whiteboard and step animator |
 | `icons.ts` | the card icons |
+| `lessons.ts` | the "מה היה נכון" reason per situation |
 | `index.ts` | UI, timer, flow and `renumber` |
 
 **Scenario model.**
@@ -195,13 +196,18 @@ const result = await playDecisionMoment(host, spec, {
    - Chasing late: risk 3 +0.08, bold:false −0.12.
    - Rain: dribbling and chips −0.08.
    - Hostile crowd and rival: only through per-option `ctx`.
-2. Success chance = `0.1 + 0.42·fit + 0.36·attrNorm(attr) − 0.26·difficulty + {+0.1, 0, −0.1}[risk]`, minus 0.03 each for hostile and rival and 0.02 for lateClose. The result is clamped to 0.05..0.93.
+2. Success chance (tuned after QA's 84-moment run) is
+   `0.064 + 0.545·fit − 0.4·(difficulty − 0.5) + 0.12·attrEdge + {+0.04, 0, −0.04}[risk] + kindBonus`, clamped to 0.05..0.9.
+   - `attrEdge = clamp((optionAttr − spec.attackerSkill) / 25, −1, 1)`, so attributes count relative to the player's own level. The absolute gap to the opponent is already in `spec.difficulty`, together with the late/crowd/rival/rain pressure, so those are not counted twice.
+   - `kindBonus`: penalty taker +0.2, save +0.07, rush_out +0.05.
+   - Calibration for a youngster (attributes at his level, difficulty 0.5), averaged over all situations: best read 50%, worst read 20%, any read (rotating picks) 33%, keeper best read 54%, penalty taker 66%, penalty keeper 49%. Difficulty 0.35 / 0.65 moves the best read to 56% / 44%.
 3. Quality: success gives about 0.5..1 and failure about 0.1..0.35.
 4. Timeout gives `success: false, quality: 0.05`, the stamp "היססת", and the board plays the weakest read's failure.
-5. Vision hint ("נראה לך פתוח" on the best-fit card):
-   - vision ≥ 72: always shown;
-   - vision 55..71: shown with probability (v−55)/17;
-   - keepers use max(vision, gk).
+5. Vision hint ("נראה לך פתוח" on the best-fit card): shown with probability `clamp(0.5 + (vision − 40)/60, 0.15, 1)`, i.e. vision 40 → 50%, 70+ → always, never below 15%. Keepers use max(vision, gk).
+6. Every coach note carries a situational clue to the right read (e.g. "הקו האחורי שלהם גבוה" → through ball). After the result, `lessonLine` adds:
+   - for a poor read (fit more than 0.12 below the best) or a timeout, even when it got lucky: "מה היה נכון: <best option>. <reason>", with one reason per situation in `lessons.ts`;
+   - for the right read that failed: "הקריאה הייתה נכונה. הפעם הביצוע לא הלך."
+   - the auto-close gets 2.8 s longer when a lesson is shown.
 
 **Core semantics** (core is unchanged):
 - For scoring kinds, success means a goal, so every option in those kinds is a goal attempt; a one-two plus a finish counts as one. Cutbacks and safe passes appear only in assist-type kinds (cross, through_ball, dribble).

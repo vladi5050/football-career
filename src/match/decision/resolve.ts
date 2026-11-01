@@ -1,5 +1,6 @@
 // Pure resolver for decision moments (no DOM). Unit tested in tests/unit/match-decision.test.ts.
 import type { Attributes, MomentSpec, Position } from '../../core/types';
+import { LESSONS } from './lessons';
 import { LIBRARY } from './scenarios';
 import type { DecisionOption, KindDef, OptAttr, OptionTpl, Resolved, Variant } from './types';
 
@@ -37,18 +38,35 @@ export function contextFit(base: number, tpl: OptionTpl, spec: Pick<MomentSpec, 
   return clamp(f, 0, 1);
 }
 
-/** 30 → 0, 90 → 1 */
+/** 30 → 0, 90 → 1 (quality only: success chances use attributes relative to the player's own level). */
 export const attrNorm = (v: number) => clamp((v - 30) / 60, 0, 1);
 
-const RISK_BASE = [0, 0.1, 0, -0.1];
+/**
+ * How much the option's attribute stands out from the player's level for this moment (spec.attackerSkill):
+ * −1..1. The absolute level vs. the opponent is already in spec.difficulty (core scales it with the skill gap),
+ * so a 40-rated youngster and a 85-rated star both face a fair moment; picking a read that uses your strength helps.
+ */
+export function attrEdge(attrValue: number, attackerSkill: number): number {
+  return clamp((attrValue - attackerSkill) / 25, -1, 1);
+}
 
-/** Success chance of an option. */
-export function successChance(fit: number, attrValue: number, risk: 1 | 2 | 3, spec: Pick<MomentSpec, 'difficulty' | 'context'>): number {
-  let p = 0.1 + 0.42 * fit + 0.36 * attrNorm(attrValue) - 0.26 * clamp(spec.difficulty, 0, 1) + RISK_BASE[risk];
-  if (spec.context.hostileCrowd) p -= 0.03;
-  if (spec.context.rivalInvolved) p -= 0.03;
-  if (spec.context.lateClose) p -= 0.02;
-  return clamp(p, 0.05, 0.93);
+const RISK_BASE = [0, 0.04, 0, -0.04];
+/** Per-kind calibration: penalties are converted far more often than open-play chances; keepers get a fair shot. */
+const KIND_BONUS: Partial<Record<MomentSpec['kind'], number>> = { penalty: 0.2, save: 0.07, rush_out: 0.05 };
+
+/**
+ * Success chance of an option. Calibrated so that at difficulty 0.5 with average attributes for the player's
+ * level the best read (fit ≈ 0.8) lands ≈ 50%, a middling read (0.5) ≈ 34%, a bad read (0.25) ≈ 20%.
+ * Context pressure (late/close, crowd, rival, rain) is already part of spec.difficulty, so it is not counted twice.
+ */
+export function successChance(
+  fit: number, attrValue: number, risk: 1 | 2 | 3,
+  spec: Pick<MomentSpec, 'difficulty' | 'attackerSkill' | 'kind'>, keeper = false,
+): number {
+  const skill = spec.attackerSkill > 0 ? spec.attackerSkill : attrValue;
+  let p = 0.064 + 0.545 * fit - 0.4 * (clamp(spec.difficulty, 0, 1) - 0.5) + 0.12 * attrEdge(attrValue, skill) + RISK_BASE[risk];
+  p += spec.kind === 'penalty' && keeper ? 0 : KIND_BONUS[spec.kind] ?? 0;
+  return clamp(p, 0.05, 0.9);
 }
 
 /** Quality of the execution 0..1. */
@@ -91,23 +109,44 @@ export function buildOptions(def: KindDef, v: Variant, spec: MomentSpec, attr: A
     const av = attrValue(attr, tpl.attr);
     out.push({
       id: tpl.id, label: fillLabel(v.labels?.[tpl.id] ?? tpl.label, v), icon: tpl.icon, attr: tpl.attr, attrValue: Math.floor(av),
-      risk: tpl.risk, fit, chance: successChance(fit, av, tpl.risk, spec), tpl,
+      risk: tpl.risk, fit, chance: successChance(fit, av, tpl.risk, spec, v.role === 'keeper'), tpl,
     });
   }
   return out;
 }
 
-/**
- * Vision reveals the best read: vision >= 72 always, 55..71 sometimes (rnd < (v-55)/17), lower never.
- * Keepers read the game with `gk`.
- */
+/** Chance that the player "sees" the best read: vision 40 → 50%, 70+ → always, never below 15%. */
+export function hintProbability(vision: number): number {
+  return clamp(0.5 + (vision - 40) / 60, 0.15, 1);
+}
+
+/** Vision reveals the best read ("נראה לך פתוח"). Keepers read the game with max(vision, gk). */
 export function hintOption(opts: DecisionOption[], attr: Attributes, pos: Position | undefined, rnd: number): string | null {
   const v = pos === 'GK' ? Math.max(attr.vision, attr.gk) : attr.vision;
-  const show = v >= 72 || (v >= 55 && rnd < (v - 55) / 17);
-  if (!show || !opts.length) return null;
+  if (!opts.length || rnd >= hintProbability(v)) return null;
   let best = opts[0];
   for (const o of opts) if (o.fit > best.fit) best = o;
   return best.id;
+}
+
+/** The best read of a set of options. */
+export function bestOption(opts: DecisionOption[]): DecisionOption | undefined {
+  return opts.reduce<DecisionOption | undefined>((a, b) => (!a || b.fit > a.fit ? b : a), undefined);
+}
+
+/**
+ * "מה היה נכון": after a poor read (or a timeout) one short line names the right read and why.
+ * A good read that failed gets a reassurance instead, so players learn the reads, not the dice.
+ */
+export function lessonLine(kind: MomentSpec['kind'], v: Variant, opts: DecisionOption[], picked: DecisionOption | null, success: boolean): { kind: 'lesson' | 'good'; text: string } | null {
+  const best = bestOption(opts);
+  if (!best) return null;
+  const why = LESSONS[`${kind}/${v.id}`];
+  if (!picked || picked.fit < best.fit - 0.12) {
+    return { kind: 'lesson', text: `מה היה נכון: ${best.label}${why ? `. ${why}` : ''}` };
+  }
+  if (!success && picked.id === best.id) return { kind: 'good', text: 'הקריאה הייתה נכונה. הפעם הביצוע לא הלך.' };
+  return null;
 }
 
 export function surname(name?: string): string {

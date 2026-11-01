@@ -5,7 +5,7 @@ import type { Attributes, MomentResult, MomentSpec, Position } from '../../core/
 import { isolateNumbers } from '../hud';
 import { Board, type BoardColors } from './board';
 import { ICONS } from './icons';
-import { ATTR_HE, RISK_HE, buildOptions, hintOption, kindDef, pickVariant, resolveDecision } from './resolve';
+import { ATTR_HE, RISK_HE, buildOptions, hintOption, kindDef, lessonLine, pickVariant, resolveDecision } from './resolve';
 import type { DecisionOption, Resolved, Variant } from './types';
 
 export type { DecisionOption, Resolved } from './types';
@@ -71,6 +71,7 @@ export function playDecisionMoment(host: HTMLElement, spec: MomentSpec, opts: De
   <div class="dm-opts${options.length % 2 ? ' odd' : ''}" role="group" aria-label="מה אתה עושה?"></div>
   <div class="dm-result" hidden>
     <div class="dm-say"><span class="dm-mic">${ICONS.mic}</span><p></p></div>
+    <div class="dm-lesson" hidden><span class="dm-lesson-ic">${ICONS.eye}</span><p></p></div>
     <button class="dm-go" type="button">המשך <span class="dm-go-ring"></span></button>
   </div>
 </div>`;
@@ -208,14 +209,27 @@ ${o.id === hint ? `<span class="dm-hint">${ICONS.eye}נראה לך פתוח</spa
       root.dataset.stamp = res.stamp;
 
       const result = q<HTMLDivElement>('.dm-result');
-      (result.querySelector('p') as HTMLParagraphElement).textContent = res.line;
+      (result.querySelector('.dm-say p') as HTMLParagraphElement).textContent = res.line;
+      const lesson = lessonLine(spec.kind, variant, options, o, res.success);
+      if (lesson) {
+        const el = q<HTMLDivElement>('.dm-lesson');
+        el.hidden = false;
+        el.classList.add(lesson.kind);
+        (el.querySelector('p') as HTMLParagraphElement).textContent = fixText(lesson.text);
+        root.dataset.lesson = lesson.kind;
+      }
       result.hidden = false;
+      // let the board give room to the commentary / lesson on short screens (the SVG scales, it does not re-crop)
+      wrap.style.flex = '';
+      wrap.style.minHeight = '200px';
       optsEl.classList.add('gone');
       const go = q<HTMLButtonElement>('.dm-go');
       const done = () => finish({ momentId: spec.id, success: res.success, quality: res.quality, skipped: false });
       go.addEventListener('click', done);
       try { go.focus({ preventScroll: true }); } catch { /* old browsers */ }
-      autoT = window.setTimeout(done, AUTO_CLOSE_MS + (reduced ? 1500 : 0));
+      const closeMs = AUTO_CLOSE_MS + (reduced ? 1500 : 0) + (root.dataset.lesson ? 2800 : 0);
+      (go.querySelector('.dm-go-ring') as HTMLSpanElement).style.animationDuration = `${closeMs}ms`;
+      autoT = window.setTimeout(done, closeMs);
     }
   });
 }
@@ -343,6 +357,14 @@ const CSS = `
 .dm-say{display:flex;gap:10px;align-items:flex-start;background:#0f1a2c;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px 13px;
   animation:dmRise .35s ease-out both}
 .dm-say p{margin:0;font:700 17px/1.4 var(--f-body,'Assistant');color:#fff}
+.dm-lesson{display:flex;gap:9px;align-items:flex-start;background:#fffdf4;color:#1b2a4a;border-radius:4px;padding:9px 12px;transform:rotate(-.5deg);
+  box-shadow:0 4px 10px rgba(0,0,0,.25);border-right:5px solid #f2c230;animation:dmRise .35s .25s ease-out both}
+.dm-lesson[hidden]{display:none}
+.dm-lesson.good{border-right-color:#2f9e57}
+.dm-lesson p{margin:0;font:700 15px/1.35 var(--f-body,'Assistant')}
+.dm-lesson-ic{flex:none;width:26px;height:26px;border-radius:50%;background:#f2c230;color:#1b2a4a;display:grid;place-items:center;margin-top:1px}
+.dm-lesson.good .dm-lesson-ic{background:#2f9e57;color:#fff}
+.dm-lesson-ic svg{width:15px;height:15px}
 .dm-mic{flex:none;width:32px;height:32px;border-radius:50%;background:#f2c230;color:#1b2a4a;display:grid;place-items:center}
 .dm-mic svg{width:18px;height:18px}
 .dm-go{position:relative;overflow:hidden;min-height:54px;border:0;border-radius:14px;background:#f28c28;color:#1b2a4a;cursor:pointer;
