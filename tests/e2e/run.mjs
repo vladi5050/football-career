@@ -721,7 +721,20 @@ async function onEventScreen(page, st) {
   if (ev.options.length < 2 || ev.options.length > 4) issue('event option count', `${ev.title}: ${ev.options.length}`, 'event', await shot(page, 'event-opts'));
   const n = await page.locator('.option-btn').count();
   await page.locator('.option-btn').nth(st.detailed ? st.events % Math.max(1, n) : 0).click();
+  const outcomeLines = await closeOutcome(page);
+  log.outcomes ??= { shown: 0, missing: 0, empty: 0 };
+  if (outcomeLines == null) log.outcomes.missing++; else { log.outcomes.shown++; if (outcomeLines === 0) log.outcomes.empty++; }
   await idle(page, 250);
+}
+
+/** Story answers open an outcome sheet ("מה זה גרם"); record it and tap on. */
+async function closeOutcome(page) {
+  const sheet = page.locator('.outcome-sheet');
+  try { await sheet.waitFor({ state: 'visible', timeout: 2500 }); } catch { return null; }
+  const lines = await sheet.locator('.outcome-line').count();
+  await sheet.locator('button', { hasText: 'המשך' }).click();
+  await sheet.waitFor({ state: 'detached', timeout: 3000 }).catch(() => {});
+  return lines;
 }
 
 async function onMatchScreen(page, st) {
@@ -1800,6 +1813,7 @@ async function scenarioFirstKick(run, seed, { continueSeasons = 0, pos = 'W' } =
         if (!seen.includes(s)) seen.push(s);
         if (s === 'event') {
           await page.locator('.option-btn').first().click();
+          await closeOutcome(page);
           taps++;
           await idle(page);
         } else if (s === 'prematch') {
@@ -2117,6 +2131,7 @@ async function scenarioViewport(name, { arcade = false, ...opts }) {
           await audit(page, `${name}:event`);
           await shot(page, `${name}-event`);
           await page.locator('.option-btn').first().click();
+          await closeOutcome(page);
           await idle(page);
         } else if (s === 'prematch') {
           await audit(page, `${name}:prematch`);
@@ -2164,6 +2179,8 @@ async function scenarioViewport(name, { arcade = false, ...opts }) {
           const s = await screenOf(page);
           if (s === 'event') {
             await page.locator('.option-btn').first().click();
+            await closeOutcome(page);
+          await closeOutcome(page);
             await idle(page);
           } else if (s === 'match' && (await page.locator('.moment-card:not(.ft-card)').isVisible().catch(() => false))) break;
           else if (s === 'weekend') {
@@ -2339,6 +2356,7 @@ function summary() {
   const fails = all.filter((r) => r[0] === 'FAIL').length;
   console.log(`\n${all.length - fails} passed, ${fails} failed. Screenshots: ${path.relative(ROOT, SHOTS)}/`);
   if (log.firstKick) console.log(`First kick: ${log.firstKick.taps} taps, ${(log.firstKick.moment / 1000).toFixed(1)}s (title ${log.firstKick.title}ms, week ${log.firstKick.week}ms), path ${log.firstKick.path}`);
+  if (log.outcomes) console.log(`Story outcomes: ${log.outcomes.shown} shown, ${log.outcomes.missing} missing, ${log.outcomes.empty} empty`);
   fs.writeFileSync(path.join(SHOTS, 'report.json'), JSON.stringify({ results, issues: [...issues.values()], log }, null, 2));
   return fails;
 }

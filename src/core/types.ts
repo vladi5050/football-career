@@ -228,7 +228,12 @@ export interface Career {
   autoAnswered?: string[];
   /** R&D addition: renewal talks with the current club are off until this absWeek (after the club walked out). */
   renewalBlockedUntil?: number;
+  /** R&D addition: what the last story answer caused (set by resolveEvent, cleared by the next command). */
+  eventOutcome?: EventOutcome | null;
 }
+
+/** What one story answer caused, shown right after the choice. */
+export interface EventOutcome { title: string; choice: string; lines: { text: string; delta?: string; tone: 'up' | 'down' | 'info' }[]; followUp: boolean }
 
 /** R&D addition: matchday status of the user, decided before the match. */
 export interface PrematchDecision { absWeek: number; lineup: 'starter' | 'bench' | 'youth' | 'out'; subMinute: number | null; reason: string; firstMatch: boolean }
@@ -421,6 +426,8 @@ export interface View {
   news: NewsItem[];
   live: LiveMatch | null;
   lastWeekReport: WeekReport | null;
+  /** R&D addition: result of the story answer just made (one command only). */
+  eventOutcome?: EventOutcome | null;
   offerClubs: Record<number, ClubView>;
   /** R&D addition: the user's squad mates with their relation to him. */
   teammates?: PersonView[];

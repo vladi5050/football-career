@@ -871,3 +871,15 @@
 
 /* BUG-13: the table's מקוצר/מלא toggle sits right under the top bar, so on that screen the banner drops above the tab bar */
 .toasts.toasts-low { top: auto; bottom: calc(var(--nav-h) + var(--safe-b) + 8px); }
+
+/* story answer outcome sheet */
+.outcome-kicker { font-size: 13px; font-weight: 700; opacity: 0.65; }
+.outcome-choice { margin: 2px 0 var(--s3); font-size: 22px; line-height: 1.2; }
+.outcome-lines { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.outcome-line { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border-radius: 8px; background: rgba(0, 0, 0, 0.05); font-weight: 600; line-height: 1.35; border-inline-start: 4px solid #8a94a6; }
+.outcome-line.tone-up { border-inline-start-color: #2E9D49; }
+.outcome-line.tone-down { border-inline-start-color: #D7263D; }
+.outcome-line .ol-delta { font-weight: 800; white-space: nowrap; direction: ltr; }
+.outcome-line.tone-up .ol-delta { color: #1f7a37; }
+.outcome-line.tone-down .ol-delta { color: #b01d31; }
+.outcome-follow { margin: var(--s3) 0 0; font-weight: 700; color: #b5651d; }

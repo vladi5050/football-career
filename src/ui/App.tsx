@@ -1,4 +1,5 @@
 // Root component: chooses the screen from (view.phase, hash route). Phase-driven screens take over full screen.
+import { EventOutcomeSheet } from './components/EventOutcome';
 import { useEffect } from 'preact/hooks';
 import type { JSX } from 'preact';
 import { busy, matchOutro, navDirection, reducedMotion, screen, uiSettings, view, type Route } from '../app/store';
@@ -102,6 +103,7 @@ export function App() {
         {tabbed && <BottomNav />}
       </div>
       {side && <SidePanel />}
+      <EventOutcomeSheet />
       <Toasts />
     </div>
   );

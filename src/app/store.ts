@@ -149,12 +149,16 @@ export const reducedMotion = computed(() => uiSettings.value.reducedMotion);
 /** True while the Match screen should keep showing full time after the engine moved on. */
 export const matchOutro = signal(false);
 
+/** What the last story answer caused; shown as a sheet until the player taps on. */
+export const eventOutcome = signal<NonNullable<View['eventOutcome']> | null>(null);
+
 // ---------------------------------------------------------------- commands
 function applyResult(res: ApplyResult): void {
   const prev = view.value;
   batch(() => {
     if (prev?.phase === 'match' && res.view.phase !== 'match') matchOutro.value = true;
     view.value = res.view;
+    if (res.view.eventOutcome) eventOutcome.value = res.view.eventOutcome;
   });
   res.toast?.filter((t) => !alreadyOnScreen(t, res.view)).forEach((t) => toast(t));
   if (res.saveDue) void persist();

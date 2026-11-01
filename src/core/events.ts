@@ -1,11 +1,11 @@
 // Events engine: eligibility (conditions + cast), weights, silence, variants, placeholders,
 // `because` lines, effects (closed list), chains and promises.
 import type { Content, EventTemplate } from './content';
-import type { ActiveEvent, Footballer, Goal, Person, Position, SquadRole, TraitId, World } from './types';
+import type { ActiveEvent, EventOutcome, Footballer, Goal, Person, Position, SquadRole, TraitId, World } from './types';
 import type { Rng } from './rng';
 import { parseCondition, testCondition, type Ast, type EvalEnv } from './conditions';
 import {
-  addNews, changeRelation, clamp, firstName, logOnce, ovr, pushHistory, relationOf, seasonWeekOf, userClub, userLeague, userPlayer,
+  ATTR_HE, addNews, changeRelation, clamp, fmtMoney, firstName, logOnce, ovr, pushHistory, relationOf, seasonWeekOf, userClub, userLeague, userPlayer,
 } from './helpers';
 import { injureUser } from './development';
 import { fixtureFor, isWindowOpen, nextFixture } from './schedule';
@@ -438,7 +438,7 @@ export function forceEvent(world: World, content: Content, id: string, rng: Rng)
 
 // ------------------------------------------------------------------ resolve + effects
 
-export interface ResolveOut { notes: string[] }
+export interface ResolveOut { notes: string[]; outcome?: EventOutcome }
 
 export function resolveEvent(world: World, content: Content, uid: number, optionId: string, rng: Rng): ResolveOut {
   const idx = world.inbox.findIndex((e) => e.uid === uid);
@@ -451,16 +451,62 @@ export function resolveEvent(world: World, content: Content, uid: number, option
   const text = `(${ev.title}) בחרת: ${fillText(world, opt.text, ev.cast)}`;
   pushHistory(world, t.id, text, t.id, ev.cast);
   pushHistory(world, `${t.id}.${opt.id}`, text, t.id);
+  const before = snapshot(world, ev.cast);
   const notes = applyEffects(world, content, compileTemplate(t).effects[opt.id] ?? [], ev.cast, rng, text);
   for (const ch of opt.chain ?? []) {
     world.pending.push({ templateId: ch.event, atWeek: world.absWeek + Math.max(1, ch.after), cast: { ...ev.cast } });
   }
   addNewsForBig(world, t.category, ev.title);
-  return { notes };
+  const outcome = describeOutcome(world, before, compileTemplate(t).effects[opt.id] ?? [], ev.cast, notes);
+  return { notes, outcome: { title: ev.title, choice: fillText(world, opt.text, ev.cast), lines: outcome, followUp: (opt.chain?.length ?? 0) > 0 } };
 }
 
 function addNewsForBig(world: World, category: string, title: string): void {
   if (category === 'media' || category === 'transfer' || category === 'national') addNews(world, { kind: 'event', headline: title });
+}
+
+interface Snap { rel: Map<number, number>; morale: number; fame: number; money: number; form: number; fitness: number; potential: number; attr: Record<string, number>; role?: string; goals: number; promises: number; newsTop: unknown }
+
+function snapshot(world: World, cast: Record<string, number>): Snap {
+  const u = userPlayer(world);
+  const rel = new Map<number, number>();
+  for (const id of Object.values(cast)) if (world.people[id]) rel.set(id, relationOf(world.people[id], u.id));
+  return { rel, morale: u.morale, fame: world.career.fame, money: world.career.money, form: u.form, fitness: u.fitness, potential: u.potential,
+    attr: { ...(u.attr as unknown as Record<string, number>) }, role: u.contract?.role, goals: world.career.goals.length, promises: world.career.promises.length, newsTop: world.news[0] };
+}
+
+const ROLE_WORD: Record<string, string> = { star: 'כוכב', starter: 'שחקן הרכב', rotation: 'שחקן רוטציה', backup: 'מחליף', youth: 'נוער' };
+const sign = (d: number, digits = 0) => `${d > 0 ? '+' : '−'}${Math.abs(d).toFixed(digits)}`;
+
+/** Before/after diff of everything an answer touched, in plain Hebrew lines. */
+function describeOutcome(world: World, b: Snap, effects: Effect[], cast: Record<string, number>, notes: string[]): EventOutcome['lines'] {
+  const u = userPlayer(world);
+  const out: EventOutcome['lines'] = [];
+  for (const [id, was] of b.rel) {
+    const p = world.people[id]; if (!p) continue;
+    const d = Math.round(relationOf(p, u.id) - was);
+    if (Math.abs(d) < 1) continue;
+    out.push({ text: d > 0 ? `${p.name} מעריך את זה` : `${p.name} לא שוכח את זה`, delta: `יחסים ${sign(d)}`, tone: d > 0 ? 'up' : 'down' });
+  }
+  // relations of people outside the cast (a random teammate etc.)
+  for (const e of effects) if (e.k === 'rel' && cast[e.role] == null) out.push({ text: e.d > 0 ? 'מישהו בחדר ההלבשה מעריך את זה' : 'מישהו בחדר ההלבשה לא אהב את זה', delta: `יחסים ${sign(e.d)}`, tone: e.d > 0 ? 'up' : 'down' });
+  const stat = (label: string, d: number, digits = 0) => { if (Math.abs(d) >= (digits ? 0.05 : 0.5)) out.push({ text: label, delta: sign(d, digits), tone: d > 0 ? 'up' : 'down' }); };
+  stat('מורל', u.morale - b.morale);
+  stat('מוניטין', world.career.fame - b.fame);
+  stat('כושר', u.form - b.form);
+  stat('מוכנות גופנית', u.fitness - b.fitness);
+  stat('פוטנציאל', u.potential - b.potential);
+  const a = u.attr as unknown as Record<string, number>;
+  for (const k of Object.keys(a)) stat(ATTR_HE[k as keyof typeof ATTR_HE] ?? k, a[k] - (b.attr[k] ?? a[k]), 1);
+  const dm = world.career.money - b.money;
+  if (Math.abs(dm) >= 1) out.push({ text: dm > 0 ? 'נכנס כסף' : 'יצא כסף', delta: `${dm > 0 ? '+' : '−'}${fmtMoney(Math.abs(dm))}`, tone: dm > 0 ? 'up' : 'down' });
+  if (u.contract?.role && u.contract.role !== b.role) out.push({ text: `התפקיד שלך בסגל: ${ROLE_WORD[u.contract.role] ?? u.contract.role}`, tone: 'info' });
+  for (const g of world.career.goals.slice(b.goals)) out.push({ text: `מטרה חדשה: ${g.text}`, tone: 'info' });
+  for (const pr of world.career.promises.slice(b.promises)) out.push({ text: pr.text, tone: 'info' });
+  const oldTop = world.news.indexOf(b.newsTop as never);
+  for (const n of world.news.slice(0, oldTop < 0 ? (b.newsTop ? 0 : world.news.length) : oldTop)) out.push({ text: `בחדשות: ${n.headline}`, tone: 'info' });
+  for (const n of notes) if (n) out.push({ text: n, tone: 'info' });
+  return out;
 }
 
 const PROMISE_TEXT: Record<string, string> = {

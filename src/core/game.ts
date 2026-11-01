@@ -50,6 +50,7 @@ export function apply(world: World, cmd: Command, content: Content): ApplyOut {
   const rng = makeRng(world.rngState);
   const toast: string[] = [];
   if (world.career.retired && cmd.type !== 'setAutoMoments') return { world, toast: ['הקריירה הסתיימה'] };
+  world.career.eventOutcome = null;
   switch (cmd.type) {
     case 'setPlan':
       if (world.phase !== 'plan') { toast.push('אפשר לתכנן רק בתחילת השבוע'); break; }
@@ -58,7 +59,8 @@ export function apply(world: World, cmd: Command, content: Content): ApplyOut {
     case 'quickWeek': quickWeek(world, content, rng, toast); break;
     case 'resolveEvent': {
       const r = resolveEvent(world, content, cmd.uid, cmd.optionId, rng);
-      toast.push(...r.notes);
+      world.career.eventOutcome = r.outcome ?? null; // the outcome sheet shows the notes
+      if (!r.outcome) toast.push(...r.notes);
       if (world.phase === 'event' && !world.inbox.length) enterMatchOrWeekend(world, content, rng, toast);
       afterEffects(world, content, rng, toast);
       break;
@@ -751,6 +753,7 @@ export function buildView(world: World): View {
     news: world.news.slice(0, 20),
     live: world.live ? JSON.parse(JSON.stringify(world.live)) : null,
     lastWeekReport: world.lastWeekReport,
+    eventOutcome: world.career.eventOutcome ?? null,
     offerClubs,
     teammates,
     people,
