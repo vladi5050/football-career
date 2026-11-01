@@ -54,9 +54,18 @@ const RISK_BASE = [0, 0.04, 0, -0.04];
 /** Per-kind calibration: penalties are converted far more often than open-play chances; keepers get a fair shot. */
 const KIND_BONUS: Partial<Record<MomentSpec['kind'], number>> = { penalty: 0.2, save: 0.07, rush_out: 0.05 };
 
+/** Goalkeeper moments keep the round-3 calibration (QA: keepers already feel fair). */
+const KEEPER_KINDS: ReadonlySet<MomentSpec['kind']> = new Set(['save', 'rush_out']);
 /**
- * Success chance of an option. Calibrated so that at difficulty 0.5 with average attributes for the player's
- * level the best read (fit ≈ 0.8) lands ≈ 50%, a middling read (0.5) ≈ 34%, a bad read (0.25) ≈ 20%.
+ * Fit -> chance line [intercept, slope]. Outfield (QA round 4: the right read felt like a coin flip that came up tails):
+ * in real careers (difficulty ≈ 0.5-0.55) the best read lands ≈ 60% and the average over all options ≈ 37%.
+ * Keepers: best read ≈ 55%, all options ≈ 39%.
+ */
+export const FIT_LINE = { outfield: [0.06, 0.69], keeper: [0.064, 0.545] } as const;
+
+/**
+ * Success chance of an option. Calibrated (outfield, difficulty 0.5, attributes at the player's level) so that the best
+ * read (fit ≈ 0.8) lands ≈ 61%, a middling read (0.5) ≈ 40%, a bad read (0.25) ≈ 23%.
  * Context pressure (late/close, crowd, rival, rain) is already part of spec.difficulty, so it is not counted twice.
  */
 export function successChance(
@@ -64,7 +73,8 @@ export function successChance(
   spec: Pick<MomentSpec, 'difficulty' | 'attackerSkill' | 'kind'>, keeper = false,
 ): number {
   const skill = spec.attackerSkill > 0 ? spec.attackerSkill : attrValue;
-  let p = 0.064 + 0.545 * fit - 0.4 * (clamp(spec.difficulty, 0, 1) - 0.5) + 0.12 * attrEdge(attrValue, skill) + RISK_BASE[risk];
+  const [a, b] = keeper || KEEPER_KINDS.has(spec.kind) ? FIT_LINE.keeper : FIT_LINE.outfield;
+  let p = a + b * fit - 0.4 * (clamp(spec.difficulty, 0, 1) - 0.5) + 0.12 * attrEdge(attrValue, skill) + RISK_BASE[risk];
   p += spec.kind === 'penalty' && keeper ? 0 : KIND_BONUS[spec.kind] ?? 0;
   return clamp(p, 0.05, 0.9);
 }

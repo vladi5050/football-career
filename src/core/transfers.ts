@@ -2,10 +2,10 @@
 import type { Content } from './content';
 import type { Club, Footballer, League, SquadRole, TransferOffer, World } from './types';
 import type { Rng } from './rng';
-import { addNews, avg, changeRelation, clamp, fmtMoney, ovr, pushHistory, userClub, userPlayer, pre } from './helpers';
+import { addNews, avg, changeRelation, clamp, count, fmtMoney, ovr, pushHistory, userClub, userPlayer, pre } from './helpers';
 import { isWindowOpen, sortedTable } from './schedule';
 import { BIG5, clubLevel, makePerson, materializeClub } from './worldGen';
-import { clubViewRole, marketWage, playerValue, wageCap } from './negotiation';
+import { clubViewRole, marketWage, moveUser, playerValue, RESERVE_MAX_RENEW_AGE, ROLE_HE, wageCap } from './negotiation';
 import { selectXI } from './matchSim';
 
 export const TRANSFER_TUNING = { weeklyBase: 0.01 };
@@ -90,6 +90,7 @@ export function spawnOffer(world: World, content: Content, rng: Rng, kind: Offer
     for (const id of lg.clubIds) {
       if (id === mine.id || world.career.offers.some((x) => x.fromClubId === id)) continue;
       const c = world.clubs[id];
+      if (c.reserveOf != null && user.age >= RESERVE_TUNING.maxSigningAge) continue; // B teams sign teenagers, not grown players
       if (kind === 'bigger' && c.reputation <= mine.reputation + 3) continue;
       const lvl = clubLevel(lg, c.reputation, avgRep);
       if (kind === 'lower' && lvl > mineLvl - 2) continue;
@@ -118,6 +119,64 @@ export function spawnOffer(world: World, content: Content, rng: Rng, kind: Offer
   return offer;
 }
 
+export const RESERVE_TUNING = {
+  /** call-up when overall >= parent squad median - margin; the margin grows with age (the parent gives its B players a chance) */
+  marginBase: 2, marginPerYear: 1.5, marginMax: 8,
+  /** reserve teams keep players up to this age (no renewal, released at the season end), and sign only teenagers */
+  maxRenewAge: RESERVE_MAX_RENEW_AGE, maxSigningAge: 20,
+  /** the agent looks for a first-team move from this age */
+  agentPushAge: 19, agentPushWeekly: 0.05,
+};
+
+/** True when the user plays for a reserve (B) team whose parent exists. */
+export function atReserve(world: World): boolean {
+  const c = userClub(world);
+  return !!c && c.reserveOf != null && !!world.clubs[c.reserveOf];
+}
+
+/**
+ * Reserve (B) team: the parent club calls the user up to its first team once his overall is near the parent squad's median.
+ * Signs him on a first-team contract (never a pay cut). Returns the line for the toast, or null.
+ */
+export function reserveCallUp(world: World, content: Content): string | null {
+  if (world.career.retired || !atReserve(world)) return null;
+  const u = userPlayer(world);
+  const parent = world.clubs[userClub(world)!.reserveOf!];
+  materializeClub(world, content, parent.id);
+  const ovrs = parent.squad.filter((id) => id !== u.id && world.people[id]).map((id) => ovr(world.people[id] as Footballer)).sort((a, b) => a - b);
+  if (!ovrs.length) return null;
+  const med = ovrs.length % 2 ? ovrs[(ovrs.length - 1) / 2] : (ovrs[ovrs.length / 2 - 1] + ovrs[ovrs.length / 2]) / 2;
+  const margin = clamp(RESERVE_TUNING.marginBase + (u.age - 17) * RESERVE_TUNING.marginPerYear, RESERVE_TUNING.marginBase, RESERVE_TUNING.marginMax);
+  if (ovr(u) < med - margin) return null;
+  moveUser(world, content, parent.id, 0);
+  const role = clubViewRole(world, parent.id, u);
+  const wage = Math.round(Math.max(u.contract?.monthlyWage ?? 0, marketWage(world, content, parent.id, u) * 0.9) / 100) * 100;
+  const years = u.age < 28 ? 3 : 2;
+  u.contract = {
+    clubId: parent.id, monthlyWage: wage, endSeason: world.season.number + years - (world.phase === 'offseason' ? 0 : 1), role, releaseClause: null,
+    bonuses: [{ kind: 'goal', amount: Math.round(wage * 0.05 / 100) * 100 }, { kind: 'appearance', amount: Math.round(wage * 0.02 / 100) * 100 }],
+  };
+  world.career.offers = world.career.offers.filter((o) => o.fromClubId !== parent.id);
+  pushHistory(world, 'called_up', `עלית לקבוצה הבוגרת של ${parent.name}`);
+  addNews(world, { kind: 'transfer', headline: `${u.name} עולה לקבוצה הבוגרת של ${parent.name}` });
+  return `עלית לקבוצה הבוגרת: ${parent.name}, ${fmtMoney(wage)} לחודש, ${ROLE_HE[role]}, ${pre('ל', count(years, 'שנה', 'שנים', true))}`;
+}
+
+/**
+ * Season end at a reserve team the user has outgrown (age >= maxRenewAge, not called up): the B team lets him go.
+ * His contract ends now, so the usual offseason flow (offers, "המועדון יחליט") finds him a first-team club. Returns the line or null.
+ */
+export function reserveRelease(world: World): string | null {
+  if (world.career.retired || !atReserve(world)) return null;
+  const u = userPlayer(world);
+  if (u.age < RESERVE_TUNING.maxRenewAge || !u.contract || u.contract.endSeason <= world.season.number) return null;
+  const c = userClub(world)!;
+  u.contract = { ...u.contract, endSeason: world.season.number };
+  pushHistory(world, 'reserve_release', `${c.name} שחררה אותך: הגיע הזמן לקבוצה בוגרת`);
+  addNews(world, { kind: 'transfer', headline: `${c.name} לא ממשיכה עם ${u.name}` });
+  return `${c.name} לא ממשיכה איתך: קבוצת ב׳ היא לשחקנים צעירים. הסוכן מחפש לך קבוצה בוגרת`;
+}
+
 export function expireOffers(world: World): void {
   world.career.offers = world.career.offers.filter((o) => o.expiresWeek >= world.absWeek);
 }
@@ -134,6 +193,8 @@ export function weeklyOffers(world: World, content: Content, rng: Rng): Transfer
   if (user.age < 17) p *= 0.4;
   let kind: OfferKind = rng.chance(0.25) ? 'bigger' : rng.chance(0.15) ? 'abroad' : 'any';
   if (avgMin < 30 && user.age >= 18) { p += 0.08; kind = 'lower'; }
+  // at a reserve team the agent pushes for a first-team move elsewhere
+  if (atReserve(world) && user.age >= RESERVE_TUNING.agentPushAge) { p += RESERVE_TUNING.agentPushWeekly; if (kind === 'lower') kind = 'any'; }
   if (!rng.chance(p)) return null;
   return spawnOffer(world, content, rng, kind) ?? (kind !== 'any' ? spawnOffer(world, content, rng, 'any') : null);
 }

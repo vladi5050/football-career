@@ -7,6 +7,9 @@ import { wageFor } from './wages';
 import { selectXI } from './matchSim';
 import { materializeLeague } from './worldGen';
 
+/** Reserve (B) teams keep players up to this age: no renewal from it, and the club lets him go (RESERVE_TUNING in transfers.ts). */
+export const RESERVE_MAX_RENEW_AGE = 21;
+
 export const ROLE_RANK: Record<SquadRole, number> = { backup: 0, prospect: 1, rotation: 2, starter: 3, star: 4 };
 export const ROLE_HE: Record<SquadRole, string> = { star: 'כוכב', starter: 'הרכב', rotation: 'רוטציה', prospect: 'כישרון צעיר', backup: 'ספסל' };
 
@@ -123,6 +126,8 @@ export function openNegotiation(world: World, content: Content, rng: Rng, clubId
     const better = ROLE_RANK[clubRole] > ROLE_RANK[user.contract.role];
     if (left > 1 && !better) return 'המועדון לא ממהר לחדש. החוזה שלך עוד ארוך.';
     if (clubRole === 'backup' && user.age >= 22 && rng.chance(0.5)) return 'המועדון לא מעוניין לחדש כרגע.';
+    // a reserve (B) team is a step, not a home: grown players move on
+    if (c.reserveOf != null && user.age >= RESERVE_MAX_RENEW_AGE) return `${c.name} לא מחדשת לשחקנים מגיל ${RESERVE_MAX_RENEW_AGE}. הגיע הזמן לצעד הבא.`;
   }
   let base = marketWage(world, content, clubId, user) * coachDesire(world, clubId, user) * budgetFactor(world, c);
   const value = playerValue(world, content, user);

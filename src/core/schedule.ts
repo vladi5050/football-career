@@ -307,13 +307,97 @@ export function promoteRelegate(world: World): { lines: string[]; promoted: numb
       moved.add(u.r.clubId);
     }
   }
-  for (const m of moves) {
+  // BUG-29: a parent club never shares a league with its reserve team (e.g. a relegated parent landing in the B team's group)
+  const final = new Map<number, League>();
+  for (const m of moves) final.set(m.clubId, m.to);
+  separateReserves(world, final, rows);
+  const out = [...final].map(([clubId, to]) => ({ clubId, from: world.leagues[world.clubs[clubId].leagueId], to })).filter((m) => m.from.id !== m.to.id);
+  promoted.length = 0;
+  relegated.length = 0;
+  for (const m of out) {
     const i = m.from.clubIds.indexOf(m.clubId);
     if (i >= 0) m.from.clubIds.splice(i, 1);
     m.to.clubIds.push(m.clubId);
     world.clubs[m.clubId].leagueId = m.to.id;
     const name = world.clubs[m.clubId].name;
-    lines.push(m.to.tier < m.from.tier ? `${name} עולה ${pre('ל', m.to.name)}` : `${name} יורדת ${pre('ל', m.to.name)}`);
+    if (m.to.tier < m.from.tier) promoted.push(m.clubId);
+    else if (m.to.tier > m.from.tier) relegated.push(m.clubId);
+    lines.push(m.to.tier < m.from.tier ? `${name} עולה ${pre('ל', m.to.name)}` : m.to.tier > m.from.tier ? `${name} יורדת ${pre('ל', m.to.name)}` : `${name} עוברת ${pre('ל', m.to.name)}`);
   }
   return { lines, promoted, relegated };
+}
+
+/**
+ * Resolves parent/reserve clashes after the summer's moves (`final`: club -> league after the summer, moved clubs only).
+ * A clash is a reserve team in its parent's league (or above it) in the same country. In order:
+ * 1. the reserve drops one more tier (swapping with the best unmoved club there),
+ * 2. else it moves to another regional group of its tier (swapping with an unmoved club there),
+ * 3. else the parent stays up and the next club above the drop zone goes down in its place.
+ * Every league keeps its size.
+ */
+function separateReserves(world: World, final: Map<number, League>, rows: (lg: League) => TableRow[]): void {
+  const at = (id: number): League => final.get(id) ?? world.leagues[world.clubs[id].leagueId];
+  const home = (id: number): League => world.leagues[world.clubs[id].leagueId];
+  const moveTo = (id: number, lg: League): void => { if (home(id).id === lg.id) final.delete(id); else final.set(id, lg); };
+  const clash = (reserve: number, parent: number, rl = at(reserve), pl = at(parent)): boolean =>
+    rl.countryCode === pl.countryCode && (rl.id === pl.id || rl.tier < pl.tier);
+  /** Would `id` in league `lg` clash with its parent or with a reserve of its own? */
+  const clashesIn = (id: number, lg: League): boolean => {
+    const c = world.clubs[id];
+    if (c.reserveOf != null && world.clubs[c.reserveOf] && clash(id, c.reserveOf, lg)) return true;
+    return world.clubs.some((r) => r.reserveOf === id && clash(r.id, id, at(r.id), lg));
+  };
+  const reserves = world.clubs.filter((c) => c.reserveOf != null && world.clubs[c.reserveOf]);
+  /** Best unmoved club of `lg` that may take `into` (top of the table first when `top`, else by region fit). */
+  const partner = (lg: League, into: League, top: boolean, region?: string): number | undefined => {
+    const cands = lg.clubIds.filter((id) => !final.has(id) && !clashesIn(id, into));
+    if (!cands.length) return undefined;
+    const pos = new Map(rows(lg).map((r, i) => [r.clubId, i]));
+    const score = (id: number): number => {
+      const cr = world.clubs[id].region;
+      const reg = region && cr ? (normRegion(cr) === region ? 0 : 1000) : 500;
+      return (top ? 0 : reg) + (pos.get(id) ?? 999);
+    };
+    return cands.sort((a, b) => score(a) - score(b) || a - b)[0];
+  };
+  for (let guard = 0; guard < 40; guard++) {
+    const r = reserves.find((c) => clash(c.id, c.reserveOf!));
+    if (!r) return;
+    const parent = r.reserveOf!;
+    const R = at(r.id);
+    const rReg = r.region ? normRegion(r.region) : undefined;
+    // 1. one tier down
+    const lower = linksDown(R).map((id) => world.leagues[id]).filter((l) => l && l.countryCode === R.countryCode && !clash(r.id, parent, l, at(parent)));
+    lower.sort((a, b) => (rReg && groupRegion(world, a) === rReg ? 0 : 1) - (rReg && groupRegion(world, b) === rReg ? 0 : 1));
+    let done = false;
+    for (const L of lower) {
+      const p = partner(L, R, true);
+      if (p == null) continue;
+      moveTo(r.id, L);
+      moveTo(p, R);
+      done = true;
+      break;
+    }
+    if (done) continue;
+    // 2. another regional group of the same tier
+    const ups = linksUp(R);
+    const siblings = world.leagues.filter((g) => g.id !== R.id && g.countryCode === R.countryCode && g.tier === R.tier && ups.length > 0 && linksUp(g).some((u) => ups.includes(u)) && !clash(r.id, parent, g, at(parent)));
+    for (const S of siblings) {
+      const p = partner(S, R, false, groupRegion(world, R));
+      if (p == null) continue;
+      moveTo(r.id, S);
+      moveTo(p, R);
+      done = true;
+      break;
+    }
+    if (done) continue;
+    // 3. the parent stays up; the next club above the drop zone goes down in its place
+    const P = home(parent);
+    if (at(parent).id === P.id) return; // the clash is not a relegation: nothing safe to change
+    const slot = at(parent);
+    const next = rows(P).map((x) => x.clubId).reverse().find((id) => id !== parent && !final.has(id) && !clashesIn(id, slot));
+    if (next == null) return;
+    moveTo(parent, P);
+    moveTo(next, slot);
+  }
 }

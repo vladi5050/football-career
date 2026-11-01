@@ -435,8 +435,9 @@ function rollStart(world: World, rng: Rng, pos: Position): StartPick {
     leagueW = (l) => (l.tier >= 2 ? (BIG5.includes(l.countryCode) ? 0.6 : 1.2) : 1) * (l.strength >= 75 ? 0.3 : 1);
   }
   const lg = rng.weightedPick(pool, leagueW) ?? world.leagues[0];
-  // academies: bigger clubs run bigger academies, but every club has one
-  const clubId = rng.weightedPick(lg.clubIds, (id) => 0.6 + world.clubs[id].reputation / 100)!;
+  // academies: bigger clubs run bigger academies, but every club has one.
+  // A reserve (B) team is rarely where a 16-year-old signs: he joins the parent's academy, so B teams weigh little.
+  const clubId = rng.weightedPick(lg.clubIds, (id) => (0.6 + world.clubs[id].reputation / 100) * (world.clubs[id].reserveOf != null ? 0.15 : 1))!;
   return { kind, clubId };
 }
 

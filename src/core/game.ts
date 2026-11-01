@@ -21,7 +21,7 @@ import {
 } from './development';
 import { autoOptionId, checkPromises, compileEvents, resolveEvent, rollWeekEvents, syncFlags } from './events';
 import { acceptCurrent, negotiateRound, openNegotiation, ROLE_HE as SQUAD_ROLE_HE, userWalkAway } from './negotiation';
-import { activeLeagues, expireOffers, npcTransfers, sackings, spawnOffer, weeklyOffers } from './transfers';
+import { activeLeagues, atReserve, expireOffers, npcTransfers, RESERVE_TUNING, reserveCallUp, reserveRelease, sackings, spawnOffer, weeklyOffers } from './transfers';
 import { nearGoals, updateGoals } from './goals';
 import { endSeason, nationalWindow, RETIRE_FORCED_AGE, startSeason } from './season';
 
@@ -516,10 +516,16 @@ function advanceWeek(world: World, content: Content, rng: Rng, toast: string[]):
     if (rep.forcedRetire) { retireUser(world, `בגיל ${RETIRE_FORCED_AGE} הגוף אמר את המילה האחרונה`); return; }
     if ((world.history.flags.farewell ?? 0) >= 1) { retireUser(world, 'משחק פרידה, והנעליים נתלו'); return; }
     world.phase = 'offseason';
+    // a reserve (B) team player who is good enough goes up to the parent's first team
+    // ...and one who has outgrown it is let go, so the summer finds him a first-team club
+    const called = reserveCallUp(world, content) ?? reserveRelease(world);
+    if (called) toast.unshift(called);
     // summer window: a few offers
     const n = (rng.chance(0.3 + world.career.fame / 200) ? 1 : 0) + (world.career.fame > 60 && rng.chance(0.5) ? 1 : 0);
     for (let i = 0; i < n; i++) spawnOffer(world, content, rng, rng.chance(0.3) ? 'bigger' : rng.chance(0.2) ? 'abroad' : 'any');
     const u = userPlayer(world);
+    // still at a reserve team: the agent finds a first-team club
+    if (atReserve(world) && u.age >= RESERVE_TUNING.agentPushAge) spawnOffer(world, content, rng, 'any');
     if (u.contract && u.contract.endSeason <= world.season.number) {
       toast.push('החוזה שלך נגמר. אפשר לבקש חידוש או לבחור הצעה');
       if (!world.career.offers.length) spawnOffer(world, content, rng, 'any');
@@ -528,7 +534,11 @@ function advanceWeek(world: World, content: Content, rng: Rng, toast: string[]):
   }
   world.phase = 'plan';
   const w = windowName(world);
-  if (w === 'january' && world.season.week === Math.floor(world.season.totalWeeks / 2) - 1) toast.push('חלון ההעברות של ינואר נפתח');
+  if (w === 'january' && world.season.week === Math.floor(world.season.totalWeeks / 2) - 1) {
+    toast.push('חלון ההעברות של ינואר נפתח');
+    const called = reserveCallUp(world, content);
+    if (called) toast.push(called);
+  }
 }
 
 function contractExpired(world: World): boolean {
@@ -570,7 +580,9 @@ function beginNextSeason(world: World, content: Content, rng: Rng, toast: string
     for (const o of pending) { if (sign(openNegotiation(world, content, rng, o.fromClubId, o, 'offseason'))) { done = true; break; } }
     if (!done) done = sign(openNegotiation(world, content, rng, c.id, null, 'offseason'));
     if (!done) {
-      const o = spawnOffer(world, content, rng, 'lower') ?? spawnOffer(world, content, rng, 'any');
+      // from a reserve team any first-team club will do; elsewhere a step down to play comes first
+      const o = atReserve(world) ? spawnOffer(world, content, rng, 'any') ?? spawnOffer(world, content, rng, 'lower')
+        : spawnOffer(world, content, rng, 'lower') ?? spawnOffer(world, content, rng, 'any');
       if (o) done = sign(openNegotiation(world, content, rng, o.fromClubId, o, 'offseason'));
     }
     if (!done && contractExpired(world)) {

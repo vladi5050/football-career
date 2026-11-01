@@ -134,12 +134,13 @@ describe('resolver: fits, attributes, context', () => {
       }
     }
     const avg = (xs: number[]) => xs.reduce((x, y) => x + y, 0) / xs.length;
-    expect(avg(best)).toBeGreaterThanOrEqual(0.45);
-    expect(avg(best)).toBeLessThanOrEqual(0.55);
+    // QA round 4: the right read succeeds ≈ 55-65%, random picks ≈ 35-40% (keepers included in these averages)
+    expect(avg(best)).toBeGreaterThanOrEqual(0.55);
+    expect(avg(best)).toBeLessThanOrEqual(0.65);
     expect(avg(worst)).toBeGreaterThanOrEqual(0.15);
-    expect(avg(worst)).toBeLessThanOrEqual(0.25);
-    expect(avg(all)).toBeGreaterThan(0.28); // rotating / random picks
-    expect(avg(all)).toBeLessThan(0.4);
+    expect(avg(worst)).toBeLessThanOrEqual(0.28);
+    expect(avg(all)).toBeGreaterThan(0.35); // rotating / random picks
+    expect(avg(all)).toBeLessThan(0.45);
     expect(avg(saves)).toBeGreaterThanOrEqual(0.5);
     expect(avg(saves)).toBeLessThanOrEqual(0.6);
     // penalties: takers convert most good reads; a keeper reading the taker saves about half
