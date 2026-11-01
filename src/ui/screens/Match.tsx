@@ -122,9 +122,21 @@ export function MatchScreen() {
   const goalsSeen = visibleHl.filter((h) => h.kind === 'goal').length;
   // Scorebug follows the feed: count goals whose minute is already on screen, per side.
   const scorers = live.fixture.scorers;
-  if (scorers && scorers.length === live.score[0] + live.score[1]) {
+  if (pending && clock >= pending.minute) {
+    // stopped at a moment: the engine state is exactly here, so the scorebug shows what the decision overlay shows
+    shownScore.current = [live.score[0], live.score[1]];
+  } else if (scorers) {
+    // goals whose minute is already on the feed, per side; goals the engine scored without a named scorer
+    // (scorers shorter than the score) are already in live.score, so they count straight away
+    const side = (list: typeof scorers, id: number) => list.filter((g) => g.clubId === id).length;
     const seen = scorers.filter((g) => g.minute <= clock);
-    shownScore.current = [seen.filter((g) => g.clubId === live.fixture.home).length, seen.filter((g) => g.clubId === live.fixture.away).length];
+    const missing = [
+      Math.max(0, live.score[0] - side(scorers, live.fixture.home)),
+      Math.max(0, live.score[1] - side(scorers, live.fixture.away)),
+    ];
+    const next: [number, number] = [side(seen, live.fixture.home) + missing[0]!, side(seen, live.fixture.away) + missing[1]!];
+    // never count down
+    shownScore.current = [Math.max(next[0], Math.min(shownScore.current[0], live.score[0])), Math.max(next[1], Math.min(shownScore.current[1], live.score[1]))];
   } else if (goalsSeen >= goalsAll) shownScore.current = [live.score[0], live.score[1]];
   const finalScore = !inMatch
     ? v.lastWeekReport?.result

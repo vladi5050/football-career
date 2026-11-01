@@ -2,7 +2,7 @@ import type { ComponentChildren } from 'preact';
 import { useEffect } from 'preact/hooks';
 import { createPortal } from 'preact/compat';
 import { TapedCard } from './TapedCard';
-import { modalsOpen, toasts } from '../../app/store';
+import { clearToasts, modalsOpen } from '../../app/store';
 
 interface Props { open: boolean; title: string; onClose: () => void; children?: ComponentChildren; actions?: ComponentChildren }
 /** Bottom sheet modal on a taped paper card. Esc / backdrop closes. */
@@ -11,7 +11,7 @@ export function Modal({ open, title, onClose, children, actions }: Props) {
     if (!open) return;
     // never stack a toast over a modal: clear what is showing and hold new ones while open
     modalsOpen.value++;
-    toasts.value = [];
+    clearToasts();
     return () => {
       modalsOpen.value--;
     };

@@ -81,18 +81,43 @@ let toastId = 1;
 export const modalsOpen = signal(0);
 const recentToasts = new Map<string, number>();
 const TOAST_DEDUPE_MS = 10_000;
-export function toast(text: string, ms = 2600): void {
+// One banner at a time; extra lines wait in a short queue (max 3) and show one after another.
+const toastQueue: { text: string; ms: number }[] = [];
+let toastTimer: ReturnType<typeof setTimeout> | null = null;
+function showNextToast(): void {
+  const next = toastQueue.shift();
+  if (!next || modalsOpen.value > 0) {
+    toasts.value = [];
+    toastQueue.length = 0;
+    return;
+  }
+  const id = toastId++;
+  toasts.value = [{ id, text: next.text }];
+  toastTimer = setTimeout(() => dismissToast(id), next.ms);
+}
+export function clearToasts(): void {
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = null;
+  toastQueue.length = 0;
+  toasts.value = [];
+}
+export function dismissToast(id: number): void {
+  if (!toasts.value.some((t) => t.id === id)) return;
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = null;
+  toasts.value = [];
+  if (toastQueue.length) setTimeout(showNextToast, 180);
+}
+export function toast(text: string, ms = 3500): void {
   if (!text || modalsOpen.value > 0) return;
   const now = Date.now();
   const last = recentToasts.get(text);
   if (last != null && now - last < TOAST_DEDUPE_MS) return;
   recentToasts.set(text, now);
   for (const [k, t] of recentToasts) if (now - t > TOAST_DEDUPE_MS) recentToasts.delete(k);
-  const id = toastId++;
-  toasts.value = [...toasts.value, { id, text }].slice(-2);
-  setTimeout(() => {
-    toasts.value = toasts.value.filter((t) => t.id !== id);
-  }, ms);
+  if (toastQueue.length >= 3) toastQueue.shift();
+  toastQueue.push({ text, ms });
+  if (!toasts.value.length && !toastTimer) showNextToast();
 }
 
 // ---------------------------------------------------------------- local UI settings

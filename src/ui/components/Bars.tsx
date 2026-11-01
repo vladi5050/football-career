@@ -13,16 +13,18 @@ export function Bar({ value, max = 100, color, striped, class: cls }: { value: n
 export function ProgressNearGoal({ text, progress, target, from = 0, label, onDark }: { text: string; progress: number; target: number; from?: number; label?: ComponentChildren; onDark?: boolean }) {
   const span = Math.max(0.0001, target - from);
   const pct = Math.max(0, Math.min(1, (progress - from) / span));
-  // one decimal only when less than 1 away ("39.9 מתוך 40"), whole numbers otherwise
-  const close = target - progress < 1;
-  const fmt = (x: number) => (close ? (Math.floor(x * 10) / 10).toFixed(1).replace(/\.0$/, '') : String(Math.floor(x)));
-  const shownText = text.replace(/\d+\.\d+/g, (m) => fmt(Number(m)));
+  // integers only; within half a point it reads "כמעט 40" (QA BUG-21)
+  const almost = target - progress < 0.5 && target - progress > 0;
+  const fmt = (x: number) => String(Math.floor(x));
   const hasNumbers = /מתוך/.test(text);
+  const shownText = almost
+    ? text.replace(/\d+(?:\.\d+)?\s*מתוך\s*(\d+)/, 'כמעט $1')
+    : text.replace(/\d+\.\d+/g, (m) => fmt(Number(m)));
   return (
     <div class={`near-goal ${pct >= 0.8 ? 'hot' : ''} ${onDark ? 'on-wall' : ''}`}>
       <div class="ng-top">
         <span>{shownText}</span>
-        {label ?? (hasNumbers ? null : <span class="ng-target num">{fmt(progress)}/{target}</span>)}
+        {label ?? (hasNumbers ? null : almost ? <span class="ng-target">כמעט {target}</span> : <span class="ng-target num">{fmt(progress)}/{target}</span>)}
       </div>
       <Bar value={pct * 100} striped />
     </div>

@@ -130,13 +130,13 @@ async function drawCard(v: View, shirtSvg: SVGSVGElement, crestSvgs: SVGSVGEleme
   for (let i = 0; i < n; i++) {
     const x = W / 2 + pathW / 2 - cw - i * (cw + cg);
     const im = await svgToImage(crestSvgs[i]!, cw, cw * 1.2);
-    ctx.drawImage(im, x, 1500, cw, cw * 1.2);
+    ctx.drawImage(im, x, 1484, cw, cw * 1.2);
     if (i < n - 1) {
       ctx.strokeStyle = '#F28C28';
       ctx.lineWidth = 6;
       ctx.lineCap = 'round';
       ctx.beginPath();
-      const y = 1500 + cw * 0.6, a = Math.max(6, cg * 0.2);
+      const y = 1484 + cw * 0.6, a = Math.max(6, cg * 0.2);
       ctx.moveTo(x - cg * 0.2, y);
       ctx.lineTo(x - cg + cg * 0.2, y);
       ctx.moveTo(x - cg + cg * 0.2 + a, y - a);
@@ -146,16 +146,47 @@ async function drawCard(v: View, shirtSvg: SVGSVGElement, crestSvgs: SVGSVGEleme
     }
   }
 
-  // trophies
+  // trophies: wrap to at most 2 lines inside the card, shrinking the font a little; whatever is left becomes "+N"
+  const all = v.career.trophies;
+  const maxW = W - 140;
+  let lines: string[] = [];
+  let size = 40;
+  if (all.length) {
+    for (size = 40; size >= 30; size -= 2) {
+      ctx.font = `700 ${size}px Assistant, sans-serif`;
+      lines = [];
+      let cur = '';
+      let used = 0;
+      for (const t of all) {
+        const cand = cur ? `${cur}  ·  ${t}` : `★ ${t}`;
+        if (ctx.measureText(cand).width <= maxW) { cur = cand; used++; continue; }
+        if (!cur) { cur = `★ ${t}`; used++; continue; } // a single over-long title: fillText's maxWidth squeezes it
+        if (lines.length === 1) break;
+        lines.push(cur);
+        cur = t;
+        used++;
+      }
+      if (cur && lines.length < 2) lines.push(cur);
+      const rest = all.length - used;
+      if (rest > 0) {
+        const last = lines.length - 1;
+        let l = lines[last]!;
+        // make room for "+N" by dropping trailing items from the last line
+        while (ctx.measureText(`${l}  +${rest}`).width > maxW && l.includes('  ·  ')) l = l.slice(0, l.lastIndexOf('  ·  '));
+        const dropped = (lines[last]!.match(/  ·  /g)?.length ?? 0) - (l.match(/  ·  /g)?.length ?? 0);
+        lines[last] = `${l}  +${rest + dropped}`;
+      }
+      if (rest === 0 || size === 30) break;
+    }
+  }
   ctx.fillStyle = '#F2C230';
-  ctx.font = '700 40px Assistant, sans-serif';
-  const tro = v.career.trophies.slice(0, 2).join('  ·  ');
-  if (tro) ctx.fillText(`★ ${tro}`, W / 2, 1700);
+  ctx.font = `700 ${size}px Assistant, sans-serif`;
+  lines.forEach((l, i) => ctx.fillText(l, W / 2, 1672 + i * (size + 4), maxW));
   const key = vx(v).careerStory?.keyPerson;
   if (key) {
     ctx.fillStyle = '#C3CEE0';
-    ctx.font = '600 34px Assistant, sans-serif';
-    ctx.fillText(`האדם שהכי השפיע: ${key}`, W / 2, tro ? 1750 : 1710, W - 80);
+    ctx.font = '600 30px Assistant, sans-serif';
+    ctx.fillText(`האדם שהכי השפיע: ${key}`, W / 2, lines.length ? 1672 + (lines.length - 1) * (size + 4) + 40 : 1700, W - 80);
   }
 
   // footer

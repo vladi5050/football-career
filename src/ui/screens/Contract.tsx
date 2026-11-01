@@ -10,6 +10,18 @@ import { Modal } from '../components/Modal';
 import { agentArchetype } from './Agent';
 import { negotiationFinal } from '../viewExtras';
 
+/** The bubble already names the club: drop a leading club name from the engine line (QA BUG-27). */
+function stripSpeaker(line: string, club: ClubView | null): string {
+  if (!club) return line;
+  for (const nm of [club.name, club.short]) {
+    if (nm && line.startsWith(nm + ' ')) {
+      const rest = line.slice(nm.length + 1);
+      return rest.charAt(0).toUpperCase() + rest.slice(1);
+    }
+  }
+  return line;
+}
+
 const ROLES: SquadRole[] = ['backup', 'prospect', 'rotation', 'starter', 'star'];
 
 export function ContractScreen() {
@@ -148,7 +160,7 @@ export function ContractScreen() {
             <div key={i} class={`bubble ${mine ? 'mine' : ''}`}>
               <span class="b-who">{mine ? 'אתה' : club?.name ?? 'המועדון'}</span>
               <span class="sr-only">: </span>
-              {l.replace(/^(אתה|המנהל):\s*/, '')}
+              {stripSpeaker(l.replace(/^(אתה|המנהל):\s*/, ''), mine ? null : club)}
             </div>
           );
         })}

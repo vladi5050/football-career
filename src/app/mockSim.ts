@@ -466,7 +466,7 @@ export function createMockSim(): SimApi {
         v.career.retirementReason = 'פרש בגיל 34 אחרי 19 עונות';
         v.player.age = 34;
         v.player.careerStats = { apps: 512, goals: 143, assists: 121, ratingSum: 512 * 7.1, cleanSheets: 0 };
-        v.career.trophies = ['אליפות ישראל 2033', 'גביע המדינה 2031', 'אליפות בלגיה 2036', 'מלך השערים 2034'];
+        v.career.trophies = ['אליפות ישראל 2033', 'עלייה ליגה עם קלאב נקסט 2030', 'גביע המדינה 2031', 'אליפות בלגיה 2036', 'מלך השערים 2034', 'עלייה ליגה עם קלאב נקסט 2033'];
         v.career.nationalCaps = 46;
         v.career.nationalGoals = 12;
         v.career.history = [

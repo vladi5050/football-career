@@ -172,3 +172,13 @@ Hash routing (`#/week` etc.) keeps browser / Android back working.
 - Overflow audit `fc-shots/overflow.cjs`: Chromium with an iPhone Safari UA at 360/390/430 with long real club names
   (team-names override in IndexedDB). Rule: every flex/grid child that holds text gets `min-width: 0` + ellipsis.
 - Safari < 16 lacks `overflow: clip`; `@supports not` falls back to `overflow-x: hidden` on #app / .shell.
+
+## 12. Round-4 notes
+
+- Toasts (supersedes §9/§10 placement): one compact banner at the TOP, `top: safe-t + 58px` (under the top bar / scorebug),
+  2 lines max, auto-dismiss 3.5 s, tap to dismiss; extra lines queue (max 3) and show one after another. Still deduped for
+  10 s and suppressed while a modal is open.
+- Near-goal numbers: integers only; within 0.5 of the target the text reads "כמעט 40".
+- Negotiation bubbles drop a leading club name from the engine line (the label already names the speaker).
+- Share card trophies wrap to 2 lines (font 40 → 30 px), then "+N".
+- Scorebug at a moment uses `live.score` (same as the decision overlay); goals without a named scorer count at once.

@@ -839,16 +839,32 @@
   font-weight: 600;
 }
 
-/* round 2 (BUG-13): toasts live in the thumb zone, above the action bar / nav, never over the scorebug or headlines */
+/* round 4 (BUG-13): one compact banner at the TOP, under the top bar / scorebug band (not over bottom controls) */
 .toasts {
-  top: auto;
-  bottom: calc(var(--safe-b) + 16px);
+  top: calc(var(--safe-t) + 58px);
+  bottom: auto;
+  z-index: 65;
+  gap: 4px;
+  width: calc(100% - 32px);
+  max-width: 420px;
 }
-.shell-row:has(.has-actions) .toasts { bottom: calc(var(--safe-b) + 84px); }
-.shell-row:has(.bottom-nav) .toasts { bottom: calc(var(--nav-h) + var(--safe-b) + 12px); }
-.shell-row:has(.has-nav.has-actions) .toasts { bottom: calc(var(--nav-h) + var(--safe-b) + 80px); }
-.toast { font-size: var(--t-sm); padding: 8px 12px; }
-/* round 3: toasts above the nav/action bar but below modals; clear the tallest action bars */
-.toasts { z-index: 65; }
-.shell-row:has(.has-actions) .toasts { bottom: calc(var(--safe-b) + 108px); }
-.shell-row:has(.has-nav.has-actions) .toasts { bottom: calc(var(--nav-h) + var(--safe-b) + 92px); }
+.toast {
+  width: 100%;
+  min-height: 0;
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: right;
+  border-radius: 8px;
+  background: rgba(27, 42, 74, 0.94);
+  color: var(--paper);
+  border-right: 4px solid var(--orange);
+  box-shadow: 0 4px 12px rgba(9, 18, 33, 0.35);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  cursor: pointer;
+}
