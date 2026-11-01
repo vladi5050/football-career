@@ -11,8 +11,10 @@ export function Bar({ value, max = 100, color, striped, class: cls }: { value: n
 
 /** "עוד 1 לדריבל 50" style near-goal bar. */
 export function ProgressNearGoal({ text, progress, target, from = 0, label, onDark }: { text: string; progress: number; target: number; from?: number; label?: ComponentChildren; onDark?: boolean }) {
-  const span = Math.max(0.0001, target - from);
-  const pct = Math.max(0, Math.min(1, (progress - from) / span));
+  // attribute goals ("69 מתוך 70"): fill the last ten points, so a week's tenths visibly move the bar
+  const base = from === 0 && /מתוך/.test(text) && target >= 10 ? target - 10 : from;
+  const span = Math.max(0.0001, target - base);
+  const pct = Math.max(0, Math.min(1, (progress - base) / span));
   // integers only; within half a point it reads "כמעט 40" (QA BUG-21)
   const almost = target - progress < 0.5 && target - progress > 0;
   const fmt = (x: number) => String(Math.floor(x));

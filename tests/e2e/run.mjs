@@ -1588,10 +1588,14 @@ async function checkPromotion(page, st) {
     for (const m of moves) {
       const down = m.to.tier > m.from.tier;
       const ids = down ? (m.from.relegatesToIds ?? [m.from.relegatesTo]) : (m.from.promotesToIds ?? [m.from.promotesTo]);
-      if (m.to.tier === m.from.tier) problems.push(`${m.club}: moved sideways ${m.from.name} -> ${m.to.name}`);
+      // round 6: a reserve team may switch regional group to stay out of its relegated parent's league
+      if (m.to.tier === m.from.tier && w.clubs.get(m.clubId)?.reserveOf == null && !moves.some((x) => x.from.id === m.to.id && x.to.id === m.from.id && w.clubs.get(x.clubId)?.reserveOf != null)) problems.push(`${m.club}: moved sideways ${m.from.name} -> ${m.to.name}`);
+      if (m.to.tier === m.from.tier) continue;
       if (Math.abs(m.to.tier - m.from.tier) !== 1) problems.push(`${m.club}: ${m.from.name} (tier ${m.from.tier}) -> ${m.to.name} (tier ${m.to.tier})`);
       if (!ids.includes(m.to.id)) problems.push(`${m.club}: ${m.from.name} -> ${m.to.name} is not a linked league`);
-      if (down && m.place <= m.n - m.from.relegateSpots) problems.push(`${m.club} relegated from ${m.from.name} in place ${m.place}/${m.n} (relegation spots ${m.from.relegateSpots})`);
+      // round 6: a parent in the drop zone stays up when its reserve team can't make room; the next club goes down instead
+      const parentKeptUp = () => sortRows(w.tables[m.from.id] ?? []).slice(m.n - m.from.relegateSpots).some((r) => w.clubs.get(r.clubId)?.leagueId === m.from.id && [...w.clubs.values()].some((c) => c.reserveOf === r.clubId));
+      if (down && m.place <= m.n - m.from.relegateSpots && !parentKeptUp()) problems.push(`${m.club} relegated from ${m.from.name} in place ${m.place}/${m.n} (relegation spots ${m.from.relegateSpots})`);
       if (!down && m.place > Math.max(m.from.promoteSpots + 3, Math.ceil(m.n / 2))) problems.push(`${m.club} promoted from ${m.from.name} in place ${m.place}/${m.n} (promotion spots ${m.from.promoteSpots})`);
       if (m.from.country !== m.to.country) problems.push(`${m.club}: moved country ${m.from.country} -> ${m.to.country}`);
     }
@@ -1628,7 +1632,7 @@ async function checkPromotion(page, st) {
     for (const c of reserves) {
       const par = w.clubs.get(c.reserveOf);
       const cl = lg.get(c.leagueId), pl = par ? lg.get(par.leagueId) : null;
-      if (cl && pl && cl.countryCode === pl.countryCode && cl.tier <= pl.tier) problems.push(`BUG-24: reserve team ${c.name} (${cl.name}, tier ${cl.tier}) at or above its parent ${par.name} (${pl.name}, tier ${pl.tier})`);
+      if (cl && pl && cl.countryCode === pl.countryCode && (cl.id === pl.id || cl.tier < pl.tier)) problems.push(`BUG-24: reserve team ${c.name} (${cl.name}, tier ${cl.tier}) in or above its parent's league ${par.name} (${pl.name}, tier ${pl.tier})`);
     }
     const reservesBlocked = [];
     for (const [lid, rows] of Object.entries(w.tables)) {

@@ -324,11 +324,11 @@ export function trackAttrProgress(world: World): void {
   }
 }
 
-/** No visible progress: 3 weeks without a tenth, or 8 weeks without a whole point (a crawl the screen can't show). */
+/** No visible progress: 3 weeks without a tenth, or 5 weeks without a whole point (a crawl the screen can't show). */
 export function attrStalled(world: World, k: AttrKey): boolean {
   const s = world.career.attrMoved?.[k];
   if (!s) return false;
-  return world.absWeek - s[1] >= 3 || (s[3] !== undefined && world.absWeek - s[3] >= 8);
+  return world.absWeek - s[1] >= 3 || (s[3] !== undefined && world.absWeek - s[3] >= 5);
 }
 
 /** "תאמן דריבל השבוע כדי לסגור את זה" */
