@@ -15,13 +15,46 @@ function weeksHe(n: number): string {
   return n === 1 ? 'עוד שבוע אחד' : `עוד ${n} שבועות`;
 }
 
+/**
+ * The coach's marker note: reacts to the week (injury, fatigue, last result, playing time, the opponent, the table,
+ * the coach's mood with you, near goals, contract). Several phrasings per situation, rotated by week, so it never sits still.
+ */
 function coachNote(v: View): string {
-  if (v.player.injury) return 'קודם כל להחלים. אל תמהר לחזור';
-  if (v.player.fitness < 50) return 'אתה גמור. תנוח קצת השבוע';
-  if (v.nextFixture?.derby) return 'דרבי בשבת. רגליים טריות!';
-  if (v.player.form >= 4) return 'ככה ממשיכים. אל תשתנה';
-  const k = POS_KEYS[v.player.pos][0]!;
-  return `תעבוד על ה${ATTR_HE[k]}. ככה נכנסים להרכב`;
+  const p = v.player;
+  const pick = (lines: string[]) => lines[(v.absWeek * 7 + p.id) % lines.length]!;
+  const rep = v.lastWeekReport;
+  const myId = v.club?.id;
+  const res = rep?.result && myId != null ? (rep.result.home === myId ? rep.result.hg - rep.result.ag : rep.result.ag - rep.result.hg) : null;
+  const rank = v.table.findIndex((r) => r.clubId === myId) + 1;
+  const n = v.table.length;
+  const opp = v.nextFixture?.opp;
+  const oppRank = opp ? v.table.findIndex((r) => r.clubId === opp.id) + 1 : 0;
+  const oppName = opp?.name ?? 'היריבה';
+  const rel = v.coach?.relation ?? 0;
+  const role = p.contract?.role;
+  const apps = p.stats.apps;
+  const week = v.season.week;
+  const goal = nearestAttrGoal(v);
+
+  if (p.injury) return pick([`קודם כל להחלים. ${p.injury.weeksLeft > 1 ? `עוד ${p.injury.weeksLeft} שבועות` : 'עוד שבוע'} ואתה איתנו`, 'אל תמהר לחזור. פציעה שנייה זה גרוע יותר', 'שיקום כל יום. אני רוצה אותך חזק כשתחזור']);
+  if (p.fitness < 45) return pick(['אתה גמור. תנוח השבוע, זו פקודה', 'הרגליים שלך כבדות. יום מנוחה לפני השבת', 'אני רואה שאתה עייף. פחות חדר כושר השבוע']);
+  if (v.nextFixture?.derby) return pick([`דרבי מול ${oppName}. אף אחד לא נח על זה`, 'דרבי בשבת. רגליים טריות וראש קר', `שבוע של דרבי. מול ${oppName} לא מפסידים`]);
+  if (rep && rep.userRating != null && rep.userRating >= 8) return pick([`${rep.userRating.toFixed(1)} בשבת. ככה ממשיכים`, 'משחק גדול. עכשיו להוכיח שזה לא חד-פעמי', 'כולם מדברים עליך. אל תתחיל להאמין להם']);
+  if (rep && rep.userRating != null && rep.userRating > 0 && rep.userRating < 5.5) return pick(['שבת חלשה. השבוע מתקנים באימונים', 'זה לא היה אתה בשבת. ראש למעלה ולעבודה', `${rep.userRating.toFixed(1)} זה לא מספיק. אני מצפה ליותר`]);
+  if (res != null && res < 0 && rank > 0 && rank > n - 3) return pick(['אנחנו בתחתית. כל נקודה שווה זהב', 'עוד הפסד ואנחנו בבעיה. מכאן יוצאים ביחד', `מול ${oppName} חייבים לקחת משהו`]);
+  if (res != null && res < 0) return pick(['הפסדנו. לא מתבכיינים, מתקנים', 'הפסד כואב. השבוע עובדים כפול', `שוכחים את השבת. ${oppName} זה המשחק הבא`]);
+  if (rank === 1 && week > 4) return pick(['אנחנו בפסגה. עכשיו כולם רוצים לנצח אותנו', 'מקום ראשון לא שווה כלום עכשיו. ממשיכים', `גם מול ${oppName} משחקים כמו מוליכה`]);
+  if (role === 'backup' || role === 'prospect' || (week > 6 && apps < week / 4)) return pick([`אתה רוצה דקות? תראה לי ב${goal ? ATTR_HE[goal.key] : 'אימונים'}`, 'הדלת להרכב פתוחה. תעבוד ותדפוק עליה', 'אני רואה אותך באימונים. עוד קצת ואתה בפנים']);
+  if (rel < -25) return pick(['אני לא מרוצה ממך. תוכיח לי שטעיתי', 'היחס שלך לא מקובל עליי. תתחיל לעבוד', 'יש לך הרבה מה להוכיח לי']);
+  if (p.morale < 35) return pick(['ראש למעלה. כולם עוברים תקופות כאלה', 'אני עדיין מאמין בך. תאמין גם אתה', 'בוא נדבר אחרי האימון. משהו מטריד אותך']);
+  if (opp && oppRank > 0 && rank > 0 && oppRank < rank - 4) return pick([`${oppName} חזקים מאיתנו. משמעת וסבלנות`, `מול ${oppName} צריך לרוץ פי שניים`, `אף אחד לא נותן לנו סיכוי מול ${oppName}. מצוין`]);
+  if (opp && oppRank > 0 && rank > 0 && oppRank > rank + 4) return pick([`${oppName} מתחתינו. אסור לזלזל`, `משחק שחייבים לנצח. מול ${oppName} לוקחים שלוש`, 'משחקים כאלה מפסידים כשבאים שאננים']);
+  if (p.form >= 4) return pick(['ככה ממשיכים. אל תשתנה', 'אתה בכושר שיא. תשמור על זה', 'רואים עליך את הביטחון. עוד שבוע כזה']);
+  if (p.contract && p.contract.endSeason <= v.season.number && week > v.season.totalWeeks - 10) return pick(['החוזה שלך נגמר בקיץ. עכשיו זה הזמן להרשים', 'ההנהלה מסתכלת עליך. סוף עונה חזק וזה בכיס']);
+  if (goal && goal.target - goal.value <= 1.5) return pick([`עוד קצת ב${ATTR_HE[goal.key]} ואתה ב-${goal.target}`, `${ATTR_HE[goal.key]}: אתה כמעט שם. אימון אחד ועוד אחד`]);
+  if (week <= 2) return pick(['עונה חדשה, דף חדש. תראה לי מה יש לך', 'פתיחת עונה. כל אחד מתחיל מאפס']);
+  const k = POS_KEYS[p.pos][(v.absWeek) % POS_KEYS[p.pos].length]!;
+  return pick([`תעבוד על ה${ATTR_HE[k]}. ככה נכנסים להרכב`, `השבוע אני רוצה לראות ${ATTR_HE[k]} באימונים`, `${oppName} בשבת. תגיע מוכן`]);
 }
 
 export function WeekScreen() {

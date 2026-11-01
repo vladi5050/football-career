@@ -109,7 +109,7 @@ Week ──[סגור את השבוע: setPlan]──► Event* ──► PreMatc
      └─[שבוע מהיר: quickWeek]──► Match (or Event if a major decision waits) │      │
                                                                           ▼      │
                        Match: clock runs to each moment ─► moment card ─► playMoment()
-                              (or סמלץ: momentResult skipped / simRestOfMatch) ─► full time
+                              (or דלג: momentResult skipped / simRestOfMatch) ─► full time
                                                                           ▼      │
                                                     WeekEnd ──[finishWeek]───────┘
 Tabs during plan: Week · Table · Club · Agent ─[negotiate]─► Contract · More (News, Goals, Settings, Editor, retire)

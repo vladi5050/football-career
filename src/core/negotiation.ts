@@ -24,9 +24,8 @@ export function clubXiLevel(world: World, clubId: number, exclude?: number): num
 export function clubViewRole(world: World, clubId: number, p: Footballer): SquadRole {
   const lvl = clubXiLevel(world, clubId, p.id);
   const o = ovr(p);
-  // a teenager at a senior club is a prospect or a rotation player unless he is far above the XI
+  // a teenager at a senior club is a prospect or a rotation player unless he is far above the XI; never the star
   if (p.age < 19) {
-    if (o >= lvl + 12) return 'star';
     if (o >= lvl + 4) return 'starter';
     return o >= lvl - 4 ? 'rotation' : 'prospect';
   }

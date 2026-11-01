@@ -64,7 +64,7 @@ export function SettingsScreen() {
           </div>
         </div>
         <Toggle
-          label="סמלץ רגעי מפתח אוטומטית"
+          label="רגעי מפתח: המשחק מחליט בשבילי"
           sub="המשחק ירוץ בלי לעצור לרגעים. אפשר תמיד לשנות"
           on={v?.settings?.autoMoments ?? s.autoMoments}
           onChange={(val) => {

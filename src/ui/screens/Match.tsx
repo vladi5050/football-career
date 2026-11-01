@@ -253,7 +253,7 @@ export function MatchScreen() {
                 <IconPlay size={20} /> שחק את הרגע
               </button>
               <button class="btn btn-ghost btn-sm" type="button" onClick={skipMoment} disabled={busy.value}>
-                סמלץ
+                דלג על הרגע
               </button>
             </div>
           </div>
@@ -299,7 +299,7 @@ export function MatchScreen() {
           </button>
         ) : (
           <button class="btn btn-ink" type="button" onClick={simRest} disabled={(busy.value && !playing) || !inMatch}>
-            <IconFF size={20} /> סמלץ את המשחק
+            <IconFF size={20} /> דלג לסוף המשחק
           </button>
         )}
       </div>

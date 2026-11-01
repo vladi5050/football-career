@@ -634,7 +634,7 @@ async function onWeekScreen(page, st) {
     if (st.detailed ? st.week % 4 === 1 : st.week === 2 || st.week === 15) await visitTabs(page, st, st.week);
     if (st.autoAfterBudget && st.decisionBudget <= 0 && !st.autoOn) {
       st.autoOn = true;
-      await settingsToggle(page, 'סמלץ רגעי מפתח', true).catch(() => {});
+      await settingsToggle(page, 'רגעי מפתח: המשחק מחליט', true).catch(() => {});
     }
     // retirement
     if (st.retireAt && save?.age >= st.retireAt) return 'retire';
@@ -795,7 +795,7 @@ async function onMatchScreen(page, st) {
         continue;
       }
       firstMoment = false;
-      await tap(page, 'סמלץ את המשחק');
+      await tap(page, 'דלג לסוף המשחק');
       continue;
     }
     await sleep(120);
@@ -1267,7 +1267,7 @@ async function handleOffseason(page, st) {
   await shot(page, `${st.label}-s${sn}-offseason`, true);
   const expired = before?.contract ? before.contract.end <= sn : false;
   const summerTxt = await page.locator('.summer-card').innerText().catch(() => '');
-  const abbr = summerTxt.match(/לבקש חידוש ב[^\s]*״[^\s]*/);
+  const abbr = summerTxt.match(/לבקש חידוש ב[^\s]*״[^\s]*$/m); // a full name like "קפו״ם אוסלו" continues on the same line
   if (abbr) issue('BUG-21: renewal button uses the club abbreviation', `"${abbr[0]}"`, 'weekend', null);
   await step(S, `s${sn}: offseason has tabs + summer card`, async () => {
     const nav = await page.locator('.bottom-nav').isVisible().catch(() => false);
@@ -1874,7 +1874,7 @@ async function scenarioFirstKick(run, seed, { continueSeasons = 0, pos = 'W' } =
       const st = { S: `h-random#${run}-${pos}`, label: `rnd${run}`, pos, decisionBudget: 10, autoAfterBudget: true, detailed: false, season: 1, week: -1, lastLabel: null, weeksSeen: 0, events: 0, matches: 0, played: 0, deadline: now() + 12 * 60000 };
       if ((await screenOf(page)) === 'match') {
         const ft = page.getByRole('button', { name: 'לסיכום השבוע' });
-        const sim = page.getByRole('button', { name: 'סמלץ את המשחק' });
+        const sim = page.getByRole('button', { name: 'דלג לסוף המשחק' });
         if (await sim.isEnabled().catch(() => false)) await sim.click().catch(() => {});
         await ft.waitFor({ timeout: 20000 }).catch(() => {});
         await ft.click().catch(() => {});
@@ -2036,7 +2036,7 @@ async function scenarioCareer() {
     st.detailed = false;
     st.S = 'g-long-career';
     st.deadline = now() + LONG_MAX_MS;
-    await settingsToggle(page, 'סמלץ רגעי מפתח', true).catch(() => {});
+    await settingsToggle(page, 'רגעי מפתח: המשחק מחליט', true).catch(() => {});
     await settingsToggle(page, 'תנועה מופחתת', true).catch(() => {});
     await waitScreen(page, ['weekend'], 5000).catch(() => {});
     let how = null;
@@ -2147,7 +2147,7 @@ async function scenarioViewport(name, { arcade = false, ...opts }) {
               if (d.r !== 'played') throw new Error(`decision moment: ${d.r}`);
               continue;
             }
-            await tap(page, 'סמלץ את המשחק');
+            await tap(page, 'דלג לסוף המשחק');
           } else if (await page.locator('.ft-card').isVisible().catch(() => false)) {
             await tap(page, 'לסיכום השבוע');
           } else await sleep(150);
@@ -2192,7 +2192,7 @@ async function scenarioViewport(name, { arcade = false, ...opts }) {
         assert(r === 'played', `arcade moment: ${r}`);
         assert((await page.locator('.dm-root').count()) === 0, 'decision overlay shown in arcade mode');
         // back to the default
-        await page.getByRole('button', { name: 'סמלץ את המשחק' }).click().catch(() => {});
+        await page.getByRole('button', { name: 'דלג לסוף המשחק' }).click().catch(() => {});
         return r;
       });
     }

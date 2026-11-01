@@ -82,7 +82,7 @@ export function PreMatchScreen() {
 
       <div class="action-bar">
         <button class="btn btn-primary" type="button" disabled={busy.value} onClick={() => act({ type: 'startMatch' })}>
-          <IconWhistle size={22} /> {pm.lineup === 'out' ? 'לסמלץ את השבת' : youth ? 'למשחק הנוער' : 'צא למגרש'}
+          <IconWhistle size={22} /> {pm.lineup === 'out' ? 'לתוצאת השבת' : youth ? 'למשחק הנוער' : 'צא למגרש'}
         </button>
       </div>
     </main>

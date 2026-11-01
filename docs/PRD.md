@@ -62,7 +62,7 @@ Acceptance:
 | S4 | Week plan | 3 slots, drag or tap magnets, preview of gains and costs, **"שבוע מהיר"** button. | The plan persists as `lastPlan`. Slots locked by stage (media from age 17, mentoring from age 28) are hidden. |
 | S5 | Event card | Title, body, "כי בשבוע X..." line when `because` resolves, 2-4 options with hints, cast avatars. | Text over 220 chars never appears (the validator enforces it). Options are reachable with the thumb. |
 | S6 | Pre-match | Line-up with **one clear reason** ("תיכנס בדקה 60. תראה לי מה יש לך."), opponent, derby badge, weather. | A reason is shown 100% of the time. |
-| S7 | Match | Live score ticker, minute, key-moment player (Pixi, lazy loaded), "סמלץ עד הסוף". | A moment resolves in 5-15s. Reduced motion is respected. Pixi is cleaned up. |
+| S7 | Match | Live score ticker, minute, key-moment player (Pixi, lazy loaded), "דלג לסוף המשחק". | A moment resolves in 5-15s. Reduced motion is respected. Pixi is cleaned up. |
 | S8 | World reacts | Headline + 2 fan lines + a 3-number comparison with the rival. Only when `WeekReport.notable`. | Never shown after a routine match. Every number comes from sim data. |
 | S9 | Week end | See §4. One button: "לשבוע הבא". | At most 3 open loops, at most 2 near-goal bars. |
 | S10 | Goals board | 3 horizons: week, season, dream. Created from the current state, not a fixed list. | At least 1 goal is active at all times. A completed goal shows its reward. |

@@ -106,7 +106,7 @@ describe('QA round 3 (core)', () => {
     setOvr(lvl - 8);
     expect(clubViewRole(w, club.id, u)).toBe('prospect');
     setOvr(lvl + 14);
-    expect(clubViewRole(w, club.id, u)).toBe('star');
+    expect(clubViewRole(w, club.id, u)).toBe('starter'); // a teenager is never the club's star
     u.age = 24;
     setOvr(lvl + 6);
     expect(clubViewRole(w, club.id, u)).toBe('star');

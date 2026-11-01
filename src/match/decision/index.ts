@@ -20,7 +20,7 @@ export interface DecisionMomentOptions {
   /** shirt number shown on the user's magnet */
   shirt?: number;
   reducedMotion?: boolean;
-  /** override the pressure timer (seconds, 0 = none). Default: 7 when lateClose, else 10 */
+  /** override the pressure timer (seconds, 0 = none). Default: 11 when lateClose, else 15 */
   timer?: number;
   /** dev/test hook: fixed random numbers [outcome, hint] */
   rnd?: () => number;
@@ -36,7 +36,7 @@ export function playDecisionMoment(host: HTMLElement, spec: MomentSpec, opts: De
   const { variant, fixText } = renumber(pickVariant(def, spec, opts.pos), opts.shirt);
   const options = buildOptions(def, variant, spec, opts.attr);
   const hint = hintOption(options, opts.attr, opts.pos, rnd());
-  const timerS = opts.timer ?? (spec.context.lateClose ? 7 : 10);
+  const timerS = opts.timer ?? (spec.context.lateClose ? 11 : 15);
 
   // ---------------------------------------------------------------- DOM
   const root = document.createElement('div');
