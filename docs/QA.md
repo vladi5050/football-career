@@ -308,3 +308,225 @@ Career totals: 440 apps, 154 goals, 141 assists, average rating 6.8, 1 trophy (�
 - The near-goal units check matches the new text format.
 - Senior and youth results are counted from week-end results, because fast mode skips the match screen.
 - Demand escalation in the negotiation driver is +3% per round, to stay inside the agent's range.
+
+---
+
+# Round 3: real leagues, lazy world, decision moments (build/v1 @ 1e14a82)
+
+## How it was run
+
+- **Full run:** `npm run test:e2e`, with the default options: fixed seed 20261031, 2 random careers, retirement at 34.
+- **Supplementary run:** `SKIP_BUILD=1 E2E_ONLY=a RANDOM_RUNS=4 E2E_SHOTS=tests/e2e/shots/supp`. It adds 4 random careers in other positions, and the first expired contract in each random career is left to the "המועדון יחליט" modal.
+- **Output:** full-run screenshots and `report.json` are in `tests/e2e/shots/`; the supplementary run is in `tests/e2e/shots/supp/`.
+
+New in `tests/e2e/run.mjs`:
+
+- **Decision moments ("רגע החלטה").**
+  - The overlay is found as `.dm-root` on `document.body`. The test picks an option card by tapping it on even moments and by keys 1-4 on odd ones. It then waits for the stamp and taps "המשך".
+  - Checked on the overlay:
+    - there are 2-4 cards, each with a label, an attribute chip and a risk level;
+    - no label is clipped, nothing overflows sideways and there is no Latin text;
+    - page scroll is locked while the overlay is open and released after it closes;
+    - the overlay score agrees with the scorebug and with its own stakes line;
+    - the moment types fit the position: a goalkeeper gets only save, rush_out and penalty; outfield players never get keeper moments.
+  - Careers per position:
+    - winger: the fixed seed;
+    - centre-back and goalkeeper: random runs 2 and 3;
+    - striker and full-back: the supplementary runs.
+- **"ארקייד" mode.** At 390px, the Settings switch is flipped and the next moment must play as the Pixi swipe game, with no decision overlay.
+- **Phone-fit table.** On every table visit:
+  - the מקוצר/מלא toggle and the row count in both views;
+  - no horizontal scroll;
+  - tapping a row opens its details;
+  - no Latin or duplicate names, and a crest on every row.
+- **Promotion/relegation oracle.** In every offseason the test decodes the whole save (v3 club and table tuples) and checks every move:
+  - only to a linked league, one tier apart, in the same country, from the relegation or promotion zone;
+  - league sizes are kept, and the number relegated equals the number promoted into each league;
+  - closed leagues (MLS, USL) have no moves;
+  - the season-end "בינתיים" lines agree with the moves.
+  
+  Next season it checks that every moved club is in its new table, and that the user's league table in the UI shows the clubs that arrived and drops the clubs that left.
+- **World check at career start.** Club names with Latin letters, duplicate names, duplicate short names inside a league, bad names, crests with identical colours, missing crests.
+- **Transfers into lazy leagues.** After signing:
+  - every club in the new league has a squad;
+  - the UI table has exactly the league's clubs;
+  - the club screen lists the squad.
+- **Save/continue across seasons.** A reload in the season-2 offseason and a reload at the start of season 3. After continue the screen, season, week, phase, club, money, age and contract must all match.
+- **Performance.** Times for a new career, a quick week, offseason to next season, and continue after a reload, plus save size per season.
+- **Round-2 checks, now automatic:**
+  - BUG-13: a toast overlapping a button, a modal, the decision cards or the career-end stats.
+  - BUG-11: "1 + plural" anywhere in the UI.
+  - BUG-15: the career-end timeline names and crests, and the two story lines.
+  - BUG-16: the scout's potential range compared with the real overall.
+  - BUG-18: the number of "המועדון יחליט" presses.
+  - BUG-19: the renewal button after a collapse.
+  - BUG-21: an abbreviated renewal button, a glued negotiation bubble, decimal near-goal values.
+- **Viewports.** 360x640, 390x844 and 430x932 (touch), plus 1366x860. Each one audits:
+  - every tab, including the full table, Settings, News and Goals;
+  - a decision overlay;
+  - the week end.
+
+## Result
+
+**Full run: 206 pass, 3 fail (exit 1).** All 3 failures are product findings: BUG-22 (world names) and the BUG-13 and BUG-21 audit rows.
+
+| Group | Pass | Fail |
+|---|---|---|
+| setup | 2 | 0 |
+| a: first kick (W fixed, CB and GK random) | 16 | 0 |
+| h: random careers, 2 seasons each | 8 | 0 |
+| b: season 1 in detail | 5 | 1 (BUG-22 duplicate short names) |
+| c: offseasons (3 careers) | 58 | 0 |
+| d: save and continue (incl. offseason and new season) | 6 | 0 |
+| g: long career to retirement (19 seasons) | 23 | 0 |
+| i: promotion/relegation oracle (3 careers, 22 season changes) | 44 | 0 |
+| j: decision moments per position | 3 | 0 |
+| k: performance | 5 | 0 |
+| l: BUG-16 potential vs overall | 1 | 0 |
+| e: viewports 360 / 390 (+ arcade) / 430 / 1366 | 18 | 0 |
+| f: PWA and offline | 5 | 0 |
+| ui-audit | 12 | 2 (BUG-13 toast covers UI, BUG-21 decimals) |
+
+**Supplementary run: 103 pass, 5 fail.** One failure was a test bug that has since been fixed: the club-decides move was flagged as an unsigned move. One was a BUG-16 row with no data, because group b did not run; it is now skipped. The other 3 are BUG-13, BUG-21 and BUG-26.
+
+### Performance
+
+Median (p95 or max) per action:
+
+| Action | Time | Notes |
+|---|---|---|
+| New career, tap "צא לדרך" to reveal | 198 ms (max 233) | 9 careers |
+| Quick week, tap to next screen | 55 ms (p95 104, max 153) | 707 weeks, auto key moments on |
+| Offseason to next season | 59 ms (max 106) | |
+| Continue after reload | 242-244 ms | |
+| First key moment from a cold page | 2.0 s (fixed seed); 3.3-8.9 s (random) | 4 taps; the random ones depend on when the moment falls |
+
+- **Save size:** 515-686 KB over a 19-season career, with no growth. The world has 64 leagues and 1,084 clubs; 1,038 clubs are still lazy at the start.
+- **Speed:** every action is well under the PRD budget.
+
+### Decision moments: coverage
+
+Counts are full run + supplementary run.
+
+| Position | Moments | Succeeded | Kinds |
+|---|---|---|---|
+| W | 17 + 3 | 4 + 0 | one_on_one, cross, dribble, shot |
+| CB | 10 + 12 | 2 + 3 | tackle, block, clearance, header, interception |
+| GK | 10 + 11 | 2 + 1 | save, rush_out, penalty |
+| ST (supplementary) | 10 | 2 | shot, dribble, free_kick, header, one_on_one |
+| FB (supplementary) | 11 | 3 | interception, cross, header, tackle, block, clearance |
+
+- Every moment had 4 cards.
+- No overlay overflowed or clipped a label at 360/390/430/1366, and every overlay released page scroll.
+- The arcade switch works: the Pixi game plays and no overlay appears.
+
+## Round-2 open items: verification
+
+| Item | Status | Evidence |
+|---|---|---|
+| BUG-11 "1 + plural" | Mostly fixed | The career-end timeline now says "הופעה אחת". Still open in goals.ts: "1 שערים העונה" (BUG-26, supp/157-issue-weekend.png). |
+| BUG-13 toasts cover UI | Still open, less often | Full run: a toast over the contract years stepper, the release-clause toggle and the role buttons (15 times, 037-issue-contract.png). Supplementary run: over event option buttons and the agent's "לבקש חוזה חדש" (supp/029-issue-event.png, supp/032-issue-agent.png). No duplicate toasts within 4 s in either run (fixed). |
+| BUG-14 injury hidden | Fixed | 0 "injury not shown" findings in 19 + 10 seasons. The top-bar badge, the week banner and the club chip show "פצוע" (075-injury-week-s2w3.png). |
+| BUG-15 career end loses clubs | Fixed | 18 timeline rows, all with real names and crests. The share card shows the club path as crests (2 clubs). Both story lines are present: "ההחלטה ששינתה הכל: המעבר ממכלן לקלאב נקסט, בגיל 17" and "האדם שהכי השפיע: ..., המאמן" (294-det-career-end.png). New problem on the card: BUG-25. |
+| BUG-16 potential range | Fixed | The range narrows and ends on the real level: at 16, overall 41-47 with a range of 51-61; at 28, 56 (56-59); at 33, 53 (53-55). |
+| BUG-17 talks collapse | Fixed (not reproduced) | 0 collapses in 10 signed renewals over 7 careers. The patience drop is now capped for asks inside the agent's range (negotiation.ts). |
+| BUG-18 "המועדון יחליט" | Fixed | One press, then the best pending offer is signed (supp: s2, מכלן -> ראפיד וינה; supp/076-s2-expired-modal.png). The move happens without showing the terms (UX note below). |
+| BUG-19 renewal after a collapse | Fixed in code | The button is disabled and a note explains the blocked renewal (`renewalBlocked`). It could not be exercised, because no talks collapsed. |
+| BUG-20 national caps | Not verifiable | The careers peaked at overall 54-56, below the call-up level (77). No caps and no national events. |
+| BUG-21 polish | Partly fixed | Fixed: the renewal button uses the full club name. Still open: decimal near-goal values, 50 distinct cases such as "הגנה: 39.6 מתוך 40". The glued bubble is fixed, but the bubble now repeats the club name: "בירשוט: בירשוט משפרים ל-₪6,400". |
+| UX-02 empty weeks | Still open | Detailed season 1: events in 11 of 33 weeks (67% of weeks without one). Fast seasons had 0-10 events in 33 weeks. |
+| UX-03 "+0.0" rows | Fixed | 0 findings. |
+| UX-04 rival loop | Fixed | 0 "0 שערים העונה" rival loops in 3 careers. |
+| UX-06 wage scale | Better | The fixed career, in Belgium's second tier, rose from ₪2,500 to ₪33,400 over 17 seasons in steady steps (4,400 / 7,600 / 13,100 / 22,500 / 32,900). A 16-17 year old is still offered the "כוכב" (star) role abroad (Sporting ₪7,300, Kilmarnock ₪2,400; 037-issue-contract.png). |
+| UX-07 repeated answer sets | Not measured this round | No repeated event variants in season 1 (check passed). |
+
+## New bugs (round 3)
+
+### BUG-22 minor: duplicate short names inside a league (content)
+
+- **Screens:** scorebug, compact table, decision overlay, result card. These all show `short`.
+- **Repro:** the world check at career start (any seed).
+- **Found in 6 leagues:**
+  - ליגה ב׳ צפון ב׳: "קריית" for הפועל קריית טבעון, הפועל קריית ביאליק and מכבי קריית מוצקין
+  - האירסטה דיביזי: "יונג" for יונג אייאקס, יונג פ.ס.וו. and יונג אוטרכט
+  - הפרמיירשיפ הסקוטית: "דנדי" for both דנדי יונייטד and דנדי. These two are rivals, so the derby scorebug reads "דנדי - דנדי".
+  - הליגה השנייה האוסטרית: "אוסטריה" for 3 clubs
+  - הליגה הקפריסאית: "אומוניה" for 2 clubs
+  - הסופרליגה הסרבית: "ראדניצ׳קי" for 2 clubs
+- **Expected:** short names are unique within a league, e.g. "דנדי יונ׳", "יונג PSV" written in Hebrew, "ק. ביאליק".
+- **Screenshot / data:** `report.json` -> `log.world.shortDup`.
+- **File:** src/content/leagues.json (`short`).
+
+### BUG-23 minor: Israeli clubs relegated from הליגה הלאומית go to the wrong regional group
+
+- **Repro:** any career. Read the offseason moves (`report.json` -> `log.promotion[].israel`).
+- **Expected:** northern clubs drop to ליגה א׳ צפון and southern clubs to ליגה א׳ דרום.
+- **Actual:**
+  - Northern clubs sent to דרום: הפועל עכו (twice), עירוני נשר, בית״ר נהריה, מכבי אחי נצרת, הפועל מגדל העמק, הפועל נוף הגליל.
+  - Southern clubs sent to צפון: הפועל אשקלון, מ.ס. דימונה, עירוני קריית גת, הפועל קריית עקרון.
+  - This happened in about half of all הליגה הלאומית relegations, over 3 careers and 18 seasons.
+- **Cause:**
+  - The il2 clubs have no `region` in the content, so they get no region score and take the first vacancy.
+  - Vacancies come only from the groups whose clubs went up, so a club with a region can be forced into the wrong group.
+- **Files:**
+  - src/content/leagues.json: add `region` to il2 and il1 clubs.
+  - src/core/schedule.ts `promoteRelegate`: place clubs with a region first, or match on city.
+
+### BUG-24 minor (realism): reserve teams are promoted into their parent club's league
+
+- **Repro:** seed 20261031. Club NXT goes up to the Belgian top flight in 2030, 2033 and 2043, where קלאב ברוז׳ also plays (294-det-career-end.png, trophies "עלייה ליגה עם קלאב נקסט").
+- **Same risk:** יונג אייאקס, יונג פ.ס.וו., יונג א.ז., יונג אוטרכט (nl2), יונג גנק, יונג גנט (be2), יובנטוס נקסט ג׳ן (it3b).
+- **Expected:** B-teams cannot be promoted into a league that holds their parent club. The next eligible club goes up instead.
+- **Files:** src/content/leagues.json (a `reserveOf` flag) and src/core/schedule.ts `promoteRelegate`.
+
+### BUG-25 minor: the share card's trophy line runs off the 1080px card
+
+- **Repro:** retire with 2 or more trophies (seed 20261031 has 3).
+- **Expected:** trophies wrap or are cut to fit inside the card.
+- **Actual:** one line, "★ עלייה ליגה עם קלאב נקסט 2030 · עלייה ליגה עם קלאב נקסט 2033", is cut off at both edges of the card. The same happens in the on-screen preview.
+- **Screenshot:** 296-det-share-card.png
+- **File:** src/ui/screens/CareerEnd.tsx (canvas text drawing).
+
+### BUG-26 polish: near-goal text "1 שערים העונה", and two goals for the same thing
+
+- **Repro:** score your first goal of a season (supp run, a full-back at Miami FC, s2w20).
+- **Expected:**
+  - "שער אחד העונה".
+  - Only one of "השער הראשון בקריירה: עוד שער אחד" and the season-goals goal, both 0/1.
+- **Screenshot:** supp/157-issue-weekend.png
+- **File:** src/core/goals.ts line 26. It should use `count()`, and goals with the same target should be deduplicated.
+
+### BUG-27 polish: the negotiation bubble repeats the club name
+
+- **Actual:** "בירשוט: בירשוט משפרים ל-₪6,400." and "טוריינסה: טוריינסה משפרים ל-₪3,900." The speaker label is followed by a line that starts with the same name.
+- **Expected:** the label alone ("בירשוט:") followed by "משפרים ל-₪6,400", or no label.
+- **File:** src/core/negotiation.ts (line text) or the Contract log label.
+
+### Watch item (seen once, not reproduced)
+
+- **Repro:** random seed, U19 match, s1w4, minute 64.
+- **Actual:**
+  - The decision overlay said 0:1 while the scorebug still showed 0-0. The feed already listed the opponent's goal at 58'.
+  - In the same match, the moment's "שער ליריבה" goal is pushed to `scorers` only when a scorer is found (matchSim.ts:636).
+  - When the scorers list is shorter than the score, Match.tsx falls back to "all goals seen" and the scorebug can lag.
+- **Retest:** the suite now compares the overlay score with the scorebug on every played moment. 0 differences in 84 moments in the final and supplementary runs.
+
+## UX notes (round 3)
+
+1. **"נראה לך פתוח" never appeared** in 84 decision moments across 8 careers. It needs vision ≥ 55, and the players stayed below that. Most players will never see the hint. Consider a lower threshold or a staff hint.
+2. **Decision outcomes feel harsh for defenders and keepers.** With rotating picks, 8 of 37 moments succeeded in the full run and 9 of 47 in the supplementary run. Keepers conceded in 6 of 11 moments in the supplementary run, and "נועז" options went 0 of 5. Check whether the best read reaches a fair success rate (about 50-60%).
+3. **"המועדון יחליט" signs a foreign club without showing the terms.** It moved the player מכלן -> ראפיד וינה; only a toast says so. Show a one-line summary (club, wage, years) or a confirmation card.
+4. **Small leagues leave many idle weeks.** After a mid-season move into the 10-club Scottish Championship, a season had 8 weeks without a match. Real leagues of 10-12 clubs play each other 3-4 times.
+5. **16-17 year olds are offered the "כוכב" role** by Sporting and Kilmarnock (037-issue-contract.png). For a teenager, "כישרון" or "רוטציה" would read as more believable.
+6. **The table works well on phones.** At 360/390/430 there is no horizontal scroll, no name is cut, and a row tap opens W-D-L, goals and form (013-table-row-detail-rnd2.png, 317-table-full-small-s1w1.png). The full view's "כושר" column of dots is hard to read without a legend.
+7. **Lazy leagues behave.** 6 transfers went into lazy leagues: קילמרנוק, יוסטון דינמו, קלאב נקסט, טוריינסה, מונופולי, מיאמי אף.סי. Every club got a squad, the table showed exactly the league's clubs and the club screen listed 23 players (045-transfer-s2-lazy-club-squad.png).
+
+## Test fixes made in round 3 (not product bugs)
+
+- `readSave` decodes save-v3 club tuples. A new `readWorld` decodes the whole save for the league oracles.
+- Settings, News and Goals have no bottom nav, so the driver returns through the top-bar back arrow (`backToTabs`).
+- Goals in the feed are counted by `.feed-row.k-goal`. The opponent goal text "שער ליריבה" did not match the old regex.
+- Near-goal values can be decimals, and the bar check parses them.
+- The "שחק את הרגע" button can be briefly disabled while busy. The driver waits for it to be enabled.
+- In the offseason, the UI table shows last season's standings of the new league. The lazy-league check compares names with that table, and squads with next season's club list.
+- A club change through "המועדון יחליט" is no longer flagged as a move without signing.
