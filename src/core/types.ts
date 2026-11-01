@@ -299,7 +299,10 @@ export interface EventHistory {
 
 export type MomentKind =
   | 'shot' | 'one_on_one' | 'header' | 'dribble' | 'through_ball' | 'long_shot' | 'interception'
-  | 'tackle' | 'block' | 'clearance' | 'save' | 'rush_out' | 'penalty' | 'free_kick' | 'cross';
+  | 'tackle' | 'block' | 'clearance' | 'save' | 'rush_out' | 'penalty' | 'free_kick' | 'cross'
+  // round 6: position-true moves (decision moments; the arcade player maps them to the nearest scene)
+  | 'hold_up' | 'press' | 'counter' | 'cutback' | 'overlap' | 'between_lines' | 'switch_play' | 'second_ball'
+  | 'build_up' | 'recovery' | 'last_man' | 'aerial_duel' | 'set_piece_defend' | 'distribution' | 'claim_cross';
 
 export interface ContextMods { lateClose: boolean; hostileCrowd: boolean; rivalInvolved: boolean; rain: boolean; derby: boolean }
 

@@ -38,6 +38,11 @@ const result = await playMoment(hostElement, spec, {
 | cross | the cross reached a teammate's head. The header itself is up to the engine |
 | dribble | the defender is beaten |
 | interception / tackle / block / clearance | the attack was stopped. A tackle that is too early is a **foul**: `success: false`, reason shown as "עבירה!" |
+| hold_up, press, counter, cutback, overlap, between_lines, switch_play (round 6, attacking) | the play worked: the ball was kept and moved on, won high, or delivered to a teammate. Not a goal; core turns it into assist/score chances in `momentOutcome` |
+| second_ball, build_up, recovery, last_man, aerial_duel, set_piece_defend (round 6) | the ball was won or kept and the danger passed |
+| distribution, claim_cross (round 6, keeper only) | a clean restart / the cross was dealt with |
+
+The 15 round-6 kinds are decision-only. In the arcade style `ARCADE_KIND` (`src/match/index.ts`) plays each one as the nearest swipe scene: hold_up → dribble; press and second_ball → interception; counter, between_lines, switch_play, build_up and distribution → through_ball; cutback and overlap → cross; recovery and last_man → tackle; aerial_duel and set_piece_defend → clearance; claim_cross → rush_out.
 
 `quality` is how well the action was executed. The engine uses it for the rating.
 - Goals: 0.62 to 1.0. More margin past the keeper's reach scores higher.
@@ -164,7 +169,7 @@ const result = await playDecisionMoment(host, spec, {
 });
 ```
 
-- `Match.tsx` lazy-loads `src/match/decision/index.ts` when `momentStyle !== 'arcade'`. The chunk is about 27 KB gzip and contains no Pixi.
+- `Match.tsx` lazy-loads `src/match/decision/index.ts` when `momentStyle !== 'arcade'`. The chunk is about 60 KB gzip (177 situations) and contains no Pixi.
 - The overlay is a full-screen fixed DOM layer appended to `document.body`. It still listens for `moment-skip` on `host`, which resolves `{ skipped: true }`.
 - Cleanup removes the DOM, the listeners, the ResizeObserver and the rAF loop.
 
@@ -173,7 +178,11 @@ const result = await playDecisionMoment(host, spec, {
 | file | contents |
 |---|---|
 | `types.ts` | the data model |
-| `scenarios.ts` | `LIBRARY`: 15 kinds × 3-4 situations × 3-4 options, all Hebrew |
+| `scenarios.ts` | `LIBRARY`: the 15 original kinds, plus the spread of the files below. 30 kinds, 177 situations, all Hebrew |
+| `kinds-attack.ts` | hold_up, press, counter, cutback, overlap, between_lines |
+| `kinds-mid.ts` | switch_play, second_ball, build_up (incl. throw-ins), recovery |
+| `kinds-def.ts` | last_man, aerial_duel, set_piece_defend (outfield + keeper wall calls), distribution, claim_cross |
+| `steps.ts` | choreography helpers `B`, `M`, `score`, `saved` |
 | `resolve.ts` | the pure resolver (unit tested) |
 | `board.ts` | the SVG whiteboard and step animator |
 | `icons.ts` | the card icons |
@@ -199,7 +208,8 @@ const result = await playDecisionMoment(host, spec, {
 2. Success chance (tuned after QA's 84-moment run) is
    `0.064 + 0.545·fit − 0.4·(difficulty − 0.5) + 0.12·attrEdge + {+0.04, 0, −0.04}[risk] + kindBonus`, clamped to 0.05..0.9.
    - `attrEdge = clamp((optionAttr − spec.attackerSkill) / 25, −1, 1)`, so attributes count relative to the player's own level. The absolute gap to the opponent is already in `spec.difficulty`, together with the late/crowd/rival/rain pressure, so those are not counted twice.
-   - `kindBonus`: penalty taker +0.2, save +0.07, rush_out +0.05.
+   - `kindBonus`: penalty taker +0.2, save +0.07, rush_out +0.05, claim_cross +0.04, distribution +0.05.
+   - Outfield options use the steeper line `0.06 + 0.69·fit` (QA round 4). Keeper kinds (save, rush_out, claim_cross, distribution) and every `role: 'keeper'` variant keep the keeper line.
    - Calibration for a youngster (attributes at his level, difficulty 0.5), averaged over all situations: best read 50%, worst read 20%, any read (rotating picks) 33%, keeper best read 54%, penalty taker 66%, penalty keeper 49%. Difficulty 0.35 / 0.65 moves the best read to 56% / 44%.
 3. Quality: success gives about 0.5..1 and failure about 0.1..0.35.
 4. Timeout gives `success: false, quality: 0.05`, the stamp "היססת", and the board plays the weakest read's failure.
@@ -209,8 +219,16 @@ const result = await playDecisionMoment(host, spec, {
    - for the right read that failed: "הקריאה הייתה נכונה. הפעם הביצוע לא הלך."
    - the auto-close gets 2.8 s longer when a lesson is shown.
 
-**Core semantics** (core is unchanged):
-- For scoring kinds, success means a goal, so every option in those kinds is a goal attempt; a one-two plus a finish counts as one. Cutbacks and safe passes appear only in assist-type kinds (cross, through_ball, dribble).
+**Position-true situations (round 6).** "צריך להוסיף הרבה מהלכי כדורגל לפחות איזה 150 וגם זה צריך להיות מותאם לתפקיד".
+- 177 situations over 30 kinds. Core `KINDS_BY_POS` (exported from `matchSim.ts`) gives each position mostly its own job: ST hold-up, pressing, near-post runs and rebounds; W 1v1, cutbacks and tracking back; AM between the lines and the final pass; CM switches, second balls and late runs; DM screening, covering, counters stopped and the first pass; CB aerial duels, last man, the line and set pieces; FB overlaps, 1v1 defending, recovery runs and throw-ins; GK shots, crosses, sweeping, distribution, penalties and the wall.
+- A variant may carry `pos?: Position[]`. `pickVariant(def, spec, pos, recent)` filters by role (`keeper` for GK, `taker` otherwise), then by `pos` (falling back to the role pool if nothing matches), and picks deterministically from `spec.id`/`minute`.
+- Reachable situations per position: ST 42, W 45, AM 40, CM 46, DM 40, CB 40, FB 47, GK 31 (test: at least 25 each).
+- Variety: `index.ts` keeps the last 24 shown `kind/variant` keys in localStorage (`fc.dm.recent.v1`, about five matches). `pickVariant` prefers unseen situations; when all were seen, the one seen longest ago returns.
+- New board icons: throw, flag, foul, turn, switch.
+- `tools/decisionOdds.ts` prints the library counts and real-career odds for all 8 positions.
+
+**Core semantics:**
+- For scoring kinds, success means a goal, so every option in those kinds is a goal attempt; a one-two plus a finish counts as one. Cutbacks and safe passes appear only in non-scoring kinds (cross, through_ball, dribble and the round-6 kinds).
 - Penalty: takers get taker variants, and a GK gets keeper variants where failure concedes.
 
 **Board.**
@@ -229,7 +247,9 @@ Under reduced motion, the result appears instantly.
 **Demo:** `src/match/demo.html?mode=decision&kind=shot&vision=80&pos=CB&asKeeper=1&lateClose=1&lead=1&timer=0`.
 
 **Tests:** `tests/unit/match-decision.test.ts` covers:
-- library integrity;
+- library integrity (30 kinds, ≥150 situations, ≥25 reachable per position, best-read margin);
+- board validity (inside 0..100 × 0..112, labels name magnets that exist);
+- recent-situation avoidance;
 - ids in the choreography;
 - penalty roles;
 - fit and context shifts;

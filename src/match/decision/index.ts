@@ -28,12 +28,30 @@ export interface DecisionMomentOptions {
 
 const AUTO_CLOSE_MS = 5200;
 
+/** Situations shown lately (about the last 5 matches), so the same picture does not repeat within or across matches. */
+const RECENT_KEY = 'fc.dm.recent.v1';
+const RECENT_MAX = 24;
+let recentMem: string[] = [];
+function recentVariants(): string[] {
+  try {
+    const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(RECENT_KEY) : null;
+    if (raw) { const a = JSON.parse(raw); if (Array.isArray(a)) recentMem = a.filter((x) => typeof x === 'string').slice(-RECENT_MAX); }
+  } catch { /* storage off: keep the in-memory list */ }
+  return recentMem;
+}
+function rememberVariant(key: string): void {
+  recentMem = [...recentMem.filter((k) => k !== key), key].slice(-RECENT_MAX);
+  try { if (typeof localStorage !== 'undefined') localStorage.setItem(RECENT_KEY, JSON.stringify(recentMem)); } catch { /* ignore */ }
+}
+
 export function playDecisionMoment(host: HTMLElement, spec: MomentSpec, opts: DecisionMomentOptions): Promise<MomentResult> {
   injectCss();
   const rnd = opts.rnd ?? Math.random;
   const reduced = opts.reducedMotion ?? (typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches);
   const def = kindDef(spec.kind);
-  const { variant, fixText } = renumber(pickVariant(def, spec, opts.pos), opts.shirt);
+  const picked = pickVariant(def, spec, opts.pos, recentVariants());
+  rememberVariant(`${def.kind}/${picked.id}`);
+  const { variant, fixText } = renumber(picked, opts.shirt);
   const options = buildOptions(def, variant, spec, opts.attr);
   const hint = hintOption(options, opts.attr, opts.pos, rnd());
   const timerS = opts.timer ?? (spec.context.lateClose ? 11 : 15);

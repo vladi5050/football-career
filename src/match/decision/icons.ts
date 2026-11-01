@@ -20,6 +20,11 @@ export const ICONS: Record<IconKey | 'eye' | 'mic', string> = {
   clear: s('<path d="M12 21V5"/><path d="M6 10.5L12 4.5l6 6"/><path d="M4 21h16"/>'),
   run: s('<path d="M3 12h13"/><path d="M12.5 7l5.5 5-5.5 5"/><path d="M3 7h5M3 17h5"/>'),
   wait: s('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'),
+  throw: s('<circle cx="12" cy="5" r="2.6"/><path d="M8 13l4-5 4 5"/><path d="M12 8v13"/><path d="M8 21h8"/>'),
+  flag: s('<path d="M6 21V3"/><path d="M6 4h11l-2.5 4L17 12H6"/>'),
+  foul: s('<rect x="7" y="3.5" width="10" height="14" rx="1.5"/><path d="M10 21h4"/><path d="M12 7.5v5"/><circle cx="12" cy="15" r=".6" fill="currentColor"/>'),
+  turn: s('<path d="M7 20V9a5 5 0 0110 0v3"/><path d="M13.5 9.5L17 13l3.5-3.5"/><circle cx="7" cy="20" r="1.6" fill="currentColor"/>'),
+  switch: s('<path d="M3 16c4-9 14-9 18 0"/><path d="M17.5 12.5L21 16l-4.3 1.6"/><circle cx="3" cy="16" r="1.6" fill="currentColor"/>'),
   eye: s('<path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/>'),
   mic: s('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0013 0M12 17.5V21M8.5 21h7"/>'),
 };

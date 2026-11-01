@@ -198,18 +198,23 @@ export function simFixture(world: World, f: Fixture, rng: Rng, withStats: boolea
 
 // ------------------------------------------------------------------ key moments
 
-const KINDS_BY_POS: Record<Position, [MomentKind, number][]> = {
-  ST: [['shot', 1.2], ['one_on_one', 0.9], ['header', 1.2], ['dribble', 4], ['through_ball', 1.5], ['penalty', 0.15], ['free_kick', 0.3]],
-  W: [['dribble', 4], ['shot', 3], ['one_on_one', 2], ['cross', 2.5], ['header', 0.6], ['free_kick', 0.4]],
-  AM: [['through_ball', 4], ['long_shot', 2], ['dribble', 2.5], ['shot', 1.5], ['free_kick', 0.8], ['interception', 0.8]],
-  CM: [['through_ball', 4], ['long_shot', 2.5], ['interception', 3], ['tackle', 1], ['free_kick', 0.5]],
-  DM: [['interception', 4], ['tackle', 3], ['through_ball', 2.5], ['long_shot', 1.2], ['block', 1]],
-  CB: [['tackle', 4], ['block', 3], ['clearance', 3], ['header', 1.2], ['interception', 1]],
-  FB: [['tackle', 4], ['block', 2], ['clearance', 2.5], ['cross', 2.5], ['interception', 1.5]],
-  GK: [['save', 5], ['rush_out', 3], ['penalty', 1]],
+/**
+ * Moment mix per position (round 6: every position mostly sees moves of its own role). Scoring kinds keep about the
+ * same share as before for attackers, so goal tallies stay where the balance runner wants them.
+ */
+export const KINDS_BY_POS: Record<Position, [MomentKind, number][]> = {
+  ST: [['shot', 1.7], ['one_on_one', 0.9], ['header', 1.2], ['hold_up', 2], ['press', 1.1], ['counter', 0.8], ['dribble', 1.2], ['penalty', 0.15], ['free_kick', 0.2]],
+  W: [['dribble', 2.5], ['shot', 3], ['one_on_one', 1.8], ['cross', 1.5], ['cutback', 1.5], ['counter', 1], ['recovery', 0.7], ['press', 0.5], ['overlap', 0.5], ['header', 0.4], ['free_kick', 0.3]],
+  AM: [['between_lines', 2.4], ['through_ball', 2.4], ['long_shot', 1.6], ['shot', 1.5], ['dribble', 1.2], ['counter', 0.8], ['free_kick', 0.7], ['press', 0.6], ['cutback', 0.4], ['interception', 0.4]],
+  CM: [['through_ball', 2], ['switch_play', 2], ['second_ball', 1.6], ['long_shot', 1.6], ['interception', 1.6], ['between_lines', 1], ['tackle', 1], ['recovery', 0.8], ['press', 0.6], ['counter', 0.5], ['build_up', 0.4], ['overlap', 0.4], ['free_kick', 0.3]],
+  DM: [['interception', 2.2], ['tackle', 1.8], ['recovery', 1.6], ['build_up', 1.6], ['second_ball', 1.4], ['switch_play', 1.4], ['block', 0.8], ['last_man', 0.6], ['set_piece_defend', 0.6], ['long_shot', 0.6], ['through_ball', 0.6], ['aerial_duel', 0.5]],
+  CB: [['aerial_duel', 1.8], ['last_man', 1.8], ['tackle', 1.6], ['block', 1.4], ['clearance', 1.4], ['set_piece_defend', 1.4], ['build_up', 1.2], ['header', 0.8], ['interception', 0.8], ['switch_play', 0.4]],
+  FB: [['overlap', 1.6], ['tackle', 1.4], ['cross', 1.4], ['recovery', 1.4], ['build_up', 1], ['block', 0.8], ['clearance', 0.8], ['interception', 0.8], ['cutback', 0.6], ['last_man', 0.6], ['aerial_duel', 0.5], ['set_piece_defend', 0.4], ['dribble', 0.3]],
+  GK: [['save', 4], ['rush_out', 2], ['claim_cross', 2], ['distribution', 2], ['penalty', 0.8], ['set_piece_defend', 0.6]],
 };
 
-const ATTACKING: Set<MomentKind> = new Set(['shot', 'one_on_one', 'header', 'long_shot', 'free_kick', 'dribble', 'through_ball', 'cross']);
+const ATTACKING: Set<MomentKind> = new Set(['shot', 'one_on_one', 'header', 'long_shot', 'free_kick', 'dribble', 'through_ball', 'cross',
+  'hold_up', 'press', 'counter', 'cutback', 'overlap', 'between_lines', 'switch_play']);
 const SCORING: Set<MomentKind> = new Set(['shot', 'one_on_one', 'header', 'long_shot', 'free_kick']);
 
 export function isAttackingMoment(kind: MomentKind, userPos: Position): boolean {
@@ -226,12 +231,22 @@ const SKILL_FOR: Record<MomentKind, (p: Footballer) => number> = {
   save: (p) => p.attr.gk, rush_out: (p) => (p.attr.gk * 2 + p.attr.pace) / 3,
   penalty: (p) => (p.pos === 'GK' ? p.attr.gk : p.attr.finishing), free_kick: (p) => (p.attr.finishing + p.attr.passing) / 2,
   cross: (p) => p.attr.passing,
+  hold_up: (p) => (p.attr.dribbling + p.attr.passing + p.attr.heading) / 3, press: (p) => (p.attr.stamina + p.attr.pace + p.attr.vision) / 3,
+  counter: (p) => (p.attr.passing + p.attr.dribbling + p.attr.pace) / 3, cutback: (p) => (p.attr.passing + p.attr.vision) / 2,
+  overlap: (p) => (p.attr.pace + p.attr.passing + p.attr.stamina) / 3, between_lines: (p) => (p.attr.dribbling + p.attr.passing + p.attr.vision) / 3,
+  switch_play: (p) => (p.attr.passing + p.attr.vision) / 2, second_ball: (p) => (p.attr.stamina + p.attr.defending + p.attr.passing) / 3,
+  build_up: (p) => (p.pos === 'GK' ? p.attr.gk : (p.attr.passing + p.attr.vision) / 2), recovery: (p) => (p.attr.pace + p.attr.stamina + p.attr.defending) / 3,
+  last_man: (p) => (p.attr.defending * 2 + p.attr.pace) / 3, aerial_duel: (p) => (p.attr.heading + p.attr.defending) / 2,
+  set_piece_defend: (p) => (p.pos === 'GK' ? p.attr.gk : (p.attr.heading + p.attr.defending) / 2),
+  distribution: (p) => (p.attr.gk * 2 + p.attr.passing) / 3, claim_cross: (p) => p.attr.gk,
 };
 
 const KIND_BASE: Record<MomentKind, number> = {
   shot: 0.07, one_on_one: 0.1, header: 0.06, dribble: 0.5, through_ball: 0.48, long_shot: 0.045,
   interception: 0.55, tackle: 0.6, block: 0.55, clearance: 0.66, save: 0.68, rush_out: 0.6, penalty: 0.75,
   free_kick: 0.05, cross: 0.48,
+  hold_up: 0.55, press: 0.4, counter: 0.45, cutback: 0.48, overlap: 0.5, between_lines: 0.5, switch_play: 0.55, second_ball: 0.52,
+  build_up: 0.6, recovery: 0.55, last_man: 0.5, aerial_duel: 0.55, set_piece_defend: 0.6, distribution: 0.65, claim_cross: 0.62,
 };
 const KIND_DIFF: Partial<Record<MomentKind, number>> = { long_shot: 0.12, free_kick: 0.12, penalty: -0.15, one_on_one: -0.05, header: 0.05 };
 
@@ -263,6 +278,21 @@ function momentOutcome(kind: MomentKind, userPos: Position): { scoreOnSuccess: n
     case 'clearance': return { scoreOnSuccess: 0, assistOnSuccess: 0, concedeOnFail: 0.3 };
     case 'save': return { scoreOnSuccess: 0, assistOnSuccess: 0, concedeOnFail: 1 };
     case 'rush_out': return { scoreOnSuccess: 0, assistOnSuccess: 0, concedeOnFail: 0.6 };
+    case 'hold_up': return { scoreOnSuccess: 0.05, assistOnSuccess: 0.15, concedeOnFail: 0 };
+    case 'press': return { scoreOnSuccess: 0.1, assistOnSuccess: 0.12, concedeOnFail: 0.04 };
+    case 'counter': return { scoreOnSuccess: 0.1, assistOnSuccess: 0.3, concedeOnFail: 0 };
+    case 'cutback': return { scoreOnSuccess: 0, assistOnSuccess: 0.32, concedeOnFail: 0 };
+    case 'overlap': return { scoreOnSuccess: 0, assistOnSuccess: 0.22, concedeOnFail: 0.04 };
+    case 'between_lines': return { scoreOnSuccess: 0.06, assistOnSuccess: 0.25, concedeOnFail: 0 };
+    case 'switch_play': return { scoreOnSuccess: 0, assistOnSuccess: 0.12, concedeOnFail: 0.03 };
+    case 'second_ball': return { scoreOnSuccess: 0, assistOnSuccess: 0.08, concedeOnFail: 0.08 };
+    case 'build_up': return { scoreOnSuccess: 0, assistOnSuccess: 0.05, concedeOnFail: 0.1 };
+    case 'recovery': return { scoreOnSuccess: 0, assistOnSuccess: 0, concedeOnFail: 0.25 };
+    case 'last_man': return { scoreOnSuccess: 0, assistOnSuccess: 0, concedeOnFail: 0.45 };
+    case 'aerial_duel': return { scoreOnSuccess: 0, assistOnSuccess: 0, concedeOnFail: 0.18 };
+    case 'set_piece_defend': return { scoreOnSuccess: 0, assistOnSuccess: 0, concedeOnFail: 0.3 };
+    case 'distribution': return { scoreOnSuccess: 0, assistOnSuccess: 0.05, concedeOnFail: 0.1 };
+    case 'claim_cross': return { scoreOnSuccess: 0, assistOnSuccess: 0, concedeOnFail: 0.3 };
     default: return { scoreOnSuccess: 0, assistOnSuccess: 0, concedeOnFail: 0 };
   }
 }
@@ -271,6 +301,10 @@ const KIND_HE: Record<MomentKind, string> = {
   shot: 'בעיטה', one_on_one: 'אחד על אחד', header: 'נגיחה', dribble: 'דריבל', through_ball: 'מסירת עומק',
   long_shot: 'בעיטה מרחוק', interception: 'חטיפה', tackle: 'תיקול', block: 'חסימה', clearance: 'הרחקה',
   save: 'הצלה', rush_out: 'יציאה', penalty: 'פנדל', free_kick: 'בעיטה חופשית', cross: 'הגבהה',
+  hold_up: 'משחק גב', press: 'לחץ גבוה', counter: 'מתפרצת', cutback: 'החזרה לאחור', overlap: 'עקיפה באגף',
+  between_lines: 'קבלה בין הקווים', switch_play: 'החלפת אגף', second_ball: 'כדור שני', build_up: 'יציאה מהלחץ',
+  recovery: 'חזרה להגנה', last_man: 'אחרון בהגנה', aerial_duel: 'מאבק אווירי', set_piece_defend: 'הגנה על מצב נייח',
+  distribution: 'הוצאת כדור', claim_cross: 'יציאה להגבהה',
 };
 export { KIND_HE };
 
@@ -478,8 +512,13 @@ function pickOpponent(world: World, live: LiveMatch, m: MomentSpec, rng: Rng): v
   const oppXI = live.youth ? (() => { const ids = youthXI(world, live.oppClubId, false); return { xi: ids, slots: ids.map((id) => (world.people[id] as Footballer).pos) }; })() : selectXI(world, live.oppClubId);
   const attacking = isAttackingMoment(m.kind, user.pos);
   const wanted: Position[] = attacking
-    ? (['shot', 'one_on_one', 'long_shot', 'free_kick', 'penalty', 'header'].includes(m.kind) ? ['GK'] : m.kind === 'cross' ? ['FB'] : m.kind === 'through_ball' ? ['DM', 'CB'] : ['CB', 'FB', 'DM'])
-    : (user.pos === 'GK' ? ['ST', 'W', 'AM'] : ['ST', 'W', 'AM', 'CM']);
+    ? (['shot', 'one_on_one', 'long_shot', 'free_kick', 'penalty', 'header'].includes(m.kind) ? ['GK']
+      : m.kind === 'cross' || m.kind === 'cutback' || m.kind === 'overlap' ? ['FB']
+        : m.kind === 'through_ball' || m.kind === 'between_lines' || m.kind === 'switch_play' ? ['DM', 'CB']
+          : m.kind === 'press' ? ['CB', 'DM'] : m.kind === 'counter' ? ['CB', 'DM', 'FB'] : ['CB', 'FB', 'DM'])
+    : m.kind === 'build_up' || m.kind === 'distribution' ? ['ST', 'W', 'AM']
+      : m.kind === 'second_ball' ? ['CM', 'DM', 'AM']
+        : (user.pos === 'GK' ? ['ST', 'W', 'AM'] : ['ST', 'W', 'AM', 'CM']);
   const rival = world.people[world.career.rivalId] as Footballer | undefined;
   let oppId = -1;
   if (rival && rival.clubId === live.oppClubId && oppXI.xi.includes(rival.id) && (wanted.includes(rival.pos) || rng.chance(0.35)) && rival.pos !== 'GK' === (wanted[0] !== 'GK')) {

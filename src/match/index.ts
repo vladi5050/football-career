@@ -24,17 +24,32 @@ export interface PlayMomentOptions {
   asKeeper?: boolean;
 }
 
-export const MOMENT_FACTORIES: Record<MomentKind, ScriptFactory> = {
+/** The 15 kinds that have their own arcade (swipe) scene. */
+export type ArcadeKind = 'shot' | 'long_shot' | 'free_kick' | 'penalty' | 'one_on_one' | 'header' | 'dribble' | 'through_ball' | 'cross'
+  | 'interception' | 'tackle' | 'block' | 'clearance' | 'save' | 'rush_out';
+
+export const MOMENT_FACTORIES: Record<ArcadeKind, ScriptFactory> = {
   shot, long_shot, free_kick, penalty, one_on_one, header,
   dribble, through_ball, cross, interception,
   tackle, block, clearance, save, rush_out,
+};
+
+/** Decision-only kinds play the nearest arcade scene (same success meaning for the engine: the move came off). */
+export const ARCADE_KIND: Record<MomentKind, ArcadeKind> = {
+  shot: 'shot', long_shot: 'long_shot', free_kick: 'free_kick', penalty: 'penalty', one_on_one: 'one_on_one', header: 'header',
+  dribble: 'dribble', through_ball: 'through_ball', cross: 'cross', interception: 'interception', tackle: 'tackle', block: 'block',
+  clearance: 'clearance', save: 'save', rush_out: 'rush_out',
+  hold_up: 'dribble', press: 'interception', counter: 'through_ball', cutback: 'cross', overlap: 'cross', between_lines: 'through_ball',
+  switch_play: 'through_ball', second_ball: 'interception', build_up: 'through_ball', recovery: 'tackle', last_man: 'tackle',
+  aerial_duel: 'clearance', set_piece_defend: 'clearance', distribution: 'through_ball', claim_cross: 'rush_out',
 };
 
 const DEFAULT_COLORS: { user: [string, string]; opp: [string, string] } = { user: ['#1E5BD8', '#FFFFFF'], opp: ['#D62E2E', '#FFFFFF'] };
 
 type Phase = 'intro' | 'action' | 'resolve' | 'result' | 'done';
 
-export async function playMoment(host: HTMLElement, spec: MomentSpec, opts: PlayMomentOptions = {}): Promise<MomentResult> {
+export async function playMoment(host: HTMLElement, specIn: MomentSpec, opts: PlayMomentOptions = {}): Promise<MomentResult> {
+  const spec: MomentSpec = { ...specIn, kind: ARCADE_KIND[specIn.kind] ?? 'shot' };
   const tuning = mergeTuning(opts.tuning);
   const reducedMotion = opts.reducedMotion ?? (typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches);
   const skipped: MomentResult = { momentId: spec.id, success: false, quality: 0, skipped: true };
@@ -84,7 +99,7 @@ export async function playMoment(host: HTMLElement, spec: MomentSpec, opts: Play
   }, { x: 0, z: 40, h: 30, f: 600, hy: -200, dir: -1 });
   const hud = new Hud(wrap, spec, reducedMotion);
   const ctx = buildCtx({ s: scene, spec, t: tuning, rng, hud, asKeeper: !!opts.asKeeper, reducedMotion });
-  const factory = MOMENT_FACTORIES[spec.kind] ?? shot;
+  const factory = MOMENT_FACTORIES[ARCADE_KIND[spec.kind]] ?? shot;
   const script: MomentScript = factory(ctx);
   hud.instruction(script.title, script.sub ?? '');
   const tracker = new GestureTracker(canvas, tuning);
@@ -246,6 +261,6 @@ function qualityLine(r: Resolution): string {
 
 /** Fallback when the player never gets to act (exported for the engine / tests). */
 export function frozenResult(spec: MomentSpec): MomentResult {
-  const o = noInputResult(spec.kind);
+  const o = noInputResult(ARCADE_KIND[spec.kind] ?? spec.kind);
   return { momentId: spec.id, success: o.success, quality: o.quality, skipped: false };
 }

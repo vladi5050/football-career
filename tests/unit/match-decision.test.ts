@@ -6,6 +6,8 @@ import {
 } from '../../src/match/decision/resolve';
 import { LESSONS } from '../../src/match/decision/lessons';
 import type { Step, Target, Variant } from '../../src/match/decision/types';
+import { KINDS_BY_POS } from '../../src/core/matchSim';
+import type { Position } from '../../src/core/types';
 
 const CTX0: ContextMods = { lateClose: false, hostileCrowd: false, rivalInvolved: false, rain: false, derby: false };
 const KINDS = Object.keys(LIBRARY) as MomentKind[];
@@ -27,21 +29,107 @@ function targetIds(t: Target): string[] {
 }
 
 describe('scenario library', () => {
-  it('covers all 15 moment kinds with 3+ variants and 3-4 options each', () => {
-    expect(KINDS.length).toBe(15);
+  it('covers all 30 moment kinds with 3+ variants and 3-4 options each', () => {
+    expect(KINDS.length).toBe(30);
+    for (const k of Object.values(KINDS_BY_POS).flat().map(([kk]) => kk)) expect(LIBRARY[k], k).toBeDefined();
     for (const k of KINDS) {
       const def = LIBRARY[k];
       expect(def.kind).toBe(k);
       expect(def.variants.length, k).toBeGreaterThanOrEqual(3);
+      const ids = new Set<string>();
       for (const v of def.variants) {
+        expect(ids.has(v.id), `${k}/${v.id} unique`).toBe(false);
+        ids.add(v.id);
         const offered = def.options.filter((o) => v.fit[o.id] !== undefined);
         expect(offered.length, `${k}/${v.id}`).toBeGreaterThanOrEqual(3);
         expect(offered.length, `${k}/${v.id}`).toBeLessThanOrEqual(4);
+        for (const id of Object.keys(v.fit)) expect(def.options.some((o) => o.id === id), `${k}/${v.id} fit key ${id}`).toBe(true);
         for (const f of Object.values(v.fit)) { expect(f).toBeGreaterThanOrEqual(0); expect(f).toBeLessThanOrEqual(1); }
-        // there is a real "right read": one option clearly ahead
+        // there is a real "right read": one option clearly ahead (new situations sit at 0.75-0.85)
         const fits = Object.values(v.fit).sort((a, b) => b - a);
         expect(fits[0] - fits[1], `${k}/${v.id} best read margin`).toBeGreaterThanOrEqual(0.049);
+        expect(fits[0], `${k}/${v.id} best fit`).toBeGreaterThanOrEqual(0.6);
+        expect(fits[0], `${k}/${v.id} best fit`).toBeLessThanOrEqual(0.9);
         expect(v.note.length).toBeGreaterThan(15);
+        expect(v.note, `${k}/${v.id} note`).not.toMatch(/\u2014/);
+      }
+      for (const o of def.options) {
+        expect(o.ok.length, `${k}/${o.id} ok`).toBeGreaterThan(0);
+        expect(o.fail.length, `${k}/${o.id} fail`).toBeGreaterThan(0);
+        expect(o.say.join(' '), `${k}/${o.id} say`).not.toMatch(/\u2014/);
+        expect(o.say[0], `${k}/${o.id} say`).toContain('{name}');
+      }
+    }
+  });
+
+  const POSITIONS: Position[] = ['ST', 'W', 'AM', 'CM', 'DM', 'CB', 'FB', 'GK'];
+  /** Variants a position can be shown: its KINDS_BY_POS kinds, through the role and pos filters of pickVariant. */
+  const reachable = (pos: Position): Set<string> => {
+    const out = new Set<string>();
+    for (const [k] of KINDS_BY_POS[pos]) {
+      const def = LIBRARY[k];
+      for (let id = 0; id < 400; id++) out.add(`${k}/${pickVariant(def, { id, minute: 1 + (id % 90) }, pos).id}`);
+    }
+    return out;
+  };
+
+  it('at least 150 situations, and every position reaches at least 25 of its own', () => {
+    const total = KINDS.reduce((a, k) => a + LIBRARY[k].variants.length, 0);
+    expect(total).toBeGreaterThanOrEqual(150);
+    for (const pos of POSITIONS) {
+      const r = reachable(pos);
+      expect(r.size, pos).toBeGreaterThanOrEqual(25);
+      // the situations shown are role-true: a variant with a pos list only reaches those positions
+      for (const key of r) {
+        const [k, id] = key.split('/') as [MomentKind, string];
+        const v = LIBRARY[k].variants.find((x) => x.id === id)!;
+        if (v.pos && LIBRARY[k].variants.some((x) => (!x.role || x.role === (pos === 'GK' ? 'keeper' : 'taker')) && (!x.pos || x.pos.includes(pos)))) {
+          expect(v.pos, `${pos} ${key}`).toContain(pos);
+        }
+      }
+    }
+    // keeper-only kinds never reach an outfield player as a keeper situation, and vice versa
+    for (const pos of POSITIONS.filter((p) => p !== 'GK')) for (const k of ['distribution', 'claim_cross'] as MomentKind[]) {
+      expect(KINDS_BY_POS[pos].some(([kk]) => kk === k), `${pos} ${k}`).toBe(false);
+    }
+  });
+
+  it('pickVariant avoids recently shown situations and stays deterministic', () => {
+    const def = LIBRARY.hold_up;
+    const first = pickVariant(def, { id: 3, minute: 20 }, 'ST');
+    expect(pickVariant(def, { id: 3, minute: 20 }, 'ST').id).toBe(first.id);
+    const recent: string[] = [];
+    const seen = new Set<string>();
+    const pool = def.variants.filter((v) => !v.pos || v.pos.includes('ST'));
+    for (let i = 0; i < pool.length; i++) {
+      const v = pickVariant(def, { id: 3, minute: 20 }, 'ST', recent);
+      expect(seen.has(v.id), `repeat ${v.id} after ${[...seen]}`).toBe(false);
+      seen.add(v.id); recent.push(`hold_up/${v.id}`);
+    }
+    // all seen: the one shown longest ago comes back
+    expect(pickVariant(def, { id: 3, minute: 20 }, 'ST', recent).id).toBe(recent[0].split('/')[1]);
+  });
+
+  it('every board is valid: inside the 100x112 pitch, labels name magnets that exist', () => {
+    const inside = (x: number, y: number, where: string) => {
+      expect(x, `${where} x`).toBeGreaterThanOrEqual(0); expect(x, `${where} x`).toBeLessThanOrEqual(100);
+      expect(y, `${where} y`).toBeGreaterThanOrEqual(0); expect(y, `${where} y`).toBeLessThanOrEqual(112);
+    };
+    for (const k of KINDS) {
+      const def = LIBRARY[k];
+      for (const v of def.variants) {
+        const ids = new Set(v.magnets.map((m) => m.id));
+        expect(ids.size, `${k}/${v.id} unique magnets`).toBe(v.magnets.length);
+        for (const m of v.magnets) inside(m.x, m.y, `${k}/${v.id} ${m.id}`);
+        inside(v.ball[0], v.ball[1], `${k}/${v.id} ball`);
+        for (const a of v.arrows) for (const t of [a.from, a.to]) if (Array.isArray(t)) inside(t[0], t[1], `${k}/${v.id} arrow`);
+        for (const o of def.options) {
+          if (v.fit[o.id] === undefined) continue;
+          const label = v.labels?.[o.id] ?? o.label;
+          for (const [, id] of label.matchAll(/\{(m\d|d\d|s\d)\}/g)) expect(ids.has(id), `${k}/${v.id} label ${o.id}: ${id}`).toBe(true);
+          // a ball tipped over the bar may leave the board by a few units
+          for (const s of [...o.ok, ...o.fail]) if (Array.isArray(s.to)) inside(s.to[0], s.w === 'ball' ? Math.max(0, s.to[1] + 6) : s.to[1], `${k}/${v.id} ${o.id} step`);
+        }
       }
     }
   });

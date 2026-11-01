@@ -1,11 +1,14 @@
 // Decision-moment odds in real careers: plays N careers per position for S seasons, and at every moment
 // records the chance of the best read, of the vision-hinted card and of all options (a random pick).
 //   npx vite-node tools/decisionOdds.ts [careersPerPos=3] [seasons=2]
-// QA round 4 targets (outfield): best read ≈ 55-65%, all options ≈ 35-40%. Keepers keep their own line.
+// QA round 4 targets (outfield): best read ≈ 55-65%, all options ≈ 35-45%. Keepers keep their own line.
+// Also prints the situation library: variants per kind and how many each position can reach (role + pos filters).
 import { normalizeContent } from '../src/core/contentLoad';
 import { apply, newGame } from '../src/core/game';
 import { autoOptionId } from '../src/core/events';
 import { buildOptions, hintOption, kindDef, pickVariant } from '../src/match/decision/resolve';
+import { LIBRARY } from '../src/match/decision/scenarios';
+import { KINDS_BY_POS } from '../src/core/matchSim';
 declare const process: { argv: string[]; cwd(): string };
 const args = process.argv.slice(2).filter((a) => /^\d+$/.test(a));
 const N = Number(args[0] ?? 3), SEASONS = Number(args[1] ?? 2);
@@ -14,8 +17,23 @@ const fs = (await import(/* @vite-ignore */ modName)) as { readFileSync(p: strin
 const parts: Record<string, unknown> = {};
 for (const k of ['leagues', 'names', 'wages', 'themes', 'events']) parts[k] = JSON.parse(fs.readFileSync(`${process.cwd()}/src/content/${k}.json`, 'utf8'));
 const content = normalizeContent(parts as never);
+{
+  const perKind = Object.entries(LIBRARY).map(([k, d]) => `${k} ${d.variants.length}`);
+  console.log(`situations: ${Object.values(LIBRARY).reduce((a, d) => a + d.variants.length, 0)}  (${perKind.join(', ')})`);
+  const reach = (Object.keys(KINDS_BY_POS) as (keyof typeof KINDS_BY_POS)[]).map((pos) => {
+    const role = pos === 'GK' ? 'keeper' : 'taker';
+    let n = 0;
+    for (const [k] of KINDS_BY_POS[pos]) {
+      const vs = LIBRARY[k].variants.filter((v) => !v.role || v.role === role);
+      const pv = vs.filter((v) => !v.pos || v.pos.includes(pos));
+      n += (pv.length ? pv : vs).length;
+    }
+    return `${pos} ${n}`;
+  });
+  console.log(`reachable per position: ${reach.join(', ')}`);
+}
 let seed = 12345; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-for (const pos of ['W', 'CB', 'GK', 'ST', 'CM', 'FB'] as const) {
+for (const pos of ['W', 'CB', 'GK', 'ST', 'CM', 'FB', 'AM', 'DM'] as const) {
   const best: number[] = [], all: number[] = [], hinted: number[] = [], diff: number[] = []; let picks = 0, ok = 0;
   for (let i = 0; i < N; i++) {
     let w: any = newGame({ type: 'newCareer', seed: 777 + i * 13, pos, firstName: 'א', lastName: 'ב' }, content);

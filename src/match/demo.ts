@@ -8,13 +8,17 @@ const KIND_LABEL: Record<MomentKind, string> = {
   shot: 'בעיטה', one_on_one: 'אחד על אחד', header: 'נגיחה', dribble: 'דריבל', through_ball: 'מסירת עומק', long_shot: 'בעיטה מרחוק',
   interception: 'חטיפה', tackle: 'תיקול', block: 'חסימה', clearance: 'הרחקה', save: 'הצלה', rush_out: 'יציאה מהשער',
   penalty: 'פנדל', free_kick: 'בעיטה חופשית', cross: 'הגבהה',
+  hold_up: 'משחק גב', press: 'לחץ גבוה', counter: 'מתפרצת', cutback: 'החזרה לאחור', overlap: 'עקיפה באגף', between_lines: 'בין הקווים',
+  switch_play: 'החלפת אגף', second_ball: 'כדור שני', build_up: 'יציאה מהלחץ', recovery: 'חזרה להגנה', last_man: 'אחרון בהגנה',
+  aerial_duel: 'מאבק אווירי', set_piece_defend: 'הגנה על מצב נייח', distribution: 'הוצאת כדור', claim_cross: 'יציאה להגבהה',
 };
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const params = new URLSearchParams(location.search);
 const host = $('host');
 const sel = $<HTMLSelectElement>('kind');
-for (const k of Object.keys(MOMENT_FACTORIES) as MomentKind[]) {
+// decision mode offers every kind; the arcade player only has scenes for the original 15
+for (const k of (params.get('mode') === 'decision' ? Object.keys(KIND_LABEL) : Object.keys(MOMENT_FACTORIES)) as MomentKind[]) {
   const o = document.createElement('option');
   o.value = k; o.textContent = `${KIND_LABEL[k]} (${k})`;
   sel.appendChild(o);

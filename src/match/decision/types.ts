@@ -1,5 +1,5 @@
 // Data model of the "decision moment" (רגע החלטה): a tactical read on the whiteboard instead of a swipe.
-import type { MomentKind } from '../../core/types';
+import type { MomentKind, Position } from '../../core/types';
 
 /** Attributes an option can lean on (keys of core Attributes). */
 export type OptAttr = 'finishing' | 'passing' | 'dribbling' | 'pace' | 'heading' | 'vision' | 'defending' | 'gk' | 'stamina';
@@ -22,7 +22,8 @@ export interface Step {
   pose?: 'dive' | 'slide' | 'down' | 'jump';
 }
 
-export type IconKey = 'shot' | 'curl' | 'chip' | 'pass' | 'cross' | 'dribble' | 'shield' | 'head' | 'tackle' | 'jockey' | 'cover' | 'glove' | 'clear' | 'run' | 'wait';
+export type IconKey = 'shot' | 'curl' | 'chip' | 'pass' | 'cross' | 'dribble' | 'shield' | 'head' | 'tackle' | 'jockey' | 'cover' | 'glove' | 'clear' | 'run' | 'wait'
+  | 'throw' | 'flag' | 'foul' | 'turn' | 'switch';
 
 export interface OptionTpl {
   id: string;
@@ -76,8 +77,10 @@ export interface Variant {
   fit: Record<string, number>;
   /** optional label overrides per option id */
   labels?: Record<string, string>;
-  /** keeper / role variant filter */
+  /** keeper / role variant filter (keeper variants use the goalkeeper odds line) */
   role?: 'keeper' | 'taker';
+  /** only these positions get this situation (shared kinds carry role-specific situations) */
+  pos?: Position[];
 }
 
 export interface KindDef {
