@@ -850,7 +850,7 @@
 }
 .toast {
   width: 100%;
-  min-height: 40px;
+  min-height: 44px;
   padding: 8px 12px;
   font: inherit;
   font-size: 13px;
@@ -868,3 +868,6 @@
   overflow: hidden;
   cursor: pointer;
 }
+
+/* BUG-13: the table's מקוצר/מלא toggle sits right under the top bar, so on that screen the banner drops above the tab bar */
+.toasts.toasts-low { top: auto; bottom: calc(var(--nav-h) + var(--safe-b) + 8px); }
