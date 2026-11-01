@@ -250,7 +250,8 @@ async function readSave(page) {
                   contract: u?.contract ? { end: u.contract.endSeason, wage: u.contract.monthlyWage, role: u.contract.role } : null,
                   injury: u?.injury ?? null, caps: w.career.nationalCaps, offers: w.career.offers?.length ?? 0, retired: !!w.career.retired,
                   pos: u?.pos, lazyInLeague: lgClubs.filter((c) => c.lazy || !c.squad?.length).length, leagueClubs: lgClubs.length, bytes: g.result.length, version: f.version,
-                  armyStatus: w.career.life?.armyStatus, stage: w.career.life?.stage, neg: w.career.negotiation?.status === 'open' ? 'open' : (w.career.negotiation?.status ?? null),
+                  armyStatus: w.career.life?.armyStatus, stage: w.career.life?.stage, autoEvents: w.lastWeekReport?.autoEvents ?? [], reportWeek: w.lastWeekReport?.absWeek ?? null,
+                  offerRoles: (w.career.offers || []).map((o) => o.role), neg: w.career.negotiation?.status === 'open' ? 'open' : (w.career.negotiation?.status ?? null),
                 });
               } catch {
                 res(null);
@@ -289,16 +290,21 @@ async function readWorld(page) {
   const clubs = new Map();
   for (const c of w.clubs || []) {
     const d = Array.isArray(c)
-      ? { id: c[0], name: c[1], short: c[2], city: c[3], countryCode: c[4], leagueId: c[5], reputation: c[6], colors: c[8], crest: c[9], squad: c[12] || [], lazy: !!c[15]?.lazy, region: c[15]?.region }
+      ? { id: c[0], name: c[1], short: c[2], city: c[3], countryCode: c[4], leagueId: c[5], reputation: c[6], colors: c[8], crest: c[9], squad: c[12] || [], lazy: !!c[15]?.lazy, region: c[15]?.region, reserveOf: c[15]?.reserveOf }
       : { ...c, squad: c.squad || [], lazy: !!c.lazy };
     clubs.set(d.id, d);
   }
   const tables = {};
   for (const [lid, rows] of Object.entries(w.season?.tables || {}))
     tables[lid] = rows.map((t) => (Array.isArray(t) ? { clubId: t[0], p: t[1], w: t[2], d: t[3], l: t[4], gf: t[5], ga: t[6], pts: t[7] } : t));
-  return { version: f.version, bytes: raw.length, season: w.season?.number, week: w.season?.week, phase: w.phase, leagues: w.leagues, clubs, tables, career: w.career };
+  return { version: f.version, bytes: raw.length, season: w.season?.number, week: w.season?.week, phase: w.phase, leagues: w.leagues, clubs, tables, career: w.career, report: w.lastWeekReport };
 }
 const sortRows = (rows) => rows.slice().sort((a, b) => b.pts - a.pts || b.gf - b.ga - (a.gf - a.ga) || b.gf - a.gf);
+/** Round robins per season by league size (core round 5): up to 10 clubs meet 4 times, 11-12 clubs 3 times, else twice. */
+const legsFor = (n) => (n <= 10 ? 4 : n <= 12 ? 3 : 2);
+const REGION = { north: 'צפון', south: 'דרום', 'צפון': 'צפון', 'דרום': 'דרום' };
+const normRegion = (r) => (r ? REGION[String(r).trim().toLowerCase()] ?? r : undefined);
+const ATTR_NAMES = ['סיומת', 'מסירה', 'דריבל', 'מהירות', 'סיבולת', 'הגנה', 'משחק ראש', 'ראיית משחק', 'שוערות'];
 const LATIN = /[A-Za-z]/;
 
 // ------------------------------------------------------------------ the UI audit (run on every screen)
@@ -829,6 +835,35 @@ async function onWeekendScreen(page, st) {
     const nums = (n.text.match(/\d+/g) || []).map(Number).filter((x) => x !== b - a);
     if (nums.length >= 1 && !nums.includes(b)) issue('near-goal text and counter use different units', `"${n.text}" vs ${a}/${b}`, 'weekend', await shot(page, 'near-units'));
   }
+  // quick week answers: the week end lists exactly what report.autoEvents says (.auto-events)
+  we.autoEvents = await page.$$eval('.auto-events li', (els) => els.map((e) => e.textContent)).catch(() => []);
+  const sv = await readSave(page);
+  const wantAuto = sv?.autoEvents ?? [];
+  st.autoWeeks = (st.autoWeeks || 0) + (wantAuto.length ? 1 : 0);
+  if (wantAuto.length && !we.autoEvents.length) issue('auto-events: quick week answered events but the week end has no list', `${st.label} s${st.season}w${st.week}: ${wantAuto.join(' | ').slice(0, 120)}`, 'weekend', await shot(page, `auto-events-missing-s${st.season}w${st.week}`));
+  else if (wantAuto.length && wantAuto.some((t) => !we.autoEvents.includes(t))) issue('auto-events: list differs from report.autoEvents', `${st.label} s${st.season}w${st.week}: UI ${we.autoEvents.join(' | ')} / save ${wantAuto.join(' | ')}`.slice(0, 220), 'weekend', null);
+  else if (!wantAuto.length && we.autoEvents.length) issue('auto-events: list shown with no auto-answered events', `${st.label} s${st.season}w${st.week}`, 'weekend', null);
+  if (we.autoEvents.length && !st.autoShot) { st.autoShot = true; await shot(page, `auto-events-s${st.season}w${st.week}`, true); }
+  (log.autoEvents ||= []).push({ run: st.label, season: st.season, week: st.week, save: wantAuto.length, ui: we.autoEvents.length });
+  // near goals move: an attribute bar must not stay identical for 5 week ends in a row (core rotates a stalled one out after 3 weeks)
+  st.nearTrack ||= ((log.nearTrackRuns ||= {})[`${st.label}#${Object.keys(log.nearTrackRuns || {}).length}`] = {});
+  const seenKeys = new Set();
+  for (const n of we.near) {
+    const key = n.text.split(':')[0].trim();
+    if (!ATTR_NAMES.includes(key)) continue;
+    seenKeys.add(key);
+    const tr = (st.nearTrack[key] ||= { last: null, same: 0, pairs: 0, moved: 0, flagged: false });
+    const v = `${n.text}|${n.bar}`;
+    if (tr.last != null) { tr.pairs++; if (tr.last === v) tr.same++; else { tr.moved++; tr.same = 0; tr.flagged = false; } }
+    tr.last = v;
+    if (tr.same >= 4 && !tr.flagged) { tr.flagged = true; issue('near goal stuck: the same attribute bar 5 week ends in a row', `${st.label} s${st.season}w${st.week}: "${n.text}" bar ${n.bar}%`, 'weekend', await shot(page, `near-stuck-s${st.season}w${st.week}`)); }
+  }
+  for (const [k, tr] of Object.entries(st.nearTrack)) if (!seenKeys.has(k)) { tr.last = null; tr.same = 0; tr.flagged = false; }
+  // teenagers are not offered star roles at senior clubs (round 5)
+  if (sv && sv.age < 19 && sv.offerRoles?.length) {
+    (log.teenOffers ||= []).push({ run: st.label, season: st.season, week: st.week, age: sv.age, roles: sv.offerRoles });
+    if (sv.offerRoles.includes('star')) issue('teen offered the star role', `${st.label} s${st.season}w${st.week}: age ${sv.age}, roles ${sv.offerRoles.join(',')}`, 'weekend', null);
+  }
   for (const n of we.near) if (/\d+\.\d+\s*מתוך/.test(n.text + ' ' + n.frac)) issue('BUG-21: near-goal shows a decimal "x.y מתוך"', `"${n.text}" ${n.frac}`, 'weekend', null);
   if (we.gains.some((g) => /\+0\.0/.test(g))) issue('UX-03: "+0.0" rows in "מה השתפר"', `${st.label} s${st.season}`, 'weekend', null);
   if (st.detailed && (st.week <= 2 || st.week % 6 === 0)) await shot(page, `weekend-s${st.season}w${st.week}`, true);
@@ -903,6 +938,16 @@ async function checkTableUi(page, st, wk) {
   const c = await read();
   const where = `${st.label} s${st.season}w${wk} (${page.viewportSize()?.width}px)`;
   const probs = [];
+  // "מחזור X מתוך Y": Y is the league's real round count (3-4 legs in leagues of <=12 clubs)
+  const sub = await page.locator('.table-screen .tb-sub').textContent().catch(() => '');
+  const rm = (sub || '').match(/מחזור (\d+) מתוך (\d+)/);
+  const wantRounds = (c.rows - 1) * legsFor(c.rows);
+  if (!rm) probs.push(`no "מחזור X מתוך Y" label ("${sub}")`);
+  else {
+    if (Number(rm[2]) !== wantRounds) probs.push(`round label "${rm[0]}" but ${c.rows} clubs play ${wantRounds} rounds`);
+    if (!/לפני/.test(sub) && Number(rm[1]) > Number(rm[2])) probs.push(`round label past the end: "${rm[0]}"`);
+  }
+  (log.roundLabels ||= []).push({ where, rows: c.rows, label: rm?.[0] ?? sub, want: wantRounds });
   if (c.names.some((n) => LATIN.test(n))) probs.push(`Latin names: ${c.names.filter((n) => LATIN.test(n)).join(', ')}`);
   if (new Set(c.names).size !== c.names.length) probs.push(`duplicate names: ${c.names.filter((n, i) => c.names.indexOf(n) !== i).join(', ')}`);
   if (c.noCrest) probs.push(`${c.noCrest} rows without a crest`);
@@ -1314,6 +1359,7 @@ async function handleOffseason(page, st) {
       }
       // the engine answers "המועדון יחליט" step by step (renewal talks / pointer to offers / agent finds a club / short deal)
       let presses = 0;
+      const toastFrom = log.season.toasts.length;
       for (let k = 0; k < 8; k++) {
         if (await page.locator('.modal').isVisible().catch(() => false)) {
           await page.locator('.modal').getByRole('button', { name: 'המועדון יחליט' }).click();
@@ -1335,6 +1381,20 @@ async function handleOffseason(page, st) {
           }
         }
         if (['week', 'event', 'end'].includes(await screenOf(page))) break;
+      }
+      // the terms must be visible: "המועדון החליט: <club>, ₪X לחודש, <role>, ל<years>" (or the short-deal line), matching the save
+      if (!/negotiated/.test(detail)) {
+        await sleep(4000); // the banner shows one line at a time (3.5 s each)
+        const tt = log.season.toasts.slice(toastFrom).map((x) => x.t);
+        const term = tt.map((x) => x.match(/המועדון החליט: (.+?), ₪([\d,]+) לחודש, ([^,]+), ל-?(.+)$/)).find(Boolean);
+        const short = tt.find((x) => /אף אחד לא סגר איתך/.test(x));
+        const sv2 = await waitScreen(page, ['week', 'event', 'contract', 'end'], 15000).then(() => readSave(page));
+        if (!term && !short) issue('club decides: no toast with the signed terms', `${st.label} s${sn}: toasts ${tt.join(' | ').slice(0, 160)}`, 'weekend', await shot(page, `s${sn}-decide-no-terms`));
+        else if (term) {
+          const wage = Number(term[2].replace(/,/g, ''));
+          if (sv2?.club !== term[1] || sv2?.contract?.wage !== wage) issue('club decides: toast terms differ from the save', `${st.label} s${sn}: toast ${term[0]} / save ${sv2?.club} ₪${sv2?.contract?.wage}`, 'week', null);
+          (log.clubDecidesTerms ||= []).push(`${st.label} s${sn}: ${term[0]}`);
+        } else (log.clubDecidesTerms ||= []).push(`${st.label} s${sn}: ${short}`);
       }
       if (presses > 1) issue('BUG-18: "המועדון יחליט" needs more than one press', `${st.label} s${sn}: ${presses} presses: ${detail.slice(0, 200)}`, 'weekend', null);
       st.clubDecides = (st.clubDecides || []).concat(`s${sn}: ${presses} press(es): ${detail}`);
@@ -1553,12 +1613,49 @@ async function checkPromotion(page, st) {
       if (!mv) problems.push(`week report says "${m[0]}" but ${m[1]} did not move`);
       else if ((m[2] === 'יורדת') !== mv.to.tier > mv.from.tier) problems.push(`week report direction wrong for ${m[1]}`);
     }
+    // round counts (round 5): every club played (n-1) x legs; leagues of <=12 clubs meet 3-4 times
+    const smallLeagues = [];
+    for (const [lid, rows] of Object.entries(w.tables)) {
+      const l = lg.get(Number(lid));
+      if (!l || !rows.length) continue;
+      const want = (rows.length - 1) * legsFor(rows.length);
+      const bad = rows.filter((r) => r.p !== want);
+      if (bad.length) problems.push(`${l.name} (${rows.length} clubs): ${bad.length} clubs played ${[...new Set(bad.map((r) => r.p))].join('/')} matches, expected ${want}`);
+      if (rows.length <= 12) smallLeagues.push(`${l.name} ${rows.length}x${legsFor(rows.length)}`);
+    }
+    // BUG-24: a reserve team is never in its parent's league or above it (same country), before or after the moves
+    const reserves = [...w.clubs.values()].filter((c) => c.reserveOf != null);
+    for (const c of reserves) {
+      const par = w.clubs.get(c.reserveOf);
+      const cl = lg.get(c.leagueId), pl = par ? lg.get(par.leagueId) : null;
+      if (cl && pl && cl.countryCode === pl.countryCode && cl.tier <= pl.tier) problems.push(`BUG-24: reserve team ${c.name} (${cl.name}, tier ${cl.tier}) at or above its parent ${par.name} (${pl.name}, tier ${pl.tier})`);
+    }
+    const reservesBlocked = [];
+    for (const [lid, rows] of Object.entries(w.tables)) {
+      const l = lg.get(Number(lid));
+      if (!l || !l.promoteSpots) continue;
+      sortRows(rows).slice(0, l.promoteSpots).forEach((r) => { const c = w.clubs.get(r.clubId); if (c?.reserveOf != null && c.leagueId === l.id) reservesBlocked.push(`${c.name} (${l.name})`); });
+    }
+    // BUG-23: clubs relegated into regional groups go to their own region. A wrong group counts only if a swap with
+    // another club relegated from the same league would have put both right (both in one region is unavoidable).
+    const regionNotes = [];
+    for (const upper of w.leagues) {
+      const down = moves.filter((m) => m.from.id === upper.id && m.to.tier > upper.tier);
+      for (const m of down) {
+        const cr = normRegion(w.clubs.get(m.clubId)?.region);
+        const gr = normRegion(m.to.region);
+        if (!cr || !gr || cr === gr) continue;
+        const swap = down.find((o) => o !== m && normRegion(o.to.region) === cr && normRegion(w.clubs.get(o.clubId)?.region) !== cr);
+        if (swap) problems.push(`BUG-23: ${m.club} (${cr}) relegated to ${m.to.name} while ${swap.club} (${normRegion(w.clubs.get(swap.clubId)?.region) ?? 'no region'}) took the ${cr} slot`);
+        else regionNotes.push(`${m.club} (${cr}) -> ${m.to.name} (no other slot)`);
+      }
+    }
     const mls = w.leagues.filter((l) => /MLS|אמריקא|ארצות הברית|ארה״ב/.test(l.name + l.country));
     st.lastMoves = moves.map((m) => ({ clubId: m.clubId, club: m.club, from: m.from.name, to: m.to.name, toId: m.to.id, fromId: m.from.id, tierFrom: m.from.tier, tierTo: m.to.tier, country: m.to.country }));
     const il = moves.filter((m) => m.from.country === 'ישראל').map((m) => `${m.club}: ${m.from.name} -> ${m.to.name}`);
-    (log.promotion ||= []).push({ run: st.label, season: w.season, moves: moves.length, israel: il, mls: mls.map((l) => l.name), sample: moves.slice(0, 6).map((m) => `${m.club} ${m.from.name}#${m.place} -> ${m.to.name}`) });
+    (log.promotion ||= []).push({ run: st.label, season: w.season, moves: moves.length, israel: il, mls: mls.map((l) => l.name), sample: moves.slice(0, 6).map((m) => `${m.club} ${m.from.name}#${m.place} -> ${m.to.name}`), smallLeagues, reserves: reserves.length, reservesBlocked, regionNotes });
     assert(problems.length === 0, problems.slice(0, 6).join(' | '));
-    return `${moves.length} moves in ${new Set(moves.map((m) => m.from.country)).size} countries; Israel: ${il.join(', ') || 'none'}; closed: ${mls.map((l) => l.name).join(', ') || 'no US league found'}`;
+    return `${moves.length} moves in ${new Set(moves.map((m) => m.from.country)).size} countries; Israel: ${il.join(', ') || 'none'}; closed: ${mls.map((l) => l.name).join(', ') || 'no US league found'}; ${smallLeagues.length} small leagues with 3-4 legs; ${reserves.length} reserve teams, blocked in a promotion spot: ${reservesBlocked.join(', ') || 'none'}; unavoidable region mismatches: ${regionNotes.length}`;
   });
 }
 
@@ -1621,7 +1718,7 @@ async function checkWorldNames(page, S) {
         seen.set(c.short, c.name);
       }
     }
-    const bad = clubs.filter((c) => !c.name?.trim() || !c.short?.trim() || /undefined|null|NaN|\d{3,}/.test(`${c.name}${c.short}`)).map((c) => c.name);
+    const bad = clubs.filter((c) => !c.name?.trim() || !c.short?.trim() || /undefined|null|NaN|\d{3,}/.test(`${c.name} ${c.short}`.replace(/(^|\s)(18|19|20)\d\d(?=\s|$)/g, ' '))).map((c) => c.name);
     const longShort = clubs.filter((c) => c.short && [...c.short].length > 8).map((c) => c.short);
     const sameColors = clubs.filter((c) => Array.isArray(c.colors) && String(c.colors[0]).toLowerCase() === String(c.colors[1]).toLowerCase()).map((c) => c.name);
     const noCrest = clubs.filter((c) => !c.crest).map((c) => c.name);
@@ -1668,7 +1765,9 @@ async function reloadMidWeek(page) {
 async function scenarioFirstKick(run, seed, { continueSeasons = 0, pos = 'W' } = {}) {
   const tag = seed === QA_SEED ? 'fixed' : 'random';
   const S = `a-first-kick#${run}-${tag}-${pos}`;
-  const { ctx, page } = await newPage(MOBILE, `first-kick-${run}`, { seed: seed === QA_SEED ? seed : null });
+  // random runs get a logged random seed (injected like the fixed one) so any finding can be replayed with QA_SEED
+  const useSeed = seed ?? Math.floor(Math.random() * 2 ** 31);
+  const { ctx, page } = await newPage(MOBILE, `first-kick-${run}`, { seed: useSeed });
   try {
     let taps = 0;
     const t0 = now();
@@ -1683,7 +1782,7 @@ async function scenarioFirstKick(run, seed, { continueSeasons = 0, pos = 'W' } =
       taps += await startNewCareer(page, { name: seed === QA_SEED ? QA_NAME : null, pos });
       marks.week = now() - t0;
       const save = await readSave(page);
-      marks.start = `${save?.club} (${save?.league}), age ${save?.age}, ${save?.pos}`;
+      marks.start = `${save?.club} (${save?.league}), age ${save?.age}, ${save?.pos}, seed ${useSeed}`;
       assert(save?.pos === pos, `picked ${pos} on the board, save has ${save?.pos}`);
       return `${taps} taps, ${marks.week}ms, ${marks.start}`;
     });
@@ -1779,6 +1878,110 @@ async function scenarioFirstKick(run, seed, { continueSeasons = 0, pos = 'W' } =
   }
 }
 
+// ------------------------------------------------------------------ n. "המועדון יחליט" on demand (round 4)
+/** Edit the autosave in IndexedDB (test-only): fn gets the parsed save file and returns it changed. */
+async function patchSave(page, fnSrc) {
+  return page.evaluate(
+    (src) =>
+      new Promise((res) => {
+        const r = indexedDB.open('football-career');
+        r.onerror = () => res(false);
+        r.onsuccess = () => {
+          const tx = r.result.transaction('saves', 'readwrite');
+          const os = tx.objectStore('saves');
+          const g = os.get('autosave');
+          g.onsuccess = () => {
+            try {
+              const f = JSON.parse(g.result);
+              // eslint-disable-next-line no-new-func
+              const out = new Function('f', src)(f);
+              os.put(JSON.stringify(out ?? f), 'autosave');
+              tx.oncomplete = () => res(true);
+            } catch (e) {
+              res(String(e));
+            }
+          };
+          g.onerror = () => res(false);
+        };
+      }),
+    fnSrc,
+  );
+}
+
+async function scenarioClubDecides() {
+  const S = 'n-club-decides';
+  const { ctx, page } = await newPage(MOBILE, 'club-decides', { seed: QA_SEED + 11 });
+  try {
+    const st = { S, label: 'cd', pos: 'ST', decisionBudget: 0, autoAfterBudget: true, detailed: false, season: 1, week: -1, lastLabel: null, weeksSeen: 0, events: 0, matches: 0, played: 0, deadline: now() + 12 * 60000 };
+    await step(S, 'new career, season 1 to the offseason', async () => {
+      await page.goto(URL, { waitUntil: 'domcontentloaded' });
+      await waitScreen(page, 'title', 20000);
+      await startNewCareer(page, { pos: 'ST' });
+      await settingsToggle(page, 'תנועה מופחתת', true).catch(() => {});
+      newSeasonLog(st, await readSave(page));
+      const r = await playUntilBreak(page, st);
+      assert(r === 'offseason', `stopped with ${r}`);
+      const sv = await readSave(page);
+      return `${sv?.club} (${sv?.league}), contract until s${sv?.contract?.end}, offers ${sv?.offers}`;
+    });
+    await step(S, 'expire the contract (save edit), reload, continue to the week end', async () => {
+      const ok = await patchSave(page, `
+        const w = f.world; const pid = w.career.playerId;
+        const t = (w.players || []).find((x) => x[0] === pid);
+        const c = t ? t[13]?.contract : w.people[pid]?.contract;
+        if (!c) throw new Error('no contract');
+        c.endSeason = w.season.number;
+        return f;`);
+      assert(ok === true, `save edit failed: ${ok}`);
+      await page.reload({ waitUntil: 'domcontentloaded' });
+      await waitScreen(page, 'title', 20000);
+      await tap(page, /המשך קריירה/);
+      const s = await waitScreen(page, ['weekend'], 10000).catch(() => screenOf(page));
+      assert(s === 'weekend', `continue landed on ${s}`);
+      const sv = await readSave(page);
+      return `contract until s${sv?.contract?.end} (season ${sv?.season}), offers ${sv?.offers}`;
+    });
+    const before = await readSave(page);
+    const from = log.season.toasts.length;
+    let presses = 0;
+    await step(S, '"לעונה הבאה" -> modal -> "המועדון יחליט" decides in one press', async () => {
+      await tap(page, 'לעונה הבאה', { after: 400 });
+      assert(await page.locator('.modal').isVisible().catch(() => false), 'no expired-contract modal');
+      await shot(page, 'cd-modal');
+      await page.locator('.modal').getByRole('button', { name: 'המועדון יחליט' }).click();
+      presses++;
+      const s = await waitScreen(page, ['week', 'event', 'contract'], 15000).catch(() => screenOf(page));
+      await sleep(4500); // let the toast queue play out
+      await shot(page, 'cd-after');
+      const sv = await readSave(page);
+      assert(s !== 'contract', 'opened a negotiation instead of deciding');
+      assert(sv?.season === before.season + 1, `season ${before?.season} -> ${sv?.season}`);
+      assert(sv?.contract?.end > before.season, `contract still ends s${sv?.contract?.end}`);
+      return `${presses} press -> ${s}; ${before?.club} -> ${sv?.club}, ₪${sv?.contract?.wage}, ${sv?.contract?.role}, until s${sv?.contract?.end}`;
+    });
+    await step(S, 'the decision is shown: toast with club, wage, role, years (matches the save)', async () => {
+      const tt = log.season.toasts.slice(from).filter((x) => x.page === 'club-decides').map((x) => x.t);
+      const sv = await readSave(page);
+      const news = await page.evaluate(() => new Promise((res) => {
+        const r = indexedDB.open('football-career');
+        r.onsuccess = () => { const g = r.result.transaction('saves', 'readonly').objectStore('saves').get('autosave'); g.onsuccess = () => { try { res((JSON.parse(g.result).world.news || []).slice(0, 8).map((n) => n.headline)); } catch { res([]); } }; };
+        r.onerror = () => res([]);
+      }));
+      const coreLine = news.find((h) => /המועדון החליט|אף אחד לא סגר איתך/.test(h)) ?? null;
+      const term = tt.map((x) => x.match(/המועדון החליט: (.+?), ₪([\d,]+) לחודש, ([^,]+), ל-?(.+?)(\. הקש לסגירה)?$/)).find(Boolean);
+      const short = tt.find((x) => /אף אחד לא סגר איתך/.test(x));
+      (log.clubDecidesTerms ||= []).push(`cd: toasts [${tt.join(' | ')}] news "${coreLine}"`);
+      if (!term && !short) issue('club decides: no toast with the signed terms', `cd s${before.season}: toasts [${tt.join(' | ') || 'none'}]; engine news "${coreLine ?? 'none'}"`, 'week', await shot(page, 'cd-no-terms'));
+      assert(term || short, `no terms toast after the decision (toasts: ${tt.join(' | ') || 'none'}; the engine's news line: "${coreLine ?? 'none'}")`);
+      if (term) assert(term[1] === sv?.club && Number(term[2].replace(/,/g, '')) === sv?.contract?.wage, `toast "${term[0]}" vs save ${sv?.club} ₪${sv?.contract?.wage}`);
+      return term ? term[0] : short;
+    });
+    errorsCheck(S, page);
+  } finally {
+    await ctx.close();
+  }
+}
+
 function errorsCheck(S, page) {
   const errs = page.__errors.filter((e) => !e.external);
   record(S, 'no page/console errors', errs.length === 0, 0, errs.slice(0, 3).map((e) => `${e.kind}: ${e.text}`).join(' | '));
@@ -1802,7 +2005,7 @@ async function scenarioCareer() {
     const s1 = log.seasons.find((x) => x.run === 'det' && x.season === 1);
     record(S, `season 1 played to the end (${s1?.weeks} weeks)`, r === 'offseason', 0, `events ${st.events}, matches ${st.matches} (senior results ${s1?.seniorWE || 0}, youth results ${s1?.youthWE || 0}), weeks without a match ${s1?.noMatch}, moments played ${st.played}, quick-week landed on ${JSON.stringify(st.quickPaths)}`);
     const tables = log.season.tables.filter((t) => t.run === 'det' && t.season === 1);
-    record(S, 'league table updates', tables.length >= 2 && tables.every((t, i, a) => i === 0 || t.played > a[i - 1].played || a[i - 1].played >= t.rows * (t.rows - 1)), 0, tables.map((t) => `w${t.week}:${t.played}`).join(' '));
+    record(S, 'league table updates', tables.length >= 2 && tables.every((t, i, a) => i === 0 || t.played > a[i - 1].played || a[i - 1].played >= t.rows * (t.rows - 1) * legsFor(t.rows)), 0, tables.map((t) => `w${t.week}:${t.played}`).join(' '));
     const seen = new Map();
     for (const e of log.season.events.filter((e) => e.run === 'det')) seen.set(`${e.title}: ${e.body.slice(0, 40)}`, (seen.get(`${e.title}: ${e.body.slice(0, 40)}`) || 0) + 1);
     const rep = [...seen].filter(([, n]) => n > 1).map(([t, n]) => `${t} x${n}`);
@@ -2093,6 +2296,21 @@ function derivedChecks() {
   const off = late.filter((p) => p.lo > peak + 6);
   log.potential = pts.filter((_, i) => i % 2 === 0).map((p) => `${p.age}: ${p.ovr} (${p.lo}-${p.hi})`);
   if (pts.length || (process.env.E2E_ONLY || 'a,b,e,f').split(',').includes('b')) record('l-round2', 'BUG-16: scout potential range converges on the real level', pts.length > 0 && off.length === 0, 0, `peak ovr ${peak}; ${log.potential.slice(-6).join(', ')}`);
+  // round 4 (QA): auto-answered events card, near goals moving, teen roles, club-decides terms, round labels
+  const ae = log.autoEvents || [];
+  const aeIssues = [...issues.values()].filter((i) => i.type.startsWith('auto-events'));
+  record('m-round4', 'week end lists quick-week answers (.auto-events = report.autoEvents)', ae.some((x) => x.save > 0) && aeIssues.length === 0, 0, `${ae.filter((x) => x.save > 0).length} week ends with auto answers, ${ae.filter((x) => x.ui > 0).length} lists shown; ${aeIssues.map((i) => i.detail).slice(0, 2).join(' | ')}`);
+  const tracks = Object.values(log.nearTrackRuns || {}).flatMap((o) => Object.values(o));
+  const pairs = tracks.reduce((s, t) => s + t.pairs, 0), moved = tracks.reduce((s, t) => s + t.moved, 0);
+  const stuck = [...issues.values()].filter((i) => i.type.startsWith('near goal stuck'));
+  record('m-round4', 'near-goal attribute bars move between weeks', pairs > 0 && stuck.length === 0, 0, `${moved}/${pairs} consecutive week ends changed (${pairs ? Math.round((moved / pairs) * 100) : 0}%); stuck: ${stuck.map((i) => i.detail).slice(0, 2).join(' | ') || 'none'}`);
+  const teen = log.teenOffers || [];
+  record('m-round4', 'teen (<19) offers: no "star" role', !teen.some((x) => x.roles.includes('star')), 0, `${teen.length} week ends with offers to a teenager; roles ${JSON.stringify(teen.flatMap((x) => x.roles).reduce((m, r) => ((m[r] = (m[r] || 0) + 1), m), {}))}`);
+  const terms = log.clubDecidesTerms || [];
+  const noTerms = [...issues.values()].filter((i) => i.type.startsWith('club decides'));
+  record('m-round4', '"המועדון יחליט" shows the signed terms', noTerms.length === 0, 0, `${terms.length} decisions: ${terms.slice(0, 3).join(' | ')}${noTerms.length ? ` ; problems: ${noTerms.map((i) => i.detail).join(' | ')}` : ''}`);
+  const rl = log.roundLabels || [];
+  record('m-round4', 'table "מחזור X מתוך Y" = real round count', rl.length > 0 && rl.every((x) => x.label.includes(`מתוך ${x.want}`)), 0, `${rl.length} table visits; leagues seen: ${[...new Set(rl.map((x) => `${x.rows} clubs -> ${x.want}`))].join(', ')}`);
   const caps = (log.long.national || []).slice(-1)[0] ?? 'no caps';
   log.notes.push(`BUG-20 national caps (det): ${caps}`);
 }
@@ -2127,7 +2345,7 @@ try {
   await buildAndServe();
   const proxy = process.env.HTTPS_PROXY ? { proxy: { server: process.env.HTTPS_PROXY, bypass: 'localhost,127.0.0.1' } } : {};
   browser = await chromium.launch(proxy);
-  const only = (process.env.E2E_ONLY || 'a,b,e,f').split(',');
+  const only = (process.env.E2E_ONLY || 'a,b,e,f,n').split(',');
   if (only.includes('a')) {
     await scenarioFirstKick(1, QA_SEED).catch((e) => record('a-first-kick', 'scenario crashed', false, 0, e.message));
     for (let i = 0; i < RANDOM_RUNS; i++) await scenarioFirstKick(i + 2, null, { continueSeasons: 2, pos: ['CB', 'GK', 'ST', 'FB'][i % 4] }).catch((e) => record(`a/h-random#${i + 2}`, 'scenario crashed', false, 0, e.message));
@@ -2139,6 +2357,7 @@ try {
     await scenarioViewport('p390', { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true, locale: 'he-IL', arcade: true }).catch((e) => record('e-p390', 'scenario crashed', false, 0, e.message));
     await scenarioViewport('p430', { viewport: { width: 430, height: 932 }, deviceScaleFactor: 3, hasTouch: true, isMobile: true, locale: 'he-IL' }).catch((e) => record('e-p430', 'scenario crashed', false, 0, e.message));
   }
+  if (only.includes('n')) await scenarioClubDecides().catch((e) => record('n-club-decides', 'scenario crashed', false, 0, e.message));
   if (only.includes('f')) await scenarioPwa().catch((e) => record('f-pwa', 'scenario crashed', false, 0, e.message));
 } catch (e) {
   record('setup', 'fatal', false, 0, e.message);

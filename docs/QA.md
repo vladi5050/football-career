@@ -530,3 +530,133 @@ Counts are full run + supplementary run.
 - The "שחק את הרגע" button can be briefly disabled while busy. The driver waits for it to be enabled.
 - In the offseason, the UI table shows last season's standings of the new league. The lazy-league check compares names with that table, and squads with next season's club list.
 - A club change through "המועדון יחליט" is no longer flagged as a move without signing.
+
+---
+
+# Round 4: regions, reserve teams, small leagues, club-decides terms, quick-week answers (build/v1 @ 5f18808)
+
+## How it was run
+
+| Run | Command | Result |
+|---|---|---|
+| Full | `npm run test:e2e` (seed 20261031 W, random CB and GK careers, retirement at 34) | **206 pass, 9 fail** as run. One failure was an oracle bug (club names with a founding year, see below); with the fixed oracle: **207 pass, 8 fail** |
+| Supplementary | `SKIP_BUILD=1 E2E_ONLY=a RANDOM_RUNS=4 E2E_SHOTS=tests/e2e/shots/supp` (CB, GK, ST, FB random careers) | **107 pass, 3 fail** |
+| Club decides | `SKIP_BUILD=1 E2E_ONLY=n E2E_SHOTS=tests/e2e/shots/cd` (new scenario, deterministic) | **26 pass, 4 fail** (all BUG-28 plus the toast tap target) |
+
+All failures are product findings: BUG-28 to BUG-31 and BUG-13.
+
+### Test changes in `tests/e2e/run.mjs`
+
+- **Round counts.** The rule: leagues of up to 10 clubs meet 4 times, 11-12 clubs 3 times, the rest twice (`legsFor`).
+  - In every offseason the promotion oracle checks that every club in every league played (n-1) x legs matches.
+  - Every table visit checks the top bar label "מחזור X מתוך Y": Y must equal the league's round count (which is `leagueZones.rounds`), and X must be at most Y.
+  - The "league table updates" check uses the same rule.
+- **Reserve teams (BUG-24).**
+  - The save decoder reads `reserveOf`.
+  - The oracle fails when a reserve team is in its parent's league or above it in the same country.
+  - It lists reserve teams that finished in a promotion spot and stayed down.
+- **Regions (BUG-23).**
+  - A relegated club with a region that lands in the other regional group is a failure only if a swap with another club relegated from the same league would have put both right.
+  - Unavoidable cases (both relegated clubs from the same region) are only counted.
+  - `north`/`south` and "צפון"/"דרום" are treated as the same.
+- **Quick-week answers.** Every week end compares the `.auto-events` list with `lastWeekReport.autoEvents` in the save. It flags a missing list, a different list, or a list with nothing behind it.
+- **Near goals that move.**
+  - Each attribute near-goal bar is tracked across week ends by its text and bar value.
+  - The same bar 5 week ends in a row is an issue, because the engine is meant to rotate a stalled goal out after 3 weeks.
+  - A summary row gives the share of consecutive week ends in which the bar changed.
+- **Teen roles.** Every week end where a player under 19 has offers records the offered roles. "star" is an issue.
+- **"המועדון יחליט" terms.**
+  - After one press the oracle waits 4 s for the banner queue.
+  - It then expects "המועדון החליט: <club>, ₪X לחודש, <role>, ל<years>" (or the short-deal line), with the club and wage equal to the save.
+  - New group **n**:
+    - plays season 1 with seed 20261042;
+    - expires the contract by editing the autosave in IndexedDB (test-only `patchSave`);
+    - reloads, continues and presses "המועדון יחליט";
+    - checks the toast, and the news line in the save to tell core from UI.
+  - `n` is in the default `E2E_ONLY` list.
+- **Random seeds are logged.** Random careers now inject a random seed and print it ("seed N" in the new-career row), so any finding can be replayed with `QA_SEED`.
+- **Oracle fix.** The world name check flagged real names with a founding year ("1860 מינכן", "בוהמיאנס 1905", "פגיה 2014"). Year tokens (18xx-20xx) are now allowed. Checked against the content: 0 bad names.
+
+## Round-4 checks
+
+| Check | Result | Evidence |
+|---|---|---|
+| Table "מחזור X מתוך Y" | PASS | 55 table visits (full) and 16 (supp). Leagues seen: 12 clubs 33 rounds, 14 clubs 26, 15 clubs 28, 16 clubs 30, 18 clubs 34. Every label was right. |
+| Small leagues play 3-4 legs | PASS | Every finished table in 30 offseasons (22 full + 8 supplementary): all clubs played (n-1) x legs. 10 leagues of up to 12 clubs ran 3-4 legs each season. |
+| iPhone 390 table | PASS | No horizontal scroll in compact or full view, real Hebrew names, a crest on every row, row tap opens details (e-p390, and every table visit of the 3 careers). |
+| Regions in relegation | PASS | No avoidable wrong group in 30 offseasons. 1-5 unavoidable cases per season across the Israeli, Spanish and Italian groups, where both relegated clubs came from the same region and each group had one free slot (e.g. בני יהודה (דרום) -> ליגה א׳ צפון; פדובה (צפון) -> הסריה ג׳, בית ב׳). |
+| Reserve teams not promoted | PASS for promotion | Reserve teams in promotion spots stayed down (e.g. יונג גנט s10; בילבאו אתלטיק, אינטר מתחת ל-23 and אנדרלכט פיוצ׳רס s11; בנפיקה ב׳ s12), and the next club went up. **FAIL** for relegation: see BUG-29. |
+| Week end lists quick-week answers | PASS | 262 (full) + 177 (supp) week ends with automatic answers; the list matched the save every time. |
+| UX-02 empty weeks | Fixed | Counting event screens plus quick-week answers, events came in 23 of 33 weeks in the detailed season 1 (70%), then 26/33 and 28/33. Random careers: 25/35, 24/36, 17/28, 22/29. Round 3 counted only event screens, which is why it reported 33%. |
+| Near goals move | FAIL in the long career | Full run: 60 of 170 consecutive week ends changed (35%), with 7 stuck episodes (BUG-30). Supplementary (young players): 73/104 (70%), none stuck. |
+| Teen roles | PASS | No "star" offers to players under 19. Roles offered: rotation 24, starter 20 (44 role offers on 39 week ends). |
+| "המועדון יחליט" terms | FAIL | BUG-28 |
+| Decision moments end to end | PASS | Cards and keys 1-4, stamps, lessons. W 17 + 3 played (5 succeeded), CB 11 + 10 (5), GK 11 + 11 (8). No overlay overflow at 360/390/430/1366. Arcade mode works. |
+| Save and load | PASS | Mid-week reload keeps the phase and the event. Reloads in the offseason and at a season start land on the same screen, season, week, club, money and contract. Continue took 229-249 ms. Save size 516-685 KB over a 19-season career, with no growth. |
+| Performance | PASS | New career median 200 ms (max 230). Quick week median 55 ms (p95 105, max 164, n=705). Offseason to next season 53 ms. |
+
+## New bugs (round 4)
+
+### BUG-28 major: "המועדון יחליט" never shows the signed terms
+
+- **Repro:**
+  1. Run `SKIP_BUILD=1 E2E_ONLY=n node tests/e2e/run.mjs`. To do it by hand instead: let a contract expire, tap "לעונה הבאה", then "המועדון יחליט".
+  2. The engine signs (בני יהודה -> אוסטריה זלצבורג, ₪1,900, rotation, until s4).
+  3. The only toast is "עונה 2 מתחילה".
+- **Expected:** "המועדון החליט: אוסטריה זלצבורג, ₪1,900 לחודש, רוטציה, ל-3 שנים".
+- **Actual:**
+  - The engine produces the line. It is in the save's news, and core puts it first in the command's toasts.
+  - The UI drops it: `alreadyOnScreen()` in `src/app/store.ts` skips any toast equal to one of the 3 newest news headlines. Those headlines are not visible on the week screen.
+  - The supplementary run shows the same thing (random FB career, s2: באנפילד -> יונג גנט with no terms shown).
+- **Screenshots:** `shots/cd/*-cd-after.png`, `shots/supp/152-s2-decide-no-terms.png`.
+- **Fix options:**
+  - UI: compare toasts with news only when the news list is on screen.
+  - Core: write a different news headline for the decision.
+
+### BUG-29 minor (realism): a relegated parent club lands in its reserve team's league
+
+- **Repro:**
+  - Seed 20261031, offseason of season 10. Also random GK run rnd3, offseason of season 1.
+  - אסטראס טריפוליס is relegated from הסופרליגה היוונית into הסופרליגה 2, דרום. Its reserve team, אסטראס טריפוליס ב׳, already plays there. Both stay together for 2 seasons.
+- **Expected:** a reserve team never shares a league with its parent. Either the parent goes to the other group, or the reserve team drops.
+- **Actual:** `promoteRelegate` places the relegated parent by region into the reserve's group. The Greek second tier has `relegateSpots: 0`, so the B team cannot drop.
+- **Same risk:** nl2 (the Jong teams) when Ajax, PSV, AZ or Utrecht go down, and pt2 (פורטו ב׳, בנפיקה ב׳).
+- **Files:** `src/core/schedule.ts` (`promoteRelegate`), and `src/content/leagues.json` (Greek second-tier links).
+
+### BUG-30 minor (the CTO's live report, in a new form): a near goal stays on screen for about 70 weeks
+
+- **Repro:** seed 20261031, W, long career. "סיומת: 77 מתוך 80" first shows in season 4 week 27, at bar 97%. Then:
+
+  | Week end | Text | Bar |
+  |---|---|---|
+  | s5w9 | 78 מתוך 80 | 98% |
+  | s5w33 | 79 מתוך 80 | 99% |
+  | s6w30 | כמעט 80 | 100% |
+
+  It was the same bar 5 or more week ends in a row 7 times.
+- **Expected:** a goal that barely moves rotates out (the core rule: 3 weeks without progress), or the bar visibly moves.
+- **Actual:**
+  - The player is 19-21 and close to his potential, so finishing gains about +0.1 every 2-3 weeks.
+  - Core tracks progress at 0.1 resolution, so the goal never counts as stalled.
+  - The UI shows whole numbers, and on a target of 80 the bar moves 1% per 0.8 points. To the player it is frozen.
+- **Screenshots:** `shots/173-near-stuck-s4w31.png`, `180-182`, `190-192`.
+- **Files:**
+  - `src/core/development.ts` (`attrStalled` / `nearAttrGoals`): judge "moving" at whole-number resolution, or require that the goal can close within about 6-8 weeks.
+  - `src/ui/components/Bars.tsx`.
+
+### BUG-31 polish: the top toast banner is a 30 px tap target
+
+- **Actual:** `button.toast` is 358x30 on every screen (124 distinct screens in the full run). It is tappable (tap to dismiss), so the 40 px minimum applies.
+- **File:** `src/ui/components/Toast.tsx` / `.toast` CSS (min-height 40 px).
+
+### BUG-13 polish, still open (once)
+
+- The banner covered the table's מקוצר/מלא toggle once (`shots/172-issue-table.png`).
+- It no longer covers modals or decision cards.
+
+## UX notes (round 4)
+
+1. **The hint card rarely works for outfield players.** Picking the card marked as the open read: W 0 of 4, CB 0 of 6, GK 4 of 6. Overall decision success: W 5/20, CB 5/21, GK 8/22. The round-3 note (the best read should succeed about 50-60%) still applies.
+2. **Teenagers get "starter" offers often.** 20 of 44 teen role offers were starter, none were star. This is allowed when the player is well above the club's level, but it is worth a look if those offers come from clubs above his level.
+3. **A career at a reserve team.** The deterministic career moved to יונג גנט at 17 and renewed there until 34, 16 seasons in the Challenger Pro League with no possible promotion. Reserve teams could stop renewing players over 23, or the agent could push for a move.
+4. **The toast queue is one line at a time, 3.5 s each.** With 3-4 lines at a season start, the last one shows about 10 s later. Players who tap on quickly miss them (this is how BUG-28 first looked in the supplementary run).
