@@ -9,6 +9,7 @@ import { RatingStamp } from '../components/Rating';
 import { Confetti } from '../components/Confetti';
 import { Modal } from '../components/Modal';
 import { clubLookup, contractExpired, renewalBlocked } from '../viewExtras';
+import { SkipCard } from '../components/SkipSummary';
 
 const clubFor = clubLookup;
 
@@ -29,6 +30,7 @@ export function WeekEndScreen() {
   const offers = v.career.offers;
   const [askNext, setAskNext] = useState(false);
   const blocked = renewalBlocked(v);
+  const skip = v.skip && v.skip.at !== 'plan' ? v.skip : null;
   // UX-03: rows that would read "+0.0" are noise
   const gains = (rep?.gains ?? []).filter((g) => Math.round((g.after - g.before) * 10) >= 1);
   const nextSeason = () => {
@@ -47,6 +49,8 @@ export function WeekEndScreen() {
           <h1 class="np-headline">{rep.headline}</h1>
         </div>
       )}
+
+      {skip && <SkipCard skip={skip} />}
 
       {res && home && away && (
         <TapedCard tape="left" class={`result-card ${youth ? 'is-youth' : ''}`}>
@@ -94,11 +98,15 @@ export function WeekEndScreen() {
               </div>
             );
           })}
+          {rep?.trainingWhy && <p class="training-why">{rep.trainingWhy}</p>}
         </section>
       )}
 
       {rep && gains.length === 0 && (
-        <p class="gains-note">{rep.gainsNote ?? 'השבוע בלי שינוי שרואים במספרים. העבודה מצטברת.'}</p>
+        <p class="gains-note">
+          {rep.gainsNote ?? 'השבוע בלי שינוי שרואים במספרים. העבודה מצטברת.'}
+          {rep.trainingWhy && <span class="training-why-inline">{rep.trainingWhy}</span>}
+        </p>
       )}
 
       {rep && rep.autoEvents && rep.autoEvents.length > 0 && (

@@ -909,3 +909,67 @@ button.list-row { width: 100%; min-width: 0; }
 .auto-events { padding: var(--s3) var(--s4); }
 .auto-events-title { margin: 0 0 var(--s2); font-size: 1rem; font-weight: 700; }
 .auto-events ul { margin: 0; padding-inline-start: 1.1em; display: grid; gap: 4px; font-size: 0.9rem; line-height: 1.4; }
+
+/* season speed: weeks that ran by themselves */
+.skip-card { display: grid; gap: var(--s2); padding: var(--s3) var(--s4); }
+.skip-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px var(--s3); }
+.skip-head .paper-title { margin: 0; }
+.skip-stop { font-size: var(--t-sm); font-weight: 700; color: var(--red); }
+.skip-matches { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.skip-matches li {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--s2);
+  font-size: var(--t-sm);
+  padding: 4px 0;
+  border-bottom: 1px dashed rgba(27, 42, 74, 0.18);
+}
+.skip-matches li:last-child { border-bottom: 0; }
+.skip-res { width: 24px; height: 24px; border-radius: 6px; display: grid; place-items: center; font-weight: 800; color: var(--paper); background: var(--ink-3, #6b7280); }
+.skip-res.w { background: var(--green); }
+.skip-res.l { background: var(--red); }
+.skip-opp { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+.skip-ha { font-weight: 600; color: var(--ink-3, #6b7280); }
+.skip-score { font-weight: 800; }
+.skip-me { font-weight: 700; white-space: nowrap; color: var(--ink-2, #374151); }
+.skip-me i { font-style: normal; }
+.skip-goal { color: var(--orange-press); }
+.skip-foot { display: flex; flex-wrap: wrap; gap: 6px; }
+.skip-events summary { cursor: pointer; font-weight: 700; font-size: var(--t-sm); }
+.skip-events ul { margin: 6px 0 0; padding-inline-start: 1.1em; display: grid; gap: 4px; font-size: var(--t-sm); line-height: 1.4; }
+@media (max-width: 380px) {
+  .skip-matches li { grid-template-columns: 22px minmax(0, 1fr) auto; }
+  .skip-me { grid-column: 2 / -1; font-size: 0.8rem; }
+}
+
+/* training: potential, facilities, persistence */
+.train-factors { display: flex; flex-wrap: wrap; gap: 4px var(--s3); font-size: var(--t-sm); font-weight: 600; color: var(--ink-2, #374151); }
+.train-factors b { font-weight: 800; }
+.stars { color: var(--orange-press); letter-spacing: 1px; font-weight: 400; }
+.training-why { margin: 0; font-size: var(--t-sm); font-weight: 600; color: var(--ink-3, #6b7280); }
+.gains .training-why { margin-top: var(--s2); }
+.gains-note .training-why-inline { display: block; margin-top: 4px; font-size: var(--t-sm); opacity: 0.85; }
+
+/* week: two quick-week buttons, the long one on its own slim row (DOM order keeps "שבוע מהיר" first) */
+.action-bar.week-actions { flex-wrap: wrap; row-gap: var(--s2); }
+.action-bar.week-actions > .ff-btn { order: 3; flex: 1 0 100%; min-height: 40px; font-size: var(--t-sm); gap: 2px; }
+@media (max-width: 1099px) {
+  .screen.week-screen.has-nav.has-actions { padding-bottom: calc(var(--nav-h) + 84px + 48px + var(--safe-b)); }
+}
+
+/* new career: season speed */
+.speed-pick { display: grid; gap: 6px; }
+.speed-pick .seg button { padding-inline: 4px; line-height: 1.15; }
+.speed-sub { margin: 0; font-size: var(--t-sm); color: var(--paper); opacity: 0.85; font-weight: 600; min-height: 2.4em; }
+.settings-group .speed-sub { color: var(--ink-3); opacity: 1; }
+
+.facilities-line { font-size: var(--t-sm); font-weight: 700; }
+.seg.on-wall { background: rgba(247, 247, 242, 0.1); }
+.seg.on-wall button { color: var(--paper); }
+.seg.on-wall button[aria-pressed='true'] { background: var(--paper); color: var(--ink); }
+.offer .facilities-line { margin-top: 2px; color: var(--ink-2); }
+.offer .facilities-line .up { color: var(--green); }
+.offer .facilities-line .down { color: var(--red); }
+.neg-head .facilities-line .stars,
+.club-hero .facilities-line .stars { color: var(--orange); }

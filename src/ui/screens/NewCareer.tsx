@@ -2,7 +2,7 @@ import { useState } from 'preact/hooks';
 import type { Position } from '../../core/types';
 import { busy, navigate, startCareer } from '../../app/store';
 import { teamNames } from '../../app/save';
-import { POS_HE } from '../i18n';
+import { POS_HE, SEASON_SPEEDS, type SeasonSpeedUi } from '../i18n';
 import { Magnet } from '../components/Magnet';
 import { IconBack, IconDice } from '../components/Icons';
 
@@ -37,6 +37,7 @@ export function NewCareerScreen() {
   const [last, setLast] = useState(() => pick(LAST));
   const [shirt, setShirt] = useState(11);
   const [snapKey, setSnapKey] = useState(0);
+  const [speed, setSpeed] = useState<SeasonSpeedUi>('full');
 
   const choose = (p: Position) => {
     setPos(p);
@@ -52,7 +53,7 @@ export function NewCareerScreen() {
   const go = async () => {
     if (!ok) return;
     const names = await teamNames.read();
-    const res = await startCareer({ type: 'newCareer', pos, firstName: first.trim(), lastName: last.trim(), shirt, ...(names ? { clubsOverride: names } : {}) });
+    const res = await startCareer({ type: 'newCareer', pos, firstName: first.trim(), lastName: last.trim(), shirt, ...(speed !== 'full' ? { seasonSpeed: speed } : {}), ...(names ? { clubsOverride: names } : {}) });
     if (res) navigate('reveal', { replace: true });
   };
 
@@ -130,6 +131,18 @@ export function NewCareerScreen() {
           <output class="num" aria-live="polite">{shirt}</output>
           <button type="button" aria-label="יותר" onClick={() => setShirt((n) => Math.min(99, n + 1))}>+</button>
         </div>
+      </div>
+
+      <div class="speed-pick">
+        <span class="wall-label">קצב העונה</span>
+        <div class="seg on-wall" role="group" aria-label="קצב העונה">
+          {SEASON_SPEEDS.map((o) => (
+            <button key={o.id} type="button" aria-pressed={speed === o.id} onClick={() => setSpeed(o.id)}>
+              {o.label}
+            </button>
+          ))}
+        </div>
+        <p class="speed-sub">{SEASON_SPEEDS.find((o) => o.id === speed)?.sub}. אפשר לשנות בהגדרות.</p>
       </div>
 
       <div class="action-bar">

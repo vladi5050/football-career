@@ -1,7 +1,7 @@
 // Player development: training plan, growth, ageing, injuries, NPC yearly growth, retirement + youth regen.
 import type { Content } from './content';
-import type { AttrGain, AttrKey, Footballer, PlanSlot, Position, WeekPlan, World } from './types';
-import type { Rng } from './rng';
+import type { AttrGain, AttrKey, Club, Footballer, League, PlanSlot, Position, WeekPlan, World } from './types';
+import { makeRng, seedState, type Rng } from './rng';
 import {
   ATTR_HE, ATTR_KEYS, POS_WEIGHTS, addNews, changeRelation, clamp, ovr, pushHistory, relationOf, userPlayer, count } from './helpers';
 import { SQUAD_MIX, clubLevel, makeFootballer, npcPotential } from './worldGen';
@@ -14,7 +14,95 @@ export const DEV_TUNING = {
   gymGain: 0.12,
   passiveGain: 0.003,
   gapScale: 12, // growth slows as overall approaches potential: factor = gap / gapScale
+  // training facilities: 1 star -> facMin, 5 stars -> facMax (linear)
+  facMin: 0.8,
+  facMax: 1.25,
+  // training persistence 1..100: multiplier persMin at 1 -> persMax at 100
+  persMin: 0.85,
+  persMax: 1.2,
+  persUp2: 0.22, // per week with 2 training slots (train_* / gym), slowed near the top
+  persUp3: 0.36, // per week with 3 training slots
+  persDown: 0.45, // per week of mostly rest / team nights / media
+  persMean: 52, // career start roll: wide spread
+  persSd: 20,
 };
+
+// ------------------------------------------------------------------ club training facilities
+
+/** Raw facilities score of a club (about 15 at the bottom of Israel's 4th tier, 100 at the top of England). */
+export function facilityScore(c: Pick<Club, 'reputation'>, lg: Pick<League, 'strength' | 'wageFactor'>): number {
+  return 0.45 * c.reputation + 0.4 * lg.strength + 8 * Math.log(1 + Math.max(0, lg.wageFactor));
+}
+
+/** Training facilities, 1..5 stars. Deterministic: big clubs 4-5, lower-league clubs 1-2. */
+export function clubFacilities(world: World, clubId: number): number {
+  const c = world.clubs[clubId];
+  if (!c) return 2;
+  const s = facilityScore(c, world.leagues[c.leagueId]);
+  return s >= 80 ? 5 : s >= 62 ? 4 : s >= 45 ? 3 : s >= 30 ? 2 : 1;
+}
+
+/** Growth multiplier of a facilities rating (about 0.8 at 1 star up to 1.25 at 5). */
+export function facilityMult(stars: number): number {
+  return DEV_TUNING.facMin + ((clamp(stars, 1, 5) - 1) / 4) * (DEV_TUNING.facMax - DEV_TUNING.facMin);
+}
+
+export const stars = (n: number): string => '★'.repeat(clamp(Math.round(n), 0, 5)) + '☆'.repeat(5 - clamp(Math.round(n), 0, 5));
+
+// ------------------------------------------------------------------ training persistence
+
+/** Career-start roll, from the world seed on its own stream (does not move the world RNG). */
+export function rollPersistence(seed: number): number {
+  const r = makeRng(seedState((seed ^ 0x2f6b9d1) >>> 0));
+  return Math.round(clamp(r.normal(DEV_TUNING.persMean, DEV_TUNING.persSd), 8, 96));
+}
+
+/** The user's persistence (older saves: rolled from the seed). */
+export function persistenceOf(world: World): number {
+  const u = userPlayer(world);
+  if (u.persistence == null) u.persistence = rollPersistence(world.seed);
+  return u.persistence;
+}
+
+export function persistenceMult(p: number): number {
+  return DEV_TUNING.persMin + ((clamp(p, 1, 100) - 1) / 99) * (DEV_TUNING.persMax - DEV_TUNING.persMin);
+}
+
+export function persistenceWord(p: number): string {
+  return p >= 75 ? 'גבוהה מאוד' : p >= 58 ? 'גבוהה' : p >= 40 ? 'בינונית' : p >= 22 ? 'נמוכה' : 'נמוכה מאוד';
+}
+
+export function changePersistence(world: World, d: number): void {
+  const u = userPlayer(world);
+  u.persistence = Math.round(clamp(persistenceOf(world) + d, 1, 100) * 100) / 100;
+}
+
+/** Weekly drift: 2+ training slots build the habit, a week of mostly rest / team nights / media erodes it. */
+export function weeklyPersistence(world: World, plan: WeekPlan): void {
+  const u = userPlayer(world);
+  if (u.injury) return; // rehab weeks say nothing about habits
+  const p = persistenceOf(world);
+  const work = plan.filter((s) => s.startsWith('train_') || s === 'extra_gym').length;
+  const off = plan.filter((s) => s === 'rest' || s === 'team_night' || s === 'media').length;
+  if (work >= 2) changePersistence(world, (work >= 3 ? DEV_TUNING.persUp3 : DEV_TUNING.persUp2) * clamp(1.15 - p / 100, 0.15, 1));
+  else if (off >= 2) changePersistence(world, -DEV_TUNING.persDown * clamp(0.4 + p / 100, 0.4, 1.4));
+}
+
+/** Why growth was big or small this week, short Hebrew parts ("מתקנים ★★★★☆ · התמדה גבוהה · קרוב לתקרה"). */
+export function trainingWhy(world: World): string {
+  const u = userPlayer(world);
+  const parts: string[] = [];
+  if (u.clubId != null) parts.push(`מתקנים ${stars(clubFacilities(world, u.clubId))}`);
+  parts.push(`התמדה ${persistenceWord(persistenceOf(world))}`);
+  const g = gapFactor(u);
+  if (g <= 0.05) parts.push('בתקרה');
+  else if (g < 0.5) parts.push('קרוב לתקרה');
+  else if (u.age <= 21) parts.push('הרבה מקום לגדול');
+  if (minutesFactor(world) < 0.62 && (world.career.recentMinutes ?? []).length) parts.push('מעט דקות');
+  if (world.career.life.armyStatus === 'serving') parts.push('צבא');
+  if (u.morale < 35) parts.push('מורל נמוך');
+  return parts.join(' · ');
+}
 
 export const PLAN_HE: Record<PlanSlot, string> = {
   train_finishing: 'אימון סיומת', train_passing: 'אימון מסירה', train_dribbling: 'אימון דריבל', train_pace: 'אימון מהירות',
@@ -124,12 +212,13 @@ export function applyTraining(world: World, plan: WeekPlan, rng: Rng): AttrGain[
   const before = { ...user.attr };
   if (!user.injury) {
     const club = user.clubId != null ? world.clubs[user.clubId] : null;
-    const facilities = club ? 0.85 + club.reputation / 400 : 0.9;
+    const facilities = club ? facilityMult(clubFacilities(world, club.id)) : 0.9;
+    const persist = persistenceMult(persistenceOf(world));
     const army = world.career.life.armyStatus === 'serving' ? 0.7 : 1;
     // per-season growth does not depend on the calendar length (seasons are 25-41 weeks)
     const cal = SEASON_REF_WEEKS / Math.max(20, world.season.totalWeeks || SEASON_REF_WEEKS);
     const mf = minutesFactor(world);
-    const f = ageFactor(user.age) * gapFactor(user) * mf * facilities * army * (0.8 + user.morale / 250) * cal;
+    const f = ageFactor(user.age) * gapFactor(user) * mf * facilities * persist * army * (0.8 + user.morale / 250) * cal;
     // what he trains shows even without minutes (passive growth stays tied to playing time)
     const ft = (f / mf) * (0.8 + 0.2 * mf);
     for (const slot of plan) {

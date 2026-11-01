@@ -73,10 +73,10 @@ Rules: every template must have >= 2 options and >= 3 variants (chain-only follo
 ### Condition language (`when`)
 Expressions combined with `&&`, `||`, `!`, parentheses; comparisons `< <= > >= == !=`; numbers.
 Functions/values:
-`rel(role)` relation of cast/role person with user (-100..100) · `attr(key)` user attribute · `overall` · `age` · `fame` · `money` · `form` · `morale` · `fitness` · `seasonWeek` · `season` · `absWeek` · `flag(name)` · `injured` (0/1) · `tier` (league tier) · `foreign` (0/1 playing abroad) · `starter` (0/1 started last match) · `lastResult` (1 win, 0 draw, -1 loss) · `lastRating` · `goalsSeason` · `trait(role, trait_id)` (0/1) · `theme(id)` (0/1) · `window` (0/1 transfer window open) · `derbyNext` (0/1) · `recent(tag, weeks)` (0/1 history tag within N weeks) · `stage(youth|army|pro|veteran)` (0/1) · `pos(W)` (0/1) · `hasOffer` (0/1) · `contractLeft` (seasons left)
+`rel(role)` relation of cast/role person with user (-100..100) · `attr(key)` user attribute · `overall` · `age` · `fame` · `money` · `form` · `morale` · `fitness` · `persistence` · `seasonWeek` · `season` · `absWeek` · `flag(name)` · `injured` (0/1) · `tier` (league tier) · `foreign` (0/1 playing abroad) · `starter` (0/1 started last match) · `lastResult` (1 win, 0 draw, -1 loss) · `lastRating` · `goalsSeason` · `trait(role, trait_id)` (0/1) · `theme(id)` (0/1) · `window` (0/1 transfer window open) · `derbyNext` (0/1) · `recent(tag, weeks)` (0/1 history tag within N weeks) · `stage(youth|army|pro|veteran)` (0/1) · `pos(W)` (0/1) · `hasOffer` (0/1) · `contractLeft` (seasons left)
 
 ### Effects (closed list)
-`rel(role) += n` / `-= n` · `morale += n` · `fame += n` · `money += n` · `form += n` · `fitness += n` · `attr(key) += n` · `flag(name) += n` / `flag(name) = n` · `memory(role, tag, weight)` · `history(tag)` · `promise(role, weeks, tag)` · `injury(weeks)` · `potential += n` · `goal(kind, target, text)` · `news(text)` · `offer(any|abroad|bigger)` (spawn a transfer offer) · `squadRole(starter|rotation|backup)`
+`rel(role) += n` / `-= n` · `morale += n` · `persistence += n` / `-= n` (training persistence 1..100) · `fame += n` · `money += n` · `form += n` · `fitness += n` · `attr(key) += n` · `flag(name) += n` / `flag(name) = n` · `memory(role, tag, weight)` · `history(tag)` · `promise(role, weeks, tag)` · `injury(weeks)` · `potential += n` · `goal(kind, target, text)` · `news(text)` · `offer(any|abroad|bigger)` (spawn a transfer offer) · `squadRole(starter|rotation|backup)`
 
 ## Moment player API (`src/match/`)
 ```ts

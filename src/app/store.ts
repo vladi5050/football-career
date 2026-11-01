@@ -81,7 +81,8 @@ let toastId = 1;
 export const modalsOpen = signal(0);
 const recentToasts = new Map<string, number>();
 const TOAST_DEDUPE_MS = 10_000;
-// One banner at a time; extra lines wait in a short queue (max 3) and show one after another.
+const TOAST_KEY = /^(המועדון החליט|אף אחד לא סגר איתך|חתמת)/;
+// One banner at a time; extra lines wait in a short queue (max 5) and show one after another.
 const toastQueue: { text: string; ms: number }[] = [];
 let toastTimer: ReturnType<typeof setTimeout> | null = null;
 function showNextToast(): void {
@@ -108,16 +109,25 @@ export function dismissToast(id: number): void {
   toasts.value = [];
   if (toastQueue.length) setTimeout(showNextToast, 180);
 }
-export function toast(text: string, ms = 3500): void {
-  if (!text || modalsOpen.value > 0) return;
+export function toast(text: string, ms = 3500, tries = 0): void {
+  if (!text) return;
+  if (modalsOpen.value > 0) {
+    // a key line that lands while the deciding modal is still closing waits for it instead of being lost
+    if (TOAST_KEY.test(text) && tries < 10) setTimeout(() => toast(text, ms, tries + 1), 300);
+    return;
+  }
   const now = Date.now();
   const last = recentToasts.get(text);
   if (last != null && now - last < TOAST_DEDUPE_MS) return;
   recentToasts.set(text, now);
   for (const [k, t] of recentToasts) if (now - t > TOAST_DEDUPE_MS) recentToasts.delete(k);
-  // the engine puts the important line first (signed terms, injuries); when the queue is full, the newest extra waits out
-  if (toastQueue.length >= 5) return;
-  toastQueue.push({ text, ms });
+  // key lines (the club's decision, a signed deal) jump the queue; when it is full, the newest routine line waits out
+  if (TOAST_KEY.test(text)) {
+    if (toastQueue.length >= 5) toastQueue.pop();
+    const at = toastQueue.findIndex((q) => !TOAST_KEY.test(q.text));
+    toastQueue.splice(at < 0 ? toastQueue.length : at, 0, { text, ms });
+  } else if (toastQueue.length < 5) toastQueue.push({ text, ms });
+  else return;
   if (!toasts.value.length && !toastTimer) showNextToast();
 }
 

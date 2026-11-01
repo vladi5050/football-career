@@ -22,7 +22,7 @@ const ATTR_KEYS = ['finishing', 'passing', 'dribbling', 'pace', 'stamina', 'defe
 const POSITIONS = ['GK', 'CB', 'FB', 'DM', 'CM', 'AM', 'W', 'ST'];
 const STAGES = ['youth', 'army', 'pro', 'veteran'];
 const GOAL_KINDS = ['attr', 'goals', 'apps', 'transfer', 'title', 'money', 'fame', 'national', 'captain', 'custom'];
-const VALUES = ['overall', 'age', 'fame', 'money', 'form', 'morale', 'fitness', 'seasonWeek', 'season', 'absWeek', 'injured', 'tier', 'foreign', 'starter', 'lastResult', 'lastRating', 'goalsSeason', 'window', 'derbyNext', 'hasOffer', 'contractLeft', 'rivalScoredLast', 'rivalGoalsSeason'];
+const VALUES = ['overall', 'age', 'fame', 'money', 'form', 'morale', 'fitness', 'persistence', 'seasonWeek', 'season', 'absWeek', 'injured', 'tier', 'foreign', 'starter', 'lastResult', 'lastRating', 'goalsSeason', 'window', 'derbyNext', 'hasOffer', 'contractLeft', 'rivalScoredLast', 'rivalGoalsSeason'];
 const FUNCS: Record<string, number> = { rel: 1, attr: 1, flag: 1, trait: 2, theme: 1, recent: 2, stage: 1, pos: 1 };
 const HEX = /^#[0-9A-Fa-f]{6}$/;
 const SNAKE = /^[a-z][a-z0-9_]*$/;
@@ -270,7 +270,7 @@ function checkFnArgs(fn: string, args: string[], ctx: CondCtx): void {
 const N = '-?\\d+';
 const EFFECTS: { re: RegExp; role?: number; text?: number; flag?: number; tag?: number; attr?: number }[] = [
   { re: new RegExp(`^rel\\((\\w+)\\)\\s*[+-]=\\s*${N}$`), role: 1 },
-  { re: new RegExp(`^(?:morale|fame|money|form|fitness|potential)\\s*[+-]=\\s*${N}$`) },
+  { re: new RegExp(`^(?:morale|fame|money|form|fitness|potential|persistence)\\s*[+-]=\\s*${N}$`) },
   { re: new RegExp(`^attr\\((\\w+)\\)\\s*[+-]=\\s*${N}$`), attr: 1 },
   { re: new RegExp(`^flag\\((\\w+)\\)\\s*(?:\\+=|-=|=)\\s*${N}$`), flag: 1 },
   { re: /^memory\((\w+),\s*(\w+),\s*\d+\)$/, role: 1 },

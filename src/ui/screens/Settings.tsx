@@ -4,6 +4,7 @@ import { downloadText, pickTextFile } from '../../app/save';
 import { TopBar } from '../components/TopBar';
 import { Modal } from '../components/Modal';
 import { IconDownload, IconUpload } from '../components/Icons';
+import { SEASON_SPEEDS } from '../i18n';
 
 function Toggle({ label, sub, on, onChange }: { label: string; sub: string; on: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -21,6 +22,7 @@ export function SettingsScreen() {
   const v = view.value;
   const s = uiSettings.value;
   const [confirmDel, setConfirmDel] = useState(false);
+  const speed = v?.settings?.seasonSpeed ?? 'full';
 
   const doExport = async () => {
     try {
@@ -62,6 +64,19 @@ export function SettingsScreen() {
               ארקייד (החלקות)
             </button>
           </div>
+        </div>
+        <div class="speed-pick" style={{ padding: '6px 0 10px' }}>
+          <span class="tg-text" style={{ display: 'grid', gap: '2px' }}>
+            <b style={{ fontSize: 'var(--t-md)' }}>קצב העונה</b>
+          </span>
+          <div class="seg" role="group" aria-label="קצב העונה">
+            {SEASON_SPEEDS.map((o) => (
+              <button key={o.id} type="button" aria-pressed={speed === o.id} disabled={!v} onClick={() => v && act({ type: 'setSeasonSpeed', value: o.id })}>
+                {o.label}
+              </button>
+            ))}
+          </div>
+          <p class="speed-sub">{v ? SEASON_SPEEDS.find((o) => o.id === speed)?.sub : 'בוחרים בתחילת קריירה, ואפשר לשנות כאן בכל רגע'}</p>
         </div>
         <Toggle
           label="רגעי מפתח: המשחק מחליט בשבילי"

@@ -5,6 +5,7 @@
 import type { Attributes, Club, Fixture, Footballer, Person, Position, SeasonStats, TableRow, World } from './types';
 import { ATTR_KEYS } from './helpers';
 import { SAVE_VERSION } from './worldGen';
+import { rollPersistence } from './development';
 import { SEASON_EXTRA_WEEKS, fixturesFromRounds, leagueRounds, matchWeeks } from './schedule';
 
 export const SAVE_FORMAT = 'football-career-save';
@@ -219,6 +220,9 @@ export function migrate(world: World, fromVersion: number): World {
   world.settings ??= { autoMoments: false };
   world.career.recentMinutes ??= [];
   world.career.recentRatings ??= [];
+  // training persistence arrived after v3: older careers get their roll from the seed (same as a new career would)
+  const u = world.people[world.career.playerId] as Footballer | undefined;
+  if (u && u.persistence == null) u.persistence = rollPersistence(world.seed);
   relinkLive(world);
   return world;
 }

@@ -12,7 +12,7 @@ export interface ViewExtras {
   teammates?: PersonView[];
   people?: Record<number, PersonView>;
   leagueZones?: { promote: number; relegate: number; champion?: number };
-  settings?: { autoMoments: boolean };
+  settings?: { autoMoments: boolean; seasonSpeed?: 'full' | 'balanced' | 'key' };
   /** Every club in career.history (core round 3). */
   careerClubs?: Record<number, ClubView>;
   careerStory?: { turningPoint?: string; keyPerson?: string };

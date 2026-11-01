@@ -2,7 +2,7 @@
 // It implements the same SimApi as the worker. Numbers are hand-tuned, not balanced.
 import type {
   ActiveEvent, ApplyResult, AttrKey, Attributes, ClubView, Command, CrestSpec, LiveMatch, MatchHighlight, MomentKind,
-  MomentSpec, PersonView, PlanSlot, Position, SquadRole, TableRow, View, WeekReport,
+  MomentSpec, PersonView, PlanSlot, Position, SkipSummary, SquadRole, TableRow, View, WeekReport,
 } from '../core/types';
 import type { NewCareerCmd, SimApi } from './store';
 import type { ViewExtras } from '../ui/viewExtras';
@@ -65,11 +65,11 @@ export function createMockSim(): SimApi {
 
   const clubView = (i: number): ClubView => {
     const c = IL_CLUBS[i]!;
-    return { id: 100 + i, name: c.name, short: c.short, city: c.city, colors: c.colors, crest: crestFor(c.name), reputation: c.rep, leagueName: 'ליגת הנוער העל', country: 'ישראל', stadium: c.stadium };
+    return { id: 100 + i, name: c.name, short: c.short, city: c.city, colors: c.colors, crest: crestFor(c.name), reputation: c.rep, leagueName: 'ליגת הנוער העל', country: 'ישראל', stadium: c.stadium, facilities: c.rep >= 75 ? 4 : c.rep >= 60 ? 3 : c.rep >= 48 ? 2 : 1 };
   };
   const foreignView = (i: number): ClubView => {
     const c = FOREIGN[i]!;
-    return { id: 200 + i, name: c.name, short: c.short, city: c.city, colors: c.colors, crest: crestFor(c.name), reputation: c.rep, leagueName: c.league, country: c.country, stadium: c.stadium };
+    return { id: 200 + i, name: c.name, short: c.short, city: c.city, colors: c.colors, crest: crestFor(c.name), reputation: c.rep, leagueName: c.league, country: c.country, stadium: c.stadium, facilities: c.rep >= 70 ? 5 : 4 };
   };
 
   function makeTable(userIdx: number, played: number): MView['table'] {
@@ -124,6 +124,7 @@ export function createMockSim(): SimApi {
         stats: { apps: 0, goals: 0, assists: 0, ratingSum: 0, cleanSheets: 0 },
         careerStats: { apps: 0, goals: 0, assists: 0, ratingSum: 0, cleanSheets: 0 },
         shirt: cmd.shirt ?? 17,
+        persistence: 64,
       },
       club,
       league: { id: 1, name: 'ליגת הנוער העל', country: 'ישראל' },
@@ -161,6 +162,7 @@ export function createMockSim(): SimApi {
       teammates,
       leagueZones: { promote: 0, relegate: 2, champion: 1 },
       people: { 11: coach, 12: agent, 21: teammates[0]!, 22: teammates[1]! },
+      settings: { autoMoments: false, seasonSpeed: cmd.seasonSpeed ?? 'full' },
     };
     return v;
   }
@@ -289,6 +291,7 @@ export function createMockSim(): SimApi {
         { text: 'עוד 2 הופעות בהרכב לפרס המאמן', progress: 1, target: 3 },
       ],
       notable: live.userGoals > 0,
+      trainingWhy: `מתקנים ${'★'.repeat(v.club?.facilities ?? 2)}${'☆'.repeat(5 - (v.club?.facilities ?? 2))} · התמדה גבוהה · הרבה מקום לגדול`,
     };
     v.lastWeekReport = report;
     v.phase = report.notable ? 'weekend' : 'postmatch';
@@ -338,11 +341,39 @@ export function createMockSim(): SimApi {
     v.phase = 'plan';
     v.live = null;
     v.lastWeekReport = null;
+    v.skip = null;
     v.table = makeTable(st!.userClubIdx, v.season.week);
     const oppIdx = (v.season.week * 5 + 1) % IL_CLUBS.length;
     const idx = oppIdx === st!.userClubIdx ? 8 : oppIdx;
     v.nextFixture = { opp: clubView(idx), home: v.season.week % 2 === 0, week: v.season.week, derby: idx === 8 };
     v.player.fitness = Math.min(100, v.player.fitness + 10);
+  }
+
+  /** Three made-up weeks, then a stop before a derby. */
+  function fastForward(v: MView): ApplyResult {
+    const before = st!.view.table.findIndex((t) => t.clubId === v.club!.id) + 1;
+    const keys = POS_KEY[v.player.pos];
+    const attrBefore = { ...v.player.attr };
+    const matches: SkipSummary['matches'] = [];
+    for (let i = 0; i < 3; i++) {
+      const opp = v.nextFixture!.opp;
+      const us = Math.floor(r() * 3), them = Math.floor(r() * 3);
+      const goals = i === 1 ? 1 : 0;
+      matches.push({ seasonWeek: v.season.week, oppId: opp.id, oppName: opp.name, home: v.nextFixture!.home, us: us + goals, them, rating: Math.round((6 + r() * 2) * 10) / 10, goals, assists: i === 2 ? 1 : 0 });
+      v.player.stats.apps += 1;
+      v.player.stats.goals += goals;
+      for (const k of keys) v.player.attr[k] += 0.35 + r() * 0.3;
+      nextWeek(v);
+    }
+    const idx = 8;
+    v.nextFixture = { opp: clubView(idx), home: true, week: v.season.week, derby: true };
+    const skip: SkipSummary = {
+      absWeek: v.absWeek, weeks: 3, matches, posBefore: before || 6, posAfter: Math.max(1, (before || 6) - 2),
+      gains: keys.map((k) => ({ key: k, before: attrBefore[k], after: v.player.attr[k] })),
+      autoEvents: ['המאמן מחכה בחדר: אני שם. בשבע בבוקר', 'אלון שושן מתקשר: לחייך ולנתק'], stopReason: `דרבי מול ${clubView(idx).name}`, at: 'plan',
+    };
+    v.skip = skip;
+    return res(['3 שבועות רצו אוטומטית. ' + skip.stopReason]);
   }
 
   const res = (toast?: string[]): ApplyResult => ({ view: structuredClone(st!.view), saveDue: true, toast });
@@ -364,6 +395,7 @@ export function createMockSim(): SimApi {
       }
       case 'quickWeek': {
         if (!v.career.lastPlan) v.career.lastPlan = defaultPlan(v.player.pos);
+        if (cmd.untilNext && v.phase === 'plan') return fastForward(v);
         v.inbox = [];
         v.phase = 'prematch';
         return res(['שבוע מהיר: אותה תוכנית כמו בשבוע שעבר']);
@@ -484,7 +516,11 @@ export function createMockSim(): SimApi {
         return res();
       }
       case 'setAutoMoments':
+        v.settings = { ...(v.settings ?? { autoMoments: false }), autoMoments: cmd.value };
         return res();
+      case 'setSeasonSpeed':
+        v.settings = { ...(v.settings ?? { autoMoments: false }), seasonSpeed: cmd.value };
+        return res([cmd.value === 'full' ? 'משחקים כל משחק' : cmd.value === 'balanced' ? 'משחקים רק את המשחקים החשובים' : 'משחקים רק משחקי מפתח']);
       case 'newCareer':
         return res();
     }

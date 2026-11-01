@@ -36,7 +36,8 @@
           "attr(finishing) += 1",
           "fitness -= 12",
           "rel(rival) += 4",
-          "history(rival_practice)"
+          "history(rival_practice)",
+          "persistence += 2"
         ],
         "default": true
       },
@@ -49,7 +50,8 @@
           "rel(rival) -= 6",
           "memory(rival, refused_challenge, 6)",
           "flag(refused_rival) += 1",
-          "history(refused_rival_practice)"
+          "history(refused_rival_practice)",
+          "persistence -= 1"
         ],
         "chain": [
           {
@@ -176,7 +178,8 @@
           "rel(mother) -= 8",
           "attr(stamina) += 1",
           "flag(skipped_school) += 1",
-          "history(skipped_school)"
+          "history(skipped_school)",
+          "persistence += 2"
         ],
         "chain": [
           {
@@ -668,7 +671,8 @@
           "rel(coach) -= 12",
           "fame += 1",
           "flag(defiant) += 1",
-          "history(defied_coach)"
+          "history(defied_coach)",
+          "persistence -= 2"
         ]
       },
       {
@@ -1487,7 +1491,8 @@
         "hint": "אם יתגלה, יהיה רע",
         "effects": [
           "flag(liar) += 1",
-          "history(lied_to_coach)"
+          "history(lied_to_coach)",
+          "persistence -= 2"
         ],
         "chain": [
           {
@@ -1502,7 +1507,8 @@
         "effects": [
           "fitness -= 10",
           "rel(coach) += 4",
-          "attr(pace) += 1"
+          "attr(pace) += 1",
+          "persistence += 1"
         ]
       }
     ]
@@ -1618,7 +1624,8 @@
         "effects": [
           "rel(coach) += 4",
           "fitness -= 8",
-          "attr(finishing) += 1"
+          "attr(finishing) += 1",
+          "persistence += 1"
         ]
       }
     ]
@@ -1837,7 +1844,8 @@
         "effects": [
           "rel(coach) += 5",
           "fitness += 4",
-          "morale -= 1"
+          "morale -= 1",
+          "persistence += 3"
         ]
       },
       {
@@ -1847,7 +1855,8 @@
         "effects": [
           "rel(coach) -= 6",
           "morale += 2",
-          "flag(defiant) += 1"
+          "flag(defiant) += 1",
+          "persistence -= 2"
         ]
       },
       {
@@ -1908,7 +1917,8 @@
         "effects": [
           "form += 2",
           "fitness -= 12",
-          "rel(coach) += 2"
+          "rel(coach) += 2",
+          "persistence += 3"
         ],
         "default": true
       },
@@ -5035,7 +5045,8 @@
           "flag(party) = 0",
           "rel(coach) += 6",
           "morale -= 3",
-          "flag(pro_habits) += 1"
+          "flag(pro_habits) += 1",
+          "persistence += 4"
         ],
         "default": true
       },
@@ -5045,7 +5056,8 @@
         "hint": "עד הפעם הבאה",
         "effects": [
           "morale += 2",
-          "rel(agent) -= 3"
+          "rel(agent) -= 3",
+          "persistence -= 2"
         ]
       },
       {
@@ -5054,7 +5066,8 @@
         "effects": [
           "rel(coach) -= 8",
           "fame += 1",
-          "flag(defiant) += 1"
+          "flag(defiant) += 1",
+          "persistence -= 3"
         ]
       }
     ]
@@ -6536,7 +6549,8 @@
         "effects": [
           "attr(stamina) += 1",
           "fitness -= 6",
-          "rel(coach) += 3"
+          "rel(coach) += 3",
+          "persistence += 2"
         ]
       },
       {
@@ -6544,7 +6558,8 @@
         "text": "לנוח כשאפשר ולשרוד את זה",
         "effects": [
           "fitness += 5",
-          "form -= 2"
+          "form -= 2",
+          "persistence -= 1"
         ]
       },
       {
@@ -8628,7 +8643,8 @@
         "effects": [
           "attr(finishing) += 1",
           "fitness -= 5",
-          "morale += 1"
+          "morale += 1",
+          "persistence += 2"
         ]
       },
       {
@@ -9456,7 +9472,8 @@
         "effects": [
           "fitness -= 8",
           "rel(coach) += 4",
-          "attr(stamina) += 1"
+          "attr(stamina) += 1",
+          "persistence += 2"
         ]
       },
       {
@@ -9466,7 +9483,8 @@
         "effects": [
           "rel(coach) -= 6",
           "rel(teammate) += 6",
-          "flag(defiant) += 1"
+          "flag(defiant) += 1",
+          "persistence -= 2"
         ]
       },
       {

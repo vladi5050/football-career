@@ -7,7 +7,7 @@ import { parseCondition, testCondition, type Ast, type EvalEnv } from './conditi
 import {
   ATTR_HE, addNews, changeRelation, clamp, fmtMoney, firstName, logOnce, ovr, pushHistory, relationOf, seasonWeekOf, userClub, userLeague, userPlayer,
 } from './helpers';
-import { injureUser } from './development';
+import { changePersistence, injureUser, persistenceOf } from './development';
 import { fixtureFor, isWindowOpen, nextFixture } from './schedule';
 import { spawnOffer } from './transfers';
 
@@ -23,7 +23,7 @@ export const EVENT_TUNING = {
 
 export type Effect =
   | { k: 'rel'; role: string; d: number }
-  | { k: 'stat'; key: 'morale' | 'fame' | 'money' | 'form' | 'fitness' | 'potential'; d: number }
+  | { k: 'stat'; key: 'morale' | 'fame' | 'money' | 'form' | 'fitness' | 'potential' | 'persistence'; d: number }
   | { k: 'attr'; key: string; d: number }
   | { k: 'flag'; name: string; d: number; set: boolean }
   | { k: 'memory'; role: string; tag: string; weight: number }
@@ -55,7 +55,7 @@ export function parseEffect(src: string): Effect {
   if (m) {
     const [, key, op, num] = m;
     const n = parseFloat(num) * (op === '-=' ? -1 : 1);
-    if (['morale', 'fame', 'money', 'form', 'fitness', 'potential'].includes(key)) return { k: 'stat', key: key as 'morale', d: n };
+    if (['morale', 'fame', 'money', 'form', 'fitness', 'potential', 'persistence'].includes(key)) return { k: 'stat', key: key as 'morale', d: n };
     return { k: 'unknown', src: s };
   }
   m = /^(\w+)\s*\(([\s\S]*)\)$/.exec(s);
@@ -191,6 +191,7 @@ export function makeEnv(world: World, cast: Record<string, number>): EvalEnv {
         case 'form': return user.form;
         case 'morale': return user.morale;
         case 'fitness': return user.fitness;
+        case 'persistence': return persistenceOf(world);
         case 'seasonWeek': return world.season.week + 1;
         case 'season': return world.season.number;
         case 'absWeek': return world.absWeek;
@@ -452,6 +453,7 @@ export function resolveEvent(world: World, content: Content, uid: number, option
   pushHistory(world, t.id, text, t.id, ev.cast);
   pushHistory(world, `${t.id}.${opt.id}`, text, t.id);
   const before = snapshot(world, ev.cast);
+  if (t.category === 'discipline') changePersistence(world, -1); // the incident itself says something about habits
   const notes = applyEffects(world, content, compileTemplate(t).effects[opt.id] ?? [], ev.cast, rng, text);
   for (const ch of opt.chain ?? []) {
     world.pending.push({ templateId: ch.event, atWeek: world.absWeek + Math.max(1, ch.after), cast: { ...ev.cast } });
@@ -465,13 +467,13 @@ function addNewsForBig(world: World, category: string, title: string): void {
   if (category === 'media' || category === 'transfer' || category === 'national') addNews(world, { kind: 'event', headline: title });
 }
 
-interface Snap { rel: Map<number, number>; morale: number; fame: number; money: number; form: number; fitness: number; potential: number; attr: Record<string, number>; role?: string; goals: number; promises: number; newsTop: unknown }
+interface Snap { rel: Map<number, number>; morale: number; fame: number; money: number; form: number; fitness: number; potential: number; persistence: number; attr: Record<string, number>; role?: string; goals: number; promises: number; newsTop: unknown }
 
 function snapshot(world: World, cast: Record<string, number>): Snap {
   const u = userPlayer(world);
   const rel = new Map<number, number>();
   for (const id of Object.values(cast)) if (world.people[id]) rel.set(id, relationOf(world.people[id], u.id));
-  return { rel, morale: u.morale, fame: world.career.fame, money: world.career.money, form: u.form, fitness: u.fitness, potential: u.potential,
+  return { rel, morale: u.morale, fame: world.career.fame, money: world.career.money, form: u.form, fitness: u.fitness, potential: u.potential, persistence: persistenceOf(world),
     attr: { ...(u.attr as unknown as Record<string, number>) }, role: u.contract?.role, goals: world.career.goals.length, promises: world.career.promises.length, newsTop: world.news[0] };
 }
 
@@ -496,6 +498,7 @@ function describeOutcome(world: World, b: Snap, effects: Effect[], cast: Record<
   stat('כושר', u.form - b.form);
   stat('מוכנות גופנית', u.fitness - b.fitness);
   stat('פוטנציאל', u.potential - b.potential);
+  stat('התמדה באימון', persistenceOf(world) - b.persistence);
   const a = u.attr as unknown as Record<string, number>;
   for (const k of Object.keys(a)) stat(ATTR_HE[k as keyof typeof ATTR_HE] ?? k, a[k] - (b.attr[k] ?? a[k]), 1);
   const dm = world.career.money - b.money;
@@ -527,6 +530,7 @@ export function applyEffects(world: World, content: Content, effects: Effect[], 
         else if (e.key === 'morale') user.morale = clamp(user.morale + e.d, 0, 100);
         else if (e.key === 'fitness') user.fitness = clamp(user.fitness + e.d, 0, 100);
         else if (e.key === 'potential') user.potential = clamp(user.potential + e.d, 30, 99);
+        else if (e.key === 'persistence') changePersistence(world, e.d);
         break;
       case 'attr': {
         const a = user.attr as unknown as Record<string, number>;

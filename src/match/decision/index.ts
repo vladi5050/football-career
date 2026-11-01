@@ -341,10 +341,10 @@ const CSS = `
 @keyframes dmBlink{50%{opacity:.6}}
 .dm-timer-n{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 12px/1 var(--f-body,'Assistant');color:#1b2a4a;text-shadow:0 0 3px rgba(255,255,255,.7)}
 .dm-root[data-phase=act] .dm-timer,.dm-root[data-phase=result] .dm-timer{opacity:0;transition:opacity .3s}
-.dm-opts{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding-top:4px}
+.dm-opts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px;padding-top:4px}
 .dm-opts.odd .dm-card:last-child{grid-column:1 / -1}
 .dm-opts.gone{display:none}
-.dm-card{position:relative;min-height:84px;padding:10px 11px 9px;border-radius:14px;border:0;text-align:right;cursor:pointer;
+.dm-card{position:relative;min-width:0;overflow-wrap:anywhere;min-height:84px;padding:10px 11px 9px;border-radius:14px;border:0;text-align:right;cursor:pointer;
   background:linear-gradient(180deg,#ffffff 0%,#f1f2ee 100%);color:#1b2a4a;font-family:inherit;
   box-shadow:0 4px 0 #9aa1a8,0 8px 16px rgba(0,0,0,.28);display:flex;flex-direction:column;justify-content:space-between;gap:8px;
   transition:transform .12s ease,box-shadow .12s ease,opacity .25s ease;touch-action:manipulation}
