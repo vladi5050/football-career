@@ -30,6 +30,8 @@ export function AgentScreen() {
     <main class="screen has-nav agent-screen">
       <TopBar v={v} title="הסוכן" />
 
+      <div class="cols agent-cols">
+      <div class="col col-a">
       <TapedCard tape="both" class="agent-card">
         <div class="agent-top">
           <Avatar name={a.name} role="agent" size="lg" />
@@ -51,6 +53,8 @@ export function AgentScreen() {
         </div>
       </TapedCard>
 
+      </div>
+      <div class="col col-b">
       <h2 class="section-title">
         הצעות על השולחן <small>{offers.length ? `${offers.length} פתוחות` : ''}</small>
       </h2>
@@ -107,6 +111,8 @@ export function AgentScreen() {
           </button>
         </div>
       )}
+      </div>
+      </div>
     </main>
   );
 }

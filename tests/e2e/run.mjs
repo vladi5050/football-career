@@ -299,7 +299,7 @@ async function readWorld(page) {
     tables[lid] = rows.map((t) => (Array.isArray(t) ? { clubId: t[0], p: t[1], w: t[2], d: t[3], l: t[4], gf: t[5], ga: t[6], pts: t[7] } : t));
   return { version: f.version, bytes: raw.length, season: w.season?.number, week: w.season?.week, phase: w.phase, leagues: w.leagues, clubs, tables, career: w.career, report: w.lastWeekReport };
 }
-const sortRows = (rows) => rows.slice().sort((a, b) => b.pts - a.pts || b.gf - b.ga - (a.gf - a.ga) || b.gf - a.gf);
+const sortRows = (rows) => rows.slice().sort((a, b) => b.pts - a.pts || b.gf - b.ga - (a.gf - a.ga) || b.gf - a.gf || b.w - a.w || a.clubId - b.clubId); // same order as core sortedTable
 /** Round robins per season by league size (core round 5): up to 10 clubs meet 4 times, 11-12 clubs 3 times, else twice. */
 const legsFor = (n) => (n <= 10 ? 4 : n <= 12 ? 3 : 2);
 const REGION = { north: 'צפון', south: 'דרום', 'צפון': 'צפון', 'דרום': 'דרום' };

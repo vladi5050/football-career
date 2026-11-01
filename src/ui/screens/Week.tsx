@@ -174,6 +174,9 @@ export function WeekScreen() {
         </div>
       )}
 
+      {/* phone: .cols/.col are display:contents (same order as before); tablet+: two columns */}
+      <div class="cols week-cols">
+      <div class="col col-a">
       <div class="board-wrap">
         <div class="board week-board">
           <div class="wb-head">
@@ -244,6 +247,8 @@ export function WeekScreen() {
         </div>
       </div>
 
+      </div>
+      <div class="col col-b">
       <section class="tray" aria-label="מגנטים">
         <div class="tray-scroll">
           {(inj
@@ -281,6 +286,8 @@ export function WeekScreen() {
         </div>
         {ng && !inj && <ProgressNearGoal text={ng.text} progress={ng.value} target={ng.target} />}
       </section>
+      </div>
+      </div>
 
       <div class="action-bar">
         <button class="btn btn-ink" type="button" onClick={quick} disabled={busy.value}>

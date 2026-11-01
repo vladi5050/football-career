@@ -133,20 +133,7 @@ bdi.num {
     background: rgba(26, 41, 64, 0.35);
   }
 }
-@media (min-width: 1024px) {
-  .side-panel {
-    display: flex;
-    flex-direction: column;
-    gap: var(--s4);
-    width: 360px;
-    padding: calc(var(--s6) + var(--safe-t)) 0 var(--s6);
-    position: sticky;
-    top: 0;
-    align-self: flex-start;
-    max-height: 100dvh;
-    overflow: auto;
-  }
-}
+/* side panel layout: see responsive.css (desktop >= 1100px) */
 
 /* reduced motion: user setting (html.rm) or OS */
 html.rm *,

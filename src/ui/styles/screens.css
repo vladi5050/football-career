@@ -757,13 +757,7 @@ mark {
 @media (min-width: 600px) {
   .days { gap: 12px; }
 }
-@media (min-width: 1024px) {
-  .shell-row { align-items: flex-start; }
-  .side-panel .club-cell { max-width: 200px; }
-  /* main column sits right of the side panel: keep fixed bars aligned with it */
-  .shell-row.has-side .bottom-nav,
-  .shell-row.has-side .action-bar { left: calc(50% + 194px); }
-}
+/* desktop layout: see responsive.css */
 
 /* ---------------------------------------------------------------- round 2: contract readability */
 .slider { direction: ltr; }

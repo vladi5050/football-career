@@ -115,7 +115,8 @@ export function toast(text: string, ms = 3500): void {
   if (last != null && now - last < TOAST_DEDUPE_MS) return;
   recentToasts.set(text, now);
   for (const [k, t] of recentToasts) if (now - t > TOAST_DEDUPE_MS) recentToasts.delete(k);
-  if (toastQueue.length >= 3) toastQueue.shift();
+  // the engine puts the important line first (signed terms, injuries); when the queue is full, the newest extra waits out
+  if (toastQueue.length >= 5) return;
   toastQueue.push({ text, ms });
   if (!toasts.value.length && !toastTimer) showNextToast();
 }

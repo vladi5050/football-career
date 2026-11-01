@@ -883,3 +883,5 @@
 .outcome-line.tone-up .ol-delta { color: #1f7a37; }
 .outcome-line.tone-down .ol-delta { color: #b01d31; }
 .outcome-follow { margin: var(--s3) 0 0; font-weight: 700; color: #b5651d; }
+
+.ng-target:not(.num) { font-family: var(--f-body); font-size: 13px; font-weight: 800; white-space: nowrap; }

@@ -4,6 +4,7 @@ import type { View } from '../../core/types';
 import { vx } from '../viewExtras';
 import { TopBar } from '../components/TopBar';
 import { Crest } from '../components/Crest';
+import { MQ_DESKTOP, MQ_TABLET, matches, useMedia } from '../useMedia';
 
 const FORM_HE: Record<string, string> = { W: 'נ', D: 'ת', L: 'ה' };
 
@@ -19,12 +20,14 @@ export function leagueRound(v: View): { played: number; total: number } {
  * Fits 360-430px without horizontal scroll: fixed layout, the club name takes the remaining width and ellipsizes.
  * "מקוצר": # · club · מש׳ · הפרש · נק׳.  "מלא": # · club · נ-ת-ה · כושר · נק׳.  Tap a row for its details.
  */
-export function LeagueTable({ v, compact, full }: { v: View; compact?: boolean; full?: boolean }) {
+export function LeagueTable({ v, compact, full, all }: { v: View; compact?: boolean; full?: boolean; all?: boolean }) {
   const zones = vx(v).leagueZones ?? { promote: 0, relegate: 2, champion: 1 };
   const [open, setOpen] = useState<number | null>(null);
   const n = v.table.length;
   const rows = compact ? v.table.slice(0, 8) : v.table;
   const wide = full && !compact;
+  // desktop full view: every column (מש׳ נ ת ה שערים הפרש נק׳ כושר)
+  if (wide && all) return <LeagueTableAll v={v} open={open} setOpen={setOpen} />;
   return (
     <table class={`ltable ${compact ? 'compact' : ''} ${wide ? 'full' : ''}`}>
       <colgroup>
@@ -112,10 +115,94 @@ export function LeagueTable({ v, compact, full }: { v: View; compact?: boolean; 
   );
 }
 
+function LeagueTableAll({ v, open, setOpen }: { v: View; open: number | null; setOpen: (n: number | null) => void }) {
+  const zones = vx(v).leagueZones ?? { promote: 0, relegate: 2, champion: 1 };
+  const n = v.table.length;
+  return (
+    <table class="ltable full all">
+      <colgroup>
+        <col class="w-pos" />
+        <col />
+        <col class="w-p" />
+        <col class="w-n" />
+        <col class="w-n" />
+        <col class="w-n" />
+        <col class="w-goals" />
+        <col class="w-gd" />
+        <col class="w-pts" />
+        <col class="w-form" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th class="c-pos">#</th>
+          <th class="c-club">קבוצה</th>
+          <th>מש׳</th>
+          <th>נ׳</th>
+          <th>ת׳</th>
+          <th>ה׳</th>
+          <th>שערים</th>
+          <th>הפרש</th>
+          <th class="c-pts">נק׳</th>
+          <th class="c-form">כושר</th>
+        </tr>
+      </thead>
+      <tbody>
+        {v.table.flatMap((r, i) => {
+          const pos = i + 1;
+          const zone = pos <= (zones.champion ?? 0) ? 'z-champ' : pos <= zones.promote ? 'z-promo' : pos > n - zones.relegate ? 'z-releg' : '';
+          const me = r.clubId === v.club?.id;
+          const gd = r.gf - r.ga;
+          const gdText = gd > 0 ? `+${gd}` : String(gd);
+          const isOpen = open === r.clubId;
+          const main = (
+            <tr key={r.clubId} class={`${zone} ${me ? 'me' : ''} tap`} onClick={() => setOpen(isOpen ? null : r.clubId)} aria-expanded={isOpen}>
+              <td class="c-pos num">{pos}</td>
+              <td class="c-club">
+                <div class="club-cell">
+                  <Crest spec={r.crest} colors={r.colors} name={r.name} short={r.short} size={24} />
+                  <span class="cc-name">{r.name}</span>
+                </div>
+              </td>
+              <td class="num">{r.p}</td>
+              <td class="num">{r.w}</td>
+              <td class="num">{r.d}</td>
+              <td class="num">{r.l}</td>
+              <td class="num"><bdi>{r.gf}:{r.ga}</bdi></td>
+              <td class="num">{gdText}</td>
+              <td class="c-pts num">{r.pts}</td>
+              <td class="c-form">
+                {r.form.slice(-5).map((f, j) => (
+                  <i key={j} class={`fd fd-${f}`} title={FORM_HE[f] ?? f} />
+                ))}
+              </td>
+            </tr>
+          );
+          if (!isOpen) return [main];
+          return [
+            main,
+            <tr key={`${r.clubId}-d`} class={`row-detail ${me ? 'me' : ''}`}>
+              <td colSpan={10}>
+                <div class="rd">
+                  <b>{r.name}</b>
+                  <span>
+                    {r.p} משחקים · {r.w} נ׳ {r.d} ת׳ {r.l} ה׳ · שערים <bdi class="num">{r.gf}:{r.ga}</bdi> ({gdText})
+                  </span>
+                </div>
+              </td>
+            </tr>,
+          ];
+        })}
+      </tbody>
+    </table>
+  );
+}
+
 export function TableScreen() {
   const v = view.value!;
   const zones = vx(v).leagueZones ?? { promote: 0, relegate: 2, champion: 1 };
-  const [full, setFull] = useState(false);
+  // phone starts compact; tablet and desktop start on the full view
+  const [full, setFull] = useState(() => matches(MQ_TABLET));
+  const desktop = useMedia(MQ_DESKTOP);
   const { played, total } = leagueRound(v);
   return (
     <main class="screen has-nav table-screen">
@@ -125,7 +212,7 @@ export function TableScreen() {
         <button type="button" aria-pressed={full} onClick={() => setFull(true)}>מלא</button>
       </div>
       <div class="paper table-paper">
-        <LeagueTable v={v} full={full} />
+        <LeagueTable v={v} full={full} all={desktop} />
       </div>
       <div class="legend">
         {(zones.champion ?? 0) > 0 && <span><i class="lgd z-champ" /> אליפות</span>}
