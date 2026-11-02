@@ -109,26 +109,6 @@ export function WeekEndScreen() {
         </p>
       )}
 
-      {rep && rep.autoEvents && rep.autoEvents.length > 0 && (
-        <section class="paper slim auto-events" aria-label="החלטות שהתקבלו בשבוע מהיר">
-          <h3 class="auto-events-title">בשבוע המהיר החלטנו בשבילך</h3>
-          <ul>
-            {rep.autoEvents.map((t) => <li key={t}>{t}</li>)}
-          </ul>
-        </section>
-      )}
-
-      {rep && rep.nearGoals.length > 0 && (
-        <section class="near-list">
-          {rep.nearGoals.slice(0, 2).map((n) => (
-            <div key={n.text} class="paper slim">
-              {/* Fill is exactly progress/target; the engine keeps both in the same unit. */}
-              <ProgressNearGoal text={n.text} progress={n.progress} target={n.target} />
-            </div>
-          ))}
-        </section>
-      )}
-
       {offseason && (
         <section class="paper summer-card" aria-labelledby="summer-title">
           <h2 class="paper-title" id="summer-title">החלטות הקיץ</h2>
@@ -149,6 +129,28 @@ export function WeekEndScreen() {
             )}
           </div>
           {blocked && <p class="summer-note">השיחות על חידוש התפוצצו. בחלון הזה {v.club?.name} לא יחזרו לשולחן.</p>}
+        </section>
+      )}
+
+      {/* secondary reading: on phones a panel that scrolls by itself so the page never does; display:contents elsewhere */}
+      <div class="we-more">
+      {rep && rep.autoEvents && rep.autoEvents.length > 0 && (
+        <section class="paper slim auto-events" aria-label="החלטות שהתקבלו בשבוע מהיר">
+          <h3 class="auto-events-title">בשבוע המהיר החלטנו בשבילך</h3>
+          <ul>
+            {rep.autoEvents.map((t) => <li key={t}>{t}</li>)}
+          </ul>
+        </section>
+      )}
+
+      {rep && rep.nearGoals.length > 0 && (
+        <section class="near-list">
+          {rep.nearGoals.slice(0, 2).map((n) => (
+            <div key={n.text} class="paper slim">
+              {/* Fill is exactly progress/target; the engine keeps both in the same unit. */}
+              <ProgressNearGoal text={n.text} progress={n.progress} target={n.target} />
+            </div>
+          ))}
         </section>
       )}
 
@@ -173,6 +175,8 @@ export function WeekEndScreen() {
           </ol>
         </TapedCard>
       )}
+
+      </div>
 
       {!rep && <div class="paper empty">השבוע נגמר.</div>}
 

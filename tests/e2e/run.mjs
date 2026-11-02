@@ -374,7 +374,12 @@ async function audit(page, where) {
       });
     });
     const grammar = [...new Set(text.match(/(^|[^\d.,])1 (שערים|הופעות|בישולים|משחקים|שבועות|נקודות|עונות|שנים|חודשים)/g) || [])];
-    return { bad, english, rawIds, emDash, sw, iw, wide, small, barOff, covered, grammar };
+    // phone app-shell: the page never scrolls; fixed-content screens (and the decision overlay) fit the viewport
+    const ih = window.innerHeight;
+    const pageOver = document.scrollingElement.scrollHeight - ih;
+    const scr = document.querySelector('.dm-root') || document.querySelector('main.screen');
+    const screenOver = scr ? scr.scrollHeight - scr.clientHeight : 0;
+    return { bad, english, rawIds, emDash, sw, iw, ih, wide, small, barOff, covered, grammar, pageOver, screenOver };
   });
   log.audits[where] = (log.audits[where] || 0) + 1;
   const sp = () => shot(page, `issue-${where}`);
@@ -388,7 +393,14 @@ async function audit(page, where) {
   if (r.barOff) issue('action bar off-screen', where, where, await sp());
   if (r.covered.length) issue('BUG-13: toast covers UI', `${where}: ${r.covered.join(' ; ')}`, where, await sp());
   if (r.grammar.length) issue('BUG-11: "1 + plural"', `${where}: ${r.grammar.join(', ')}`, where, await sp());
+  if (r.iw < 700) {
+    const base = String(where).split(':').pop();
+    if (r.pageOver > 1) issue('page scrolls on phone', `${where} ${r.iw}x${r.ih}: page ${r.pageOver}px taller than the viewport`, where, await sp());
+    else if (PHONE_FIT.has(base) && r.screenOver > 1) issue('page scrolls on phone', `${where} ${r.iw}x${r.ih}: screen content ${r.screenOver}px taller than the viewport`, where, await sp());
+  }
 }
+/** Screens that must fit one phone viewport without scrolling (long lists scroll inside their own panel instead). */
+const PHONE_FIT = new Set(['title', 'new', 'reveal', 'week', 'prematch', 'match', 'match-moment', 'match-fulltime', 'decision', 'weekend', 'event', 'contract', 'career-end']);
 
 // ------------------------------------------------------------------ flows
 const POS_INDEX = { ST: 0, W: 1, AM: 2, CM: 3, DM: 4, FB: 5, CB: 6, GK: 7 };
@@ -2347,7 +2359,7 @@ function summary() {
   for (const [type, list] of byType) {
     auditRows.push(['FAIL', 'ui-audit', type, '', `${list.length} distinct: ${list.slice(0, 3).map((x) => x.detail).join(' | ')}`]);
   }
-  for (const t of ['placeholder/garbage text', 'english text', 'raw id in UI', 'horizontal overflow', 'tap target < 40px', 'em-dash in UI', 'action bar off-screen', 'BUG-13: toast covers UI', 'BUG-11: "1 + plural"', 'injury not shown on week screen', 'league table (phone-fit)', 'decision overlay overflows horizontally', 'decision card label clipped'])
+  for (const t of ['placeholder/garbage text', 'english text', 'raw id in UI', 'horizontal overflow', 'tap target < 40px', 'em-dash in UI', 'action bar off-screen', 'BUG-13: toast covers UI', 'BUG-11: "1 + plural"', 'injury not shown on week screen', 'league table (phone-fit)', 'decision overlay overflows horizontally', 'decision card label clipped', 'page scrolls on phone'])
     if (!byType.has(t)) auditRows.push(['PASS', 'ui-audit', t, '', '']);
   const all = [...rows, ...auditRows];
   const w = [4, 16, 52, 7];

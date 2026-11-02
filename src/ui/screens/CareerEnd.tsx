@@ -207,6 +207,8 @@ export function CareerEndScreen() {
   const crestRef = useRef<HTMLDivElement>(null);
   const [url, setUrl] = useState<string | null>(null);
   const [blob, setBlob] = useState<Blob | null>(null);
+  // phones: the share card and the numbers/road are two tabs so the card fits the screen; tablet+ shows everything
+  const [tab, setTab] = useState<'card' | 'story'>('card');
   const clubs = clubPath(v);
   const cs = v.player.careerStats;
   const colors = v.club?.colors ?? (['#F28C28', '#1B2A4A'] as [string, string]);
@@ -253,12 +255,17 @@ export function CareerEndScreen() {
   };
 
   return (
-    <main class="screen has-actions career-end">
+    <main class={`screen has-actions career-end ce-tab-${tab}`}>
       <header class="ce-head">
         <span class="chip chip-orange">סוף הקריירה</span>
         <h1 class="h1">{v.player.name}</h1>
         <p class="muted-wall">{v.career.retirementReason ?? 'תלית את הנעליים.'}</p>
       </header>
+
+      <div class="seg ce-tabs" role="group" aria-label="תצוגת סוף הקריירה">
+        <button type="button" aria-pressed={tab === 'card'} onClick={() => setTab('card')}>הכרטיס</button>
+        <button type="button" aria-pressed={tab === 'story'} onClick={() => setTab('story')}>המספרים והדרך</button>
+      </div>
 
       <div class="ce-card">
         {url ? <img src={url} alt="כרטיס הקריירה שלך לשיתוף" width={1080} height={1920} /> : <div class="ce-card-ph">מכין את הכרטיס...</div>}

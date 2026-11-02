@@ -1,3 +1,4 @@
+import { useState } from 'preact/hooks';
 import { view } from '../../app/store';
 import type { PersonView } from '../../core/types';
 import { vx } from '../viewExtras';
@@ -41,8 +42,10 @@ export function ClubScreen() {
   const foeCand = byRel[byRel.length - 1];
   const foe = foeCand && foeCand !== friend && foeCand.relation < 0 ? foeCand : null;
   const rest = mates.filter((m) => m !== friend && m !== foe);
+  // phones: "me" and "people" are two tabs so neither page is a long scroll; tablet+ shows both columns
+  const [tab, setTab] = useState<'me' | 'people'>('me');
   return (
-    <main class="screen has-nav club-screen">
+    <main class={`screen has-nav club-screen club-tab-${tab}`}>
       <TopBar v={v} title="המועדון" />
 
       <div class="cols club-cols">
@@ -72,6 +75,11 @@ export function ClubScreen() {
           </div>
         </div>
       )}
+
+      <div class="seg club-tabs" role="group" aria-label="תצוגת המועדון">
+        <button type="button" aria-pressed={tab === 'me'} onClick={() => setTab('me')}>אני</button>
+        <button type="button" aria-pressed={tab === 'people'} onClick={() => setTab('people')}>אנשים{v.rival ? ' ויריב' : ''}</button>
+      </div>
 
       <TapedCard tape="right" class="me-card">
         <div class="me-top">

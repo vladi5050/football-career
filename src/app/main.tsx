@@ -4,6 +4,7 @@ import '../ui/styles/base.css';
 import '../ui/styles/components.css';
 import '../ui/styles/anim.css';
 import '../ui/styles/screens.css';
+import '../ui/styles/phone.css';
 import '../ui/styles/responsive.css';
 import { App } from '../ui/App';
 import { hasSave, navigate, screen, setSimApi, view, type SimApi } from './store';

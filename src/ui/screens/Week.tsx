@@ -175,7 +175,7 @@ export function WeekScreen() {
           <span class="ib-cross" aria-hidden="true">+</span>
           <div>
             <b>פצוע: {weeksHe(inj.weeksLeft)}</b>
-            <span>{inj.kind}. האימונים הופכים לשיקום, ובשבת אתה ביציע.</span>
+            <span>{inj.kind}<span class="ib-more">. האימונים הופכים לשיקום, ובשבת אתה ביציע.</span></span>
           </div>
         </div>
       )}
@@ -313,7 +313,7 @@ export function WeekScreen() {
           disabled={busy.value}
           title={speed === 'full' ? 'השבועות שאינם חשובים ירוצו לבד, עד המשחק החשוב הבא' : `קצב העונה: ${SEASON_SPEEDS.find((x) => x.id === speed)?.label ?? ''}`}
         >
-          <IconBolt size={18} /><IconBolt size={18} /> שבוע מהיר עד המשחק הבא
+          <IconBolt size={18} /><IconBolt size={18} /> <span class="ff-text">שבוע מהיר עד המשחק הבא</span>
         </button>
         <button class="btn btn-primary grow2" type="button" onClick={closeWeek} disabled={!full || busy.value}>
           {full ? 'סגור את השבוע' : `עוד ${missing} מגנט${missing > 1 ? 'ים' : ''}`}
