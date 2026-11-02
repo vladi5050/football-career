@@ -1,0 +1,397 @@
+/* ==========================================================================
+   Phone app-shell (< 700px). The page itself never scrolls: the shell is exactly
+   one viewport tall, fixed-content screens are sized to fit it (height queries
+   below), and long screens (table, club, news, settings, goals, agent) scroll
+   inside their own <main> with the top bar pinned. Tablet/desktop: untouched.
+   ========================================================================== */
+
+/* wrappers that only exist for the phone fit */
+.we-more { display: contents; }
+
+@media (max-width: 699.98px) {
+  #app {
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .shell-row,
+  .shell {
+    height: 100dvh;
+    min-height: 0;
+  }
+  .screen-host {
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+  .screen {
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: clip;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+  .screen::-webkit-scrollbar {
+    display: none;
+  }
+  /* the header stays put while a long screen scrolls under it (planks line up: fixed attachment) */
+  .screen > .topbar {
+    position: sticky;
+    top: calc(-1 * (var(--safe-t) + var(--s3))); /* sticky insets count from the scroller's content box */
+    z-index: 6;
+    margin: calc(-1 * (var(--safe-t) + var(--s3))) calc(-1 * var(--s4)) 0;
+    padding: calc(var(--safe-t) + var(--s3)) var(--s4) var(--s2);
+    background-color: var(--wall);
+    background-image:
+      linear-gradient(90deg, rgba(0, 0, 0, 0.22) 0 2px, transparent 2px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px);
+    background-size: 58px 100%, 58px 100%;
+    background-position: 0 0, 3px 0;
+    background-attachment: fixed;
+  }
+}
+
+/* ------------------------------------------------------------------ fixed-content screens: shared */
+@media (max-width: 699.98px) {
+  .screen {
+    padding-top: calc(var(--safe-t) + clamp(6px, 1.4dvh, 12px));
+    gap: clamp(6px, 1.4dvh, 12px);
+  }
+  .screen > .topbar {
+    top: calc(-1 * (var(--safe-t) + clamp(6px, 1.4dvh, 12px)));
+    margin-top: calc(-1 * (var(--safe-t) + clamp(6px, 1.4dvh, 12px)));
+    padding-top: calc(var(--safe-t) + clamp(6px, 1.4dvh, 12px));
+  }
+  .topbar { min-height: clamp(44px, 6.2dvh, 52px); }
+  .topbar .tb-title { font-size: clamp(26px, 3.6dvh, 30px); }
+}
+
+/* ------------------------------------------------------------------ week */
+@media (max-width: 699.98px) {
+  .week-board { gap: clamp(4px, 0.95dvh, 8px); padding: clamp(6px, 1.2dvh, 10px) 8px clamp(4px, 0.95dvh, 8px); }
+  .wb-head .board-title { font-size: clamp(24px, 3.5dvh, 30px); }
+  .day { min-height: 0; gap: clamp(0px, 0.25dvh, 2px); padding: clamp(3px, 0.7dvh, 6px) 4px; }
+  .day-name { font-size: clamp(20px, 2.85dvh, 24px); }
+  .day-drop { height: clamp(42px, 6.6dvh, 56px); }
+  .day-mag .magnet { --size: clamp(38px, 5.45dvh, 46px) !important; }
+  .day-plus { width: clamp(38px, 5.45dvh, 46px); height: clamp(38px, 5.45dvh, 46px); font-size: 22px; }
+  .day-label { font-size: 13px; }
+  .day-hint { font-size: 11px; line-height: 1.2; }
+  .sat-card { padding: clamp(4px, 0.95dvh, 8px) 10px; }
+  .sat-card svg { width: clamp(26px, 4dvh, 34px); height: auto; }
+  .sat-day { font-size: clamp(22px, 3.1dvh, 26px); }
+  .coach-note { font-size: clamp(22px, 3.55dvh, 30px); }
+  .coach-note .sig { margin-top: 2px; font-size: 12px; }
+  .board-tray { height: 10px; }
+  .tray-scroll { padding: 2px var(--s4) 0; }
+  .tray-item { padding: 2px 0; gap: 2px; }
+  .tray-item .magnet { --size: clamp(38px, 5.2dvh, 44px) !important; }
+  .week-status { gap: clamp(6px, 1.2dvh, 12px); padding: clamp(8px, 1.4dvh, 12px) var(--s4); }
+  /* fitness and projected side by side: one row instead of two */
+  .week-status .meter-row { grid-template-columns: auto minmax(0, 1fr) 24px auto minmax(0, 1fr) 24px; gap: 6px; }
+  .week-status .meter-row .meter-val { text-align: center; }
+  .train-factors { font-size: 13px; gap: 2px var(--s3); }
+  /* one action row on short phones: the long "until the next match" button becomes an icon button */
+  .action-bar.week-actions > .ff-btn .ff-text { display: inline; }
+  .screen.week-screen.has-nav.has-actions { padding-bottom: calc(var(--nav-h) + 84px + 48px + var(--safe-b)); }
+}
+@media (max-width: 699.98px) and (max-height: 860px) {
+  .wb-head { display: none; }
+  .action-bar.week-actions { flex-wrap: nowrap; }
+  .action-bar.week-actions > .ff-btn { order: 0; flex: 0 0 52px; min-width: 52px; padding-inline: 0; gap: 0; }
+  .action-bar.week-actions > .ff-btn .ff-text {
+    position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+  }
+  .action-bar.week-actions > .ff-btn svg { width: 16px; height: 16px; margin-inline: -2px; }
+  .screen.week-screen.has-nav.has-actions { padding-bottom: calc(var(--nav-h) + 72px + var(--safe-b)); }
+}
+@media (max-width: 699.98px) and (max-height: 860px) {
+  .action-bar.week-actions > .btn:not(.ff-btn) { flex: 1 1 0; min-width: 0; padding-inline: 8px; }
+  .action-bar.week-actions > .btn.grow2 { flex: 1.6 1 0; }
+}
+@media (max-width: 400px) and (max-height: 860px) {
+  .action-bar.week-actions > .btn:not(.ff-btn) { font-size: 16px; gap: 4px; }
+}
+
+/* ------------------------------------------------------------------ action bar room (the bar is ~72px; 96px left dead space) */
+@media (max-width: 699.98px) {
+  .screen.has-actions { padding-bottom: calc(80px + var(--safe-b)); }
+}
+
+/* ------------------------------------------------------------------ new career */
+@media (max-width: 699.98px) {
+  .board.tactics { max-height: clamp(210px, 40dvh, 46dvh); }
+  .pos-blurb { font-size: clamp(14px, 2dvh, 16px); }
+  .pos-blurb b { font-size: clamp(22px, 3.1dvh, 26px); }
+  .speed-sub { min-height: 0; font-size: 13px; }
+  .new-career { gap: clamp(6px, 1.2dvh, 12px); }
+}
+@media (max-width: 699.98px) and (max-height: 760px) {
+  .new-career .tb-sub { font-size: 13px; }
+  .new-career .pos-spot .magnet { --size: 38px !important; }
+  .new-career .pos-spot.sel .magnet { --size: 46px !important; }
+  .new-career .pos-spot { min-width: 56px; min-height: 56px; }
+  .new-career .field { gap: 2px; }
+  .new-career .input { min-height: 44px; padding-block: 6px; }
+  .new-career .stepper button { width: 42px; height: 42px; }
+  .new-career .speed-pick { gap: 4px; }
+}
+
+/* ------------------------------------------------------------------ prematch */
+@media (max-width: 699.98px) {
+  .prematch-screen { gap: clamp(6px, 1.4dvh, 16px); }
+  .matchup { padding: clamp(10px, 2dvh, 20px) var(--s3) clamp(8px, 1.6dvh, 16px); gap: var(--s2); }
+  .matchup svg { width: clamp(52px, 10dvh, 84px); height: auto; }
+  .mu-name { font-size: clamp(22px, 3.6dvh, 30px); }
+  .mu-vs { top: clamp(24px, 5.4dvh, 46px); font-size: clamp(24px, 3.6dvh, 30px); }
+  .lineup-card { gap: clamp(4px, 1.2dvh, 12px); }
+  .lineup-status { font-size: clamp(28px, 4.3dvh, 36px); }
+  .coach-line { font-size: clamp(24px, 3.6dvh, 30px); }
+  .lineup-card .meter-row { grid-template-columns: auto minmax(0, 1fr) 24px auto minmax(0, 1fr) 24px; gap: 6px; }
+}
+
+/* ------------------------------------------------------------------ match: the pitch keeps its size, the feed scrolls inside */
+@media (max-width: 699.98px) {
+  .match-screen { overflow-y: auto; gap: clamp(6px, 1.2dvh, 12px); }
+  .match-screen .pitch { height: clamp(260px, 50dvh, 440px); }
+  .match-screen .feed {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-y: auto;
+    align-content: start;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 24px), transparent);
+    mask-image: linear-gradient(180deg, #000 calc(100% - 24px), transparent);
+  }
+}
+@media (max-width: 699.98px) and (max-height: 700px) {
+  /* the inputs show the name itself; the field labels stay for screen readers */
+  .new-career .name-row .field > span {
+    position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+  }
+  .new-career .board.tactics { max-height: 37dvh; }
+}
+
+/* ------------------------------------------------------------------ weekend: compact report, secondary reading in its own scroll panel */
+@media (max-width: 699.98px) {
+  .weekend-screen { overflow-y: auto; gap: clamp(6px, 1.2dvh, 16px); }
+  .weekend-screen > * { flex-shrink: 0; }
+  .newspaper { padding: clamp(6px, 1.1dvh, 12px) var(--s4) clamp(8px, 1.4dvh, 16px); }
+  .np-mast { margin-bottom: clamp(2px, 0.6dvh, 8px); padding-bottom: 2px; }
+  .np-mast > span:first-child { font-size: clamp(26px, 3.9dvh, 34px); }
+  .np-headline { font-size: clamp(20px, 3dvh, 26px); }
+  .result-card { padding: clamp(10px, 1.6dvh, 16px) var(--s4); gap: clamp(4px, 1dvh, 12px); }
+  .rc-score { font-size: clamp(44px, 7.4dvh, 64px); }
+  .rc-stamp .stamp { width: clamp(66px, 11dvh, 96px); height: clamp(66px, 11dvh, 96px); }
+  .rc-stamp .stamp .stamp-big { font-size: clamp(28px, 4.8dvh, 42px); }
+  .rc-team svg { width: clamp(36px, 5.4dvh, 46px); height: auto; }
+  .gains { gap: clamp(4px, 0.9dvh, 10px); padding-block: clamp(10px, 1.6dvh, 16px); }
+  .gain-val { font-size: clamp(24px, 3.5dvh, 30px); line-height: 1; }
+  .gains .paper-title { font-size: clamp(24px, 3.5dvh, 30px); }
+  .we-more {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+    flex: 1 1 0;
+    min-height: 96px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    margin-inline: calc(-1 * var(--s4));
+    padding: 2px var(--s4) 16px;
+    -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 20px), transparent);
+    mask-image: linear-gradient(180deg, #000 calc(100% - 20px), transparent);
+  }
+  .we-more > * { flex-shrink: 0; }
+  .we-more .section-title { font-size: clamp(24px, 3.5dvh, 30px); }
+  .we-more .loops { padding: var(--s4); }
+}
+
+/* ------------------------------------------------------------------ contract: compact cards, the talk log scrolls inside */
+@media (max-width: 699.98px) {
+  .contract-screen { overflow-y: auto; gap: clamp(6px, 1.1dvh, 12px); padding-bottom: calc(80px + var(--safe-b)); }
+  .contract-screen > * { flex-shrink: 0; }
+  .neg-head svg { width: clamp(38px, 5.6dvh, 52px); height: auto; }
+  .neg-head .tb-title { font-size: clamp(26px, 3.6dvh, 30px); }
+  .neg-head .tb-sub { font-size: 13px; line-height: 1.25; }
+  .offer-now { gap: clamp(4px, 0.8dvh, 8px); padding: clamp(10px, 1.6dvh, 16px) var(--s4); }
+  .on-wage { font-size: clamp(32px, 5.4dvh, 48px); line-height: 1; }
+  .offer-now .chips .chip { min-height: 26px; padding: 2px 9px; font-size: 13px; }
+  .offer-now .patience { font-size: 13px; }
+  .agent-advice { padding: clamp(6px, 1.1dvh, 12px) var(--s3); font-size: 14px; line-height: 1.35; gap: var(--s2); }
+  .agent-advice .avatar.sm { width: 34px; height: 34px; font-size: 16px; }
+  .final-banner { padding: var(--s2) var(--s3); }
+  .final-banner b { font-size: 24px; }
+  .demand { gap: clamp(4px, 0.9dvh, 12px); padding: clamp(10px, 1.6dvh, 16px) var(--s4); grid-template-columns: auto 1fr; align-items: baseline; }
+  .demand > * { grid-column: 1 / -1; }
+  .demand > .paper-title { grid-column: 1; font-size: clamp(24px, 3.3dvh, 28px); }
+  .demand > .wage-out { grid-column: 2; justify-content: flex-end; }
+  .wage-out .display { font-size: clamp(32px, 5dvh, 44px); line-height: 1; }
+  .slider-wrap { padding-top: 18px; }
+  .agent-band { height: 46px; }
+  .demand-row .label { margin-bottom: 2px; }
+  .clause-toggle { min-height: 48px; }
+  .demand .seg button { min-height: 42px; }
+  .neg-log {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1 1 0;
+    flex-shrink: 1;
+    min-height: 44px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+  .neg-log .bubble { flex-shrink: 0; align-self: flex-end; }
+  .neg-log .bubble.mine { align-self: flex-start; }
+}
+@media (max-width: 699.98px) {
+  .screen.contract-screen { padding-bottom: calc(100px + var(--safe-b)); }
+}
+@media (max-width: 699.98px) and (max-height: 760px) {
+  /* short phones: the same facts in fewer lines */
+  .nh-main > .tb-sub { display: inline; }
+  .nh-main > .tb-sub.facilities-line::before { content: ' · '; }
+  .nh-main > .tb-title { display: block; }
+  .agent-advice .aa-say { display: none; }
+  .demand > .role-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .years-pick { display: flex; align-items: center; gap: var(--s2); }
+  .demand-row { align-items: center; }
+  .demand-row .years-pick .label { margin: 0; }
+  .slider-wrap { padding-top: 16px; }
+  .agent-band { height: 40px; }
+  .clause-toggle .tg-text small { font-size: 12px; }
+}
+@media (max-width: 699.98px) and (max-height: 760px) {
+  .nh-main .nh-neg { display: none; }
+  /* offer on the table: wage and the manager's patience side by side, terms under them */
+  .offer-now { grid-template-columns: minmax(0, 1fr) minmax(0, 132px); align-items: center; column-gap: var(--s3); }
+  .offer-now > * { grid-column: 1 / -1; }
+  .offer-now > .on-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .offer-now > .on-row { grid-column: 1; grid-row: 1; }
+  .offer-now > .patience { grid-column: 2; grid-row: 1; font-size: 12px; }
+  .offer-now > .patience .ng-top { flex-direction: column; gap: 0; line-height: 1.2; margin-bottom: 3px; }
+  .offer-now > .chips { grid-row: 2; }
+  .neg-actions .btn-col .sub { display: none; }
+  .neg-actions .btn { margin-bottom: 0; }
+  .screen.contract-screen { padding-bottom: calc(76px + var(--safe-b)); }
+  .neg-log { min-height: 40px; }
+}
+@media (max-width: 699.98px) and (max-height: 760px) {
+  .demand-row { gap: var(--s2); }
+  .years-pick .stepper button { width: 40px; height: 40px; }
+  .years-pick .stepper output { min-width: 22px; font-size: 26px; }
+  .clause-toggle { max-width: none; min-width: 0; padding-inline: 0; gap: 6px; min-height: 46px; }
+  .clause-toggle .tg-text { gap: 0; min-width: 0; }
+  .clause-toggle .tg-text b { white-space: nowrap; font-size: 15px; }
+  .clause-toggle .tg-text small { font-size: 12px; line-height: 1.2; }
+  .clause-toggle .switch { width: 44px; height: 26px; }
+  .clause-toggle .switch::after { top: 3px; right: 3px; width: 20px; height: 20px; }
+  .clause-toggle[aria-checked='true'] .switch::after { transform: translateX(-18px); }
+}
+@media (max-width: 699.98px) and (max-height: 680px) {
+  .demand { gap: 4px; }
+  .demand .seg { padding: 3px; }
+  .demand .seg button { min-height: 40px; }
+  .agent-band { height: 36px; }
+  .slider-wrap { padding-top: 14px; }
+  .offer-now .chips .chip { min-height: 24px; padding-block: 1px; }
+  .neg-head .tb-title { font-size: 25px; }
+}
+
+/* ------------------------------------------------------------------ match: key moment card on narrow pitches */
+@media (max-width: 699.98px) {
+  .moment-card { left: 10px; right: 10px; padding: clamp(10px, 1.8dvh, 16px) var(--s3); }
+  .mc-title { font-size: clamp(36px, 5.2dvh, 44px); line-height: 1; }
+  .mc-actions .btn { min-width: 0; padding-inline: 10px; }
+  .mc-actions .btn-ghost { white-space: normal; line-height: 1.1; font-size: var(--t-sm); }
+  /* decision overlay (src/match/decision injects its CSS): the board takes what is left, so the
+     four answer cards always sit inside the viewport */
+  .dm-root .dm-col { height: 100%; min-height: 0; }
+  .dm-root .dm-boardwrap { flex: 1 1 0; min-height: 150px; max-height: 64dvh; }
+}
+
+/* ------------------------------------------------------------------ club: two tabs on phones */
+.club-tabs { display: none; }
+@media (max-width: 699.98px) {
+  .club-tabs { display: flex; background: rgba(0, 0, 0, 0.25); }
+  .club-tabs button { color: #c3cee0; }
+  .club-tabs button[aria-pressed='true'] { background: var(--paper); color: var(--ink); }
+  .club-tab-me .col-b { display: none; }
+  .club-tab-people .me-card { display: none; }
+}
+
+/* ------------------------------------------------------------------ settings: compact */
+@media (max-width: 699.98px) {
+  .settings-screen { gap: var(--s2); }
+  .settings-group { gap: var(--s2); padding: var(--s3) var(--s4); }
+  .settings-group .paper-title { font-size: 24px; }
+  .settings-group .moment-style,
+  .settings-group .speed-pick { padding: 0 !important; gap: 4px !important; }
+  .settings-group .tg-text small,
+  .settings-group .speed-sub,
+  .settings-group > .muted { font-size: 13px; line-height: 1.3; }
+  .settings-group .toggle { min-height: 48px; }
+  .settings-group .seg button { min-height: 42px; }
+  .settings-group .btn { margin-bottom: 3px; }
+}
+
+/* ------------------------------------------------------------------ table: the table paper is the scroller (its header row sticks to it) */
+@media (max-width: 699.98px) {
+  .table-screen { overflow-y: auto; }
+  .table-screen > * { flex-shrink: 0; }
+  .table-screen > .table-paper {
+    flex: 0 1 auto;
+    min-height: 120px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    padding-top: 0;
+  }
+  .table-screen > .table-paper::-webkit-scrollbar { display: none; }
+}
+
+/* ------------------------------------------------------------------ career end: card tab (fits) and numbers tab (scrolls inside) */
+.ce-tabs { display: none; }
+@media (max-width: 699.98px) {
+  .career-end { gap: clamp(6px, 1.2dvh, 16px); }
+  .ce-head { gap: 4px; }
+  .ce-head .h1 { font-size: clamp(40px, 6dvh, 56px); line-height: 0.95; }
+  .ce-tabs { display: flex; flex-shrink: 0; background: rgba(0, 0, 0, 0.25); }
+  .ce-tabs button { color: #c3cee0; }
+  .ce-tabs button[aria-pressed='true'] { background: var(--paper); color: var(--ink); }
+  .ce-tab-card { overflow-y: auto; }
+  .ce-tab-card .ce-stats,
+  .ce-tab-card .ce-story,
+  .ce-tab-card .ce-timeline { display: none; }
+  .ce-tab-card .ce-card { flex: 1 1 0; min-height: 0; display: flex; justify-content: center; }
+  .ce-tab-card .ce-card img,
+  .ce-tab-card .ce-card .ce-card-ph { width: auto; height: 100%; max-width: 100%; object-fit: contain; }
+  .ce-tab-story .ce-card { display: none; }
+  .career-end > .btn-ghost { flex-shrink: 0; }
+}
+
+/* ------------------------------------------------------------------ week while injured: a slimmer banner */
+@media (max-width: 699.98px) {
+  .week-screen > .injury-banner { padding: clamp(6px, 1dvh, 10px) var(--s3); gap: var(--s2); flex-shrink: 0; }
+  .week-screen > .injury-banner b { font-size: clamp(22px, 3.2dvh, 28px); }
+  .week-screen > .injury-banner .ib-cross { width: 32px; height: 32px; font-size: 24px !important; }
+  .week-screen > .injury-banner span { font-size: 13px; line-height: 1.3; }
+}
+@media (max-width: 699.98px) and (max-height: 860px) {
+  /* the rehab magnet and the top-bar badge already say it; keep the kind and the weeks */
+  .week-screen > .injury-banner .ib-more { display: none; }
+}
+@media (max-width: 699.98px) and (max-height: 660px) {
+  .week-screen .board-tray { height: 8px; }
+  .week-screen .week-status { padding-block: 6px; }
+}
+
+/* ------------------------------------------------------------------ toasts sit over the top bar (content now starts right under it) */
+@media (max-width: 699.98px) {
+  .toasts { top: calc(var(--safe-t) + 4px); }
+  .scr-match .toasts { top: calc(var(--safe-t) + 60px); } /* keep the scorebug readable */
+  .toast { font-size: var(--t-sm); line-height: 1.3; }
+}

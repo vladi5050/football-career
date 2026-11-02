@@ -215,3 +215,31 @@ Breakpoints (same values in CSS and in `MQ_TABLET` / `MQ_DESKTOP`):
   `:focus-visible` ring (inset on the nav rail).
 - No horizontal scroll from 360 to 1920px (checked at 360, 390, 430, 768, 820x1180, 1024x768, 1280x800,
   1440x900, 1920x1080). Shots: `docs/screens/50-*.png`.
+
+## 14. Phone fit: one screen, no page scroll (`src/ui/styles/phone.css`, < 700px)
+
+- **App shell.** `#app`, `.shell-row`, `.shell` are exactly `100dvh`; `.screen-host` clips. The page itself never
+  scrolls. If anything is taller than the viewport, `main.screen` scrolls inside the shell and the `.topbar`
+  is sticky at its top (planks background with `background-attachment: fixed`, so the seam is invisible).
+  Sticky insets count from the scroller's content box, so the top bar uses a negative `top` equal to the
+  screen's top padding.
+- **Fixed-content screens fit 640-932px tall:** title, new career, reveal, week, prematch, match (+ decision
+  overlay), weekend, event, contract, career end. Sizes scale with `clamp(min, Ndvh, max)`; the min is tuned for
+  360x640, the max is the old size, reached around 844px. Extra rules for `max-height: 780 / 760 / 700 / 680 / 660px`.
+- **What gives way on short phones** (nothing primary is hidden):
+  - Week: board header hidden (the top bar names the club), fitness and projected bars share one row, the
+    "until the next match" button turns into an icon button (its text stays for screen readers), single action row.
+    Injured: the banner keeps the injury and weeks; the "rehab + stands" sentence hides below 860px tall.
+  - New career: name field labels become screen-reader only (the inputs show the names), smaller board.
+  - Contract: the offer card puts wage and patience side by side, the agent keeps only the range and his type,
+    "תפקיד בסגל" label is screen-reader only, years and clause share a row, the talk log scrolls inside.
+  - Match: the pitch keeps a fixed share of the height and the feed scrolls inside. The decision overlay board
+    (`.dm-boardwrap`) shrinks so the answer cards stay on screen.
+  - Weekend: headline, result and gains are compact; the secondary reading (quick-week answers, near goals,
+    league news, open loops) sits in `.we-more`, a panel that scrolls by itself (`display: contents` on tablet+).
+  - Career end: two tabs, "הכרטיס" (the share card fitted to the height) and "המספרים והדרך".
+- **Long screens** keep the top bar pinned and scroll inside: table (the table paper is the scroller, so the
+  column header sticks to it), club (two tabs: "אני" / "אנשים ויריב"), news, goals, settings (compact), agent.
+- Tabs (`.club-tabs`, `.ce-tabs`) exist only on phones; tablet and desktop show everything as before.
+- e2e audit "page scrolls on phone": page taller than the viewport on any phone screen, or screen content taller
+  than the viewport on a fixed-content screen.

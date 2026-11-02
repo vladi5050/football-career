@@ -54,7 +54,7 @@ export function ContractScreen() {
         {club && <Crest spec={club.crest} colors={club.colors} name={club.name} short={club.short} size={52} />}
         <div class="nh-main">
           <h1 class="tb-title">{club?.name ?? 'משא ומתן'}</h1>
-          <div class="tb-sub">{n.offerId == null ? 'חידוש חוזה' : 'הצעת מעבר'} · משא ומתן</div>
+          <div class="tb-sub">{n.offerId == null ? 'חידוש חוזה' : 'הצעת מעבר'}<span class="nh-neg"> · משא ומתן</span></div>
           {club?.facilities != null && (
             <div class="tb-sub facilities-line">
               מתקני אימון <span class="stars" aria-label={`${club.facilities} כוכבים מתוך 5`}>{starsHe(club.facilities)}</span>
@@ -70,7 +70,7 @@ export function ContractScreen() {
       </div>
 
       <TapedCard tape="right" class="offer-now">
-        <span class="label">ההצעה על השולחן</span>
+        <span class="label on-label">ההצעה על השולחן</span>
         <div class="on-row">
           <b class="display num on-wage">{money(n.currentOffer.wage)}</b>
           <span class="muted">לחודש</span>
@@ -86,7 +86,7 @@ export function ContractScreen() {
       <div class="agent-advice">
         <Avatar name={v.agent.name} role="agent" size="sm" />
         <p>
-          <b>{v.agent.name}:</b> "לדעתי הם יגיעו איפשהו <mark>בין {money(n.agentRange[0])} ל-{money(n.agentRange[1])}</mark>. מעבר לזה זה הימור."
+          <b>{v.agent.name}:</b> <span class="aa-say">"לדעתי הם יגיעו איפשהו </span><mark>בין {money(n.agentRange[0])} ל-{money(n.agentRange[1])}</mark><span class="aa-say">. מעבר לזה זה הימור."</span>
           <span class="muted"> ({arch.name}, טווח {arch.width})</span>
         </p>
       </div>
@@ -129,7 +129,7 @@ export function ContractScreen() {
           </div>
         </div>
 
-        <span class="label">תפקיד בסגל</span>
+        <span class="label role-label">תפקיד בסגל</span>
         <div class="seg" role="group" aria-label="תפקיד">
           {ROLES.map((r) => (
             <button key={r} type="button" aria-pressed={role === r} disabled={final} onClick={() => setRole(r)}>
@@ -139,7 +139,7 @@ export function ContractScreen() {
         </div>
 
         <div class="demand-row">
-          <div>
+          <div class="years-pick">
             <span class="label">שנים</span>
             <div class="stepper">
               <button type="button" aria-label="פחות" disabled={final} onClick={() => setYears((y) => Math.max(1, y - 1))}>−</button>
